@@ -53,12 +53,12 @@ app.use(
     saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URL,
-      ttl: 60 * 60 * 24 * 7, // 1 hafta (saniye)
+      ttl: 1000 * 60 * 60 * 24 * 7,
     }),
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 hafta
-      httpOnly: true,
-      secure: isProd, // Prod = true, Local = false
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      secure: isProd, // ❗ Prod = true, Local = false
+      httpOnly: isProd, // 🔒 Prod = true (güvenli)
       sameSite: isProd ? "none" : "lax",
     },
   })

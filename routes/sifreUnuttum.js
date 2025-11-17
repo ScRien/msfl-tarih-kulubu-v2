@@ -83,7 +83,9 @@ sifreUnuttumRouter.post("/yeni-sifre", async (req, res) => {
   }
 
   if (password1 !== password2) {
-    return res.redirect("/sifre-unuttum?error=Şifreler+eşleşmiyor&showNewPass=1");
+    return res.redirect(
+      "/sifre-unuttum?error=Şifreler+eşleşmiyor&showNewPass=1"
+    );
   }
 
   const bcrypt = await import("bcrypt");
@@ -98,7 +100,9 @@ sifreUnuttumRouter.post("/yeni-sifre", async (req, res) => {
   req.session.resetCode = null;
   req.session.allowPasswordReset = false;
 
-  return res.redirect("/kullanici/oturumAc?success=Şifre+başarıyla+güncellendi");
+  return res.redirect(
+    "/kullanici/oturumAc?success=Şifre+başarıyla+güncellendi"
+  );
 });
 
 export default sifreUnuttumRouter;
