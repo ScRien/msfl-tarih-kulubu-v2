@@ -1,0 +1,115 @@
+/* ===== ADMIN PANEL GİRİŞ (DİKEY TASARIM) ===== */
+.admin-login {
+  width: 100%;
+  min-height: 100vh;
+  background: url("/img/admin_bg.png") center/cover no-repeat;
+  display: flex;
+  align-items: center; /* dikey ortalama */
+  justify-content: center; /* yatay ortalama */
+  font-family: "Cardo", serif;
+}
+
+.admin-wrapper {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 60px 80px;
+  border-radius: 25px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+/* Başlık */
+.admin-title {
+  font-size: 42px;
+  font-weight: bold;
+  background: linear-gradient(to right, #731919, #e52b2b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+}
+
+/* Form alanı */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+
+/* Input grubu */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-form input {
+  width: 320px;
+  padding: 14px;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  background: linear-gradient(to bottom, #dfdcda, #858176);
+  color: #fff;
+  text-align: center;
+  font-size: 18px;
+  transition: all 0.2s ease-in-out;
+}
+
+.admin-form input::placeholder {
+  color: #f4f4f4;
+  opacity: 0.9;
+}
+
+.admin-form input:focus {
+  transform: scale(1.03);
+  box-shadow: 0 0 10px rgba(255, 145, 77, 0.6);
+}
+
+/* Buton */
+.admin-button {
+  margin-top: 20px;
+  padding: 12px 50px;
+  border: none;
+  border-radius: 40px;
+  background: linear-gradient(to right, #ff3131, #ff914d);
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-button:hover {
+  transform: scale(1.07);
+  box-shadow: 0 5px 20px rgba(255, 90, 0, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .admin-wrapper {
+    padding: 40px 40px;
+  }
+
+  .admin-title {
+    font-size: 34px;
+  }
+
+  .admin-form input {
+    width: 250px;
+  }
+}
+
+.admin-error {
+  margin-top: -10px;
+  margin-bottom: 10px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: #ffe3e3;
+  color: #b10000;
+  font-size: 14px;
+  text-align: center;
+  border: 1px solid #ffb3b3;
+}

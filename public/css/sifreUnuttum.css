@@ -1,0 +1,135 @@
+/* Arkaplan ortalama */
+.pw-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* Kutu */
+.pw-box {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  padding: 40px 45px;
+  border-radius: 28px;
+  text-align: center;
+  box-shadow: 0 4px 45px rgba(0, 0, 0, 0.12);
+}
+
+/* Başlık */
+.pw-box h2 {
+  font-family: glacial, sans-serif;
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* Açıklama */
+.desc {
+  color: #444;
+  font-size: 15px;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+/* Form tasarımı */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 40px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  background: linear-gradient(to bottom, #dcdcdc, #bdbdbd);
+  text-align: center;
+}
+
+/* Butonlar */
+.btn {
+  padding: 12px 0;
+  border-radius: 40px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  transition: 0.25s ease;
+}
+
+/* Turuncu buton */
+.btn.primary {
+  background: #2ecc71;
+}
+
+.btn.primary:hover {
+  background: #1ea75b;
+}
+
+/* Yeşil doğrulama */
+.btn.verify {
+  background: #27ae60;
+}
+
+.btn.verify:hover {
+  background: #1f8a4d;
+}
+
+/* Kırmızı (şifre güncelle) */
+.btn.danger {
+  background: #ff4646;
+  background: linear-gradient(45deg, #ff4646, #ff8a4d);
+}
+
+.btn.danger:hover {
+  opacity: 0.85;
+}
+
+/* Uyarı kutuları */
+.pw-alert {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  color: #000;
+  font-weight: 500;
+  font-size: 14px;
+  animation: fadeIn 0.3s ease;
+}
+
+.pw-alert.success {
+  background: #c8ffd5;
+  color: #0e6c3a;
+}
+
+.pw-alert.error {
+  background: #ffd2d2;
+  color: #7a0000;
+}
+
+/* Geri link */
+.back-link {
+  display: inline-block;
+  margin-top: 22px;
+  color: #000;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.back-link:hover {
+  color: #ff3131;
+}
+
+/* Animasyon */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

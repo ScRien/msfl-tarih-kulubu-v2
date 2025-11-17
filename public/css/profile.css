@@ -1,0 +1,319 @@
+/* =====================================
+      GENEL PROFIL WRAPPER
+===================================== */
+.profile-wrapper {
+  width: min(1100px, calc(100% - 80px));
+  margin: 0 auto;
+  padding: 20px;
+  background: #f5f5f5;
+  font-family: "Cardo", serif;
+  color: #333;
+}
+
+/* =====================================
+      KAPAK FOTOĞRAFI
+===================================== */
+.profile-cover {
+  width: 100%;
+  height: 260px;
+  background: #ddd;
+  border-radius: 24px;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* =====================================
+      PROFIL BILGI
+===================================== */
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.profile-avatar {
+  width: 130px;
+  height: 130px;
+  background: #fff;
+  border-radius: 50%;
+  border: 4px solid white;
+  margin-top: -95px;
+  overflow: hidden;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-text .username {
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.profile-text .fullname {
+  font-size: 18px;
+  color: #555;
+}
+
+.profile-text .bio {
+  font-style: italic;
+  margin: 5px 0 12px;
+}
+
+/* =====================================
+      SOCIAL + STATS (YAN YANA)
+===================================== */
+.profile-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin: 10px 0 18px;
+}
+
+.profile-social {
+  display: flex;
+  gap: 14px;
+}
+
+.profile-social a {
+  font-size: 26px;
+  color: #333;
+  transition: 0.2s;
+}
+
+.profile-social a:hover {
+  color: #a52020;
+  transform: scale(1.1);
+}
+
+.profile-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 0;
+}
+
+/* =====================================
+      FOLLOW BUTTON
+===================================== */
+.follow-btn {
+  background: #ff6b6b;
+  padding: 12px 24px;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+/* =====================================
+      SECTIONS
+===================================== */
+.profile-section {
+  margin-top: 40px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-header h3 {
+  font-size: 24px;
+}
+
+.section-header a {
+  color: #c62828;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.section-header a:hover {
+  text-decoration: underline;
+}
+
+/* =====================================
+      PROFILE LIST CARD
+===================================== */
+.profile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.profile-card {
+  background: white;
+  padding: 18px 22px;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+  transition: 0.2s;
+}
+
+.profile-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.profile-card-date {
+  font-size: 14px;
+  color: #777;
+}
+
+.goto-post {
+  margin-top: 8px;
+  display: inline-block;
+  color: #c62828;
+  font-size: 15px;
+}
+
+.profile-comment-text {
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+/* =====================================
+      BLOG GRID
+===================================== */
+.profile-blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+  margin-top: 20px;
+}
+
+.blog-card-modern {
+  display: flex;
+  flex-direction: column;
+  background: #f8f8f8;
+  border-radius: 14px;
+  overflow: hidden;
+  color: #000;
+  text-decoration: none;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  transition: 0.2s;
+}
+
+.blog-card-modern:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.blog-card-img {
+  height: 160px;
+  overflow: hidden;
+}
+
+.blog-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-card-content {
+  padding: 15px;
+}
+
+.blog-card-content h4 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.blog-card-content p {
+  font-size: 14px;
+  color: #555;
+}
+
+.blog-card-content .date {
+  font-size: 13px;
+  color: #888;
+}
+
+/* =====================================
+      RESPONSIVE
+===================================== */
+@media (max-width: 600px) {
+  .profile-info {
+    flex-direction: column;
+    text-align: center;
+    margin-top: -40px;
+  }
+
+  .profile-horizontal {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .profile-stats {
+    justify-content: center;
+  }
+
+  .profile-social {
+    justify-content: center;
+  }
+}
+
+.no-social {
+  color: #777;
+  font-size: 14px;
+  font-style: italic;
+  margin-right: 10px;
+}
+
+.profile-comments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.comment-card-modern {
+  background: #fff;
+  padding: 18px 20px;
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: 0.2s;
+}
+
+.comment-card-modern:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.comment-text {
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.comment-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #777;
+}
+
+.comment-link {
+  color: #c62828;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.comment-link:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,150 @@
+{{#if error}}
+  <div class="account-alert error">❌ {{error}}</div>
+{{/if}}
+
+{{#if success}}
+  <div class="account-alert success">✅ {{success}}</div>
+{{/if}}
+
+<section class="texts">
+  <div class="texts-left">
+    <h3>“Tarih yazmak,<br />tarih yapmak kadar mühimdir.”</h3>
+    <img src="/img/atatürk_imza.png" alt="imza" class="signature" />
+    <p class="sub-quote">
+      “Hey Gaziler!<br />Yürümek gerek, niçin duralım?”
+    </p>
+    <img src="/img/tugra.png" alt="tuğra" class="tughra" />
+  </div>
+
+  <div class="texts-middle">
+    <img src="/img/ayrac.png" alt="ayrac" class="divider" />
+  </div>
+
+  <div class="texts-right">
+    <p>
+      Tarihi yalnızca okumakla kalmıyor, onu yaşatıyoruz.<br />
+      Mustafa Saffet Fen Lisesi Tarih Kulübü olarak geçmişin izlerini
+      araştırıyor, tarihin ışığında geleceğe yürüyoruz.
+    </p>
+    <button onclick="window.location.href='/hakkinda'">Daha Fazlası İçin Tıkla</button>
+  </div>
+</section>
+
+<!-- TARİHİN SATIR ARALARI -->
+<section class="tarih-aralari">
+  <div class="tarih-left">
+    <h2 class="title">Tarihin Satır Araları</h2>
+    <p class="subtitle">
+      Her yazıda geçmişten bir nefes, geleceğe bir iz bırakıyoruz.
+    </p>
+
+    <h3 class="highlight">Öne Çıkanlar</h3>
+
+    <div class="featured-posts">
+      <div class="post">
+        <h4>“Bir Şehrin Kalbinde: Konstantinopolis’ten İstanbul’a”</h4>
+        <p>
+          Binlerce yıl boyunca imparatorluklara başkentlik yapmış bir şehir
+          düşün... Her sokağında farklı bir çağın sesi yankılanıyor. Biz bu
+          yazıda...
+        </p>
+        <button onclick="window.location.href='/blog/:id'">Okumaya Devam Etmek
+          İçin Tıkla</button>
+      </div>
+
+      <div class="post">
+        <h4>“Cumhuriyet’in İlk Kadın Öğretmenleri”</h4>
+        <p>
+          Yeni bir ülke, yeni bir nesil, yeni bir umut... Cumhuriyet’le birlikte
+          eğitimde görev alan kadın öğretmenler, bir dönemin sembolü haline
+          geldiler.
+        </p>
+        <button onclick="window.location.href='/blog/:id'">Okumaya Devam Etmek
+          İçin Tıkla</button>
+      </div>
+    </div>
+
+    <div class="explore">
+      <p>“Tarih sadece kitaplarda kalmasın. Bizimle keşfet!”</p>
+      <button onclick="window.location.href='/blog'">Blogu Keşfet</button>
+    </div>
+  </div>
+
+  <div class="tarih-right"></div>
+</section>
+
+<!-- BU YIL TARİHLE BULUŞUYORUZ -->
+<!-- BU YIL TARİHLE BULUŞUYORUZ -->
+<section class="tarihle-bulusuyoruz">
+  <div class="etkinlik-content">
+    <h2 class="title">Bu Yıl Tarihle Buluşuyoruz</h2>
+    <p class="subtitle">
+      Her etkinliğimizde tarihin farklı bir dönemine yolculuk ediyoruz.<br />
+      Gezilerden söyleşilere, her adımda öğreniyor ve paylaşıyoruz.
+    </p>
+
+    <div class="etkinlik-bottom">
+      <p class="quote-text">
+        "Tarih, anlatıldıkça yaşar.<br />
+        <span>Biz de her etkinliğimizde geçmişi yeniden canlandırıyoruz."</span>
+      </p>
+      <button onclick="window.location.href='/etkinlikler'">Etkinlik Takvimini
+        Gör</button>
+    </div>
+  </div>
+</section>
+
+<!-- TARİHTE BUGÜN -->
+<section class="tarihte-bugun">
+  <div class="bugun-left">
+    <h2 class="title">Tarihte Bugün</h2>
+    <p class="subtitle">Bugün geçmişte neler yaşandı, bir bak.</p>
+
+    <div class="dates">
+      <div class="date-item">
+        <div class="calendar">10</div>
+        <p>Bir milletin kalbi aynı anda durdu.</p>
+      </div>
+
+      <div class="date-item">
+        <div class="calendar">11</div>
+        <p>Barışın ve hatırlamanın günü.</p>
+      </div>
+
+      <div class="date-item">
+        <div class="calendar">12</div>
+        <p>Doğanın ve bilimin günü.</p>
+      </div>
+
+      <div class="date-item">
+        <div class="calendar">13</div>
+        <p>Yeni başlangıçlar, derin izler.</p>
+      </div>
+    </div>
+
+    <p class="quote">
+      Geçmişin sayfalarını biraz daha aralamaya ne dersin?
+    </p>
+
+    <button onclick="window.location.href='/tarihteBugun'">Daha Fazlası İçin
+      Tıkla</button>
+  </div>
+</section>
+
+<!-- ARAMIZA KATIL -->
+<section class="aramiza-katil">
+  <div class="katil-container">
+    <h2 class="katil-title">Sen de aramıza katılmak ister misin?</h2>
+
+    <p class="katil-text">
+      Tarihi sadece okumuyor, birlikte yaşıyoruz.<br />
+      Kulüp etkinliklerine katılmak, yazılar paylaşmak ve<br />
+      tarihin bir parçası olmak için hemen oturum aç.
+    </p>
+
+    <button
+      class="katil-button"
+      onclick="window.location.href='/oturumAc'"
+    >Oturum Aç</button>
+  </div>
+</section>

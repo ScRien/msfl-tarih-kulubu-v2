@@ -1,0 +1,36 @@
+<link rel="stylesheet" href="/css/sifreYeni.css" />
+
+<section class="pw-wrapper">
+
+  {{#if error}}
+    <div class="pw-alert error">❌ {{error}}</div>
+  {{/if}}
+
+  {{#if success}}
+    <div class="pw-alert success">✅ {{success}}</div>
+  {{/if}}
+
+  <div class="pw-box">
+    <h2>Yeni Şifre Belirle</h2>
+    <p class="desc">
+      Güvenliğiniz için güçlü bir şifre belirleyin.
+    </p>
+
+    <form action="/hesap/sifre-yeni" method="POST">
+
+      <div class="form-group">
+        <label>Yeni Şifre</label>
+        <input type="password" name="password1" required placeholder="Yeni şifre">
+      </div>
+
+      <div class="form-group">
+        <label>Yeni Şifre (Tekrar)</label>
+        <input type="password" name="password2" required placeholder="Yeni şifre tekrar">
+      </div>
+
+      <button type="submit" class="btn save">Şifreyi Güncelle</button>
+
+    </form>
+  </div>
+
+</section>

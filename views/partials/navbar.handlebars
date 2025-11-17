@@ -1,0 +1,73 @@
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="nav-left">
+    <img src="/img/msfltemiz.png" class="logo" alt="MSFL" />
+    <img src="/img/kulup_temiz.png" class="logo" alt="Kulüp" />
+  </div>
+
+  <div class="nav-center">
+    <a href="/">Mustafa Saffet Fen Lisesi Tarih Kulübü</a>
+  </div>
+
+  <div class="nav-right">
+    <a href="/hakkinda">Hakkında</a>
+    <a href="/blog">Blog</a>
+    <a href="/etkinlikler">Etkinlikler</a>
+    <a href="/tarihteBugun">Tarihte Bugün</a>
+
+    {{#if isAuth}}
+      <a href="/hesap" class="account-btn">Hesabım ({{currentUser}})</a>
+      <a href="/kullanici/cikis" class="logout-btn">Çıkış</a>
+    {{else}}
+      <a href="/kullanici/oturumAc" class="login-btn">Oturum Aç</a>
+      <a href="/kullanici/kayitOl" class="register-btn">Kayıt Ol</a>
+    {{/if}}
+  </div>
+</header>
+
+<!-- SOSYAL MEDYA -->
+<div class="social-media">
+  <a
+    href="https://www.instagram.com/msfl_tarihkulubu"
+    target="_blank"
+    class="social-group"
+  >
+    <img
+      src="/img/socialmedia/instagram.png"
+      alt="Instagram"
+      class="media-icon"
+    />
+    <span class="media-link">msfltarihkulubu</span>
+  </a>
+
+  <a
+    href="https://www.x.com/msfltarihkulubu"
+    target="_blank"
+    class="social-group"
+  >
+    <img src="/img/socialmedia/twitter.png" alt="Twitter" class="media-icon" />
+    <span class="media-link">msfltarihkulubu</span>
+  </a>
+
+  <a
+    href="https://www.facebook.com/msfltarihkulubu"
+    target="_blank"
+    class="social-group"
+  >
+    <img
+      src="/img/socialmedia/facebook.png"
+      alt="Facebook"
+      class="media-icon"
+    />
+    <span class="media-link">msfltarihkulubu</span>
+  </a>
+
+  <a
+    href="https://www.youtube.com/msfltarihkulubu"
+    target="_blank"
+    class="social-group"
+  >
+    <img src="/img/socialmedia/youtube.png" alt="YouTube" class="media-icon" />
+    <span class="media-link">MSFL Tarih Kulübü</span>
+  </a>
+</div>

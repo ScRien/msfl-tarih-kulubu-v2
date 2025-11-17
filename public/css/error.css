@@ -1,0 +1,26 @@
+.error-wrapper {
+  text-align: center;
+  padding: 120px 20px;
+  font-family: "Inter", sans-serif;
+}
+
+.error-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: #b31d1d;
+}
+
+.error-text {
+  font-size: 18px;
+  margin: 20px 0 30px;
+  color: #555;
+}
+
+.error-btn {
+  padding: 12px 24px;
+  background: #b31d1d;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}

@@ -1,0 +1,84 @@
+<link rel="stylesheet" href="/css/sifreUnuttum.css" />
+
+<section class="pw-wrapper">
+
+  {{! BAŞARILI MESAJ }}
+  {{#if success}}
+    <div class="pw-alert success">✔ {{success}}</div>
+  {{/if}}
+
+  {{! HATA }}
+  {{#if error}}
+    <div class="pw-alert error">❌ {{error}}</div>
+  {{/if}}
+
+  <div class="pw-box">
+
+    <h2>Şifremi Unuttum</h2>
+    <p class="desc">
+      E-posta adresinizi girin. Hesabınızı doğrulamak için size bir kod
+      göndereceğiz.
+    </p>
+
+    {{! 1) E-POSTA FORMU }}
+    {{#unless showVerify}}
+      {{#unless showNewPass}}
+        <form action="/sifre-unuttum/kod" method="POST" class="form">
+          <input
+            type="email"
+            name="email"
+            placeholder="E-posta adresiniz"
+            required
+          />
+          <button class="btn primary">
+            <i class="fa-solid fa-paper-plane"></i>
+            Kod Gönder
+          </button>
+        </form>
+      {{/unless}}
+    {{/unless}}
+
+    {{! 2) KOD DOĞRULAMA FORMU }}
+    {{#if showVerify}}
+      <form action="/sifre-unuttum/kod-dogrula" method="POST" class="form">
+        <input
+          type="text"
+          name="code"
+          maxlength="6"
+          placeholder="Mail'deki 6 haneli kod"
+          required
+        />
+        <button class="btn verify">
+          <i class="fa-solid fa-shield-halved"></i>
+          Kodu Doğrula
+        </button>
+      </form>
+    {{/if}}
+
+    {{! 3) YENİ ŞİFRE FORMU }}
+    {{#if showNewPass}}
+      <form action="/sifre-unuttum/yeni-sifre" method="POST" class="form">
+        <input
+          type="password"
+          name="password1"
+          placeholder="Yeni şifre"
+          required
+        />
+        <input
+          type="password"
+          name="password2"
+          placeholder="Yeni şifre (tekrar)"
+          required
+        />
+
+        <button class="btn danger">
+          <i class="fa-solid fa-lock"></i>
+          Şifreyi Güncelle
+        </button>
+      </form>
+    {{/if}}
+
+    <a href="/kullanici/oturumAc" class="back-link">← Giriş sayfasına dön</a>
+
+  </div>
+</section>

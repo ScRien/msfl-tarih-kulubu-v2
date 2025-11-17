@@ -1,0 +1,62 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-box {
+  width: 520px;
+  background: #fff;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  font-family: "Cardo", serif;
+  animation: fadeIn .2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-box input {
+  width: 90%;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 18px;
+}
+
+.modal-btn {
+  padding: 10px 26px;
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+  margin: 14px 8px;
+  font-size: 18px;
+  font-family: inherit;
+}
+
+.modal-save {
+  background: #2ecc71;
+  color: #fff;
+}
+
+.modal-cancel {
+  background: #999;
+  color: #fff;
+}
+
+.modal-delete {
+  background: #e74c3c;
+  color: #fff;
+}

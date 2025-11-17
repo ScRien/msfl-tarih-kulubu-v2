@@ -1,0 +1,122 @@
+<section class="register-section">
+  <div class="register-container">
+
+    <!-- Sol Taraf - Form -->
+    <div class="register-left">
+      <h2 class="register-title">Kayıt Ol</h2>
+
+      {{#if error}}
+        <p class="auth-error">{{error}}</p>
+      {{/if}}
+
+      <form
+        id="register-form"
+        class="register-form"
+        action="/kullanici/kayitOl"
+        method="POST"
+      >
+
+        <div class="form-row">
+          <input
+            type="text"
+            name="username"
+            placeholder="Kullanıcı Adı"
+            class="register-input"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="E-mail"
+            class="register-input"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <input
+            type="text"
+            name="name"
+            placeholder="İsim"
+            class="register-input"
+            required
+          />
+          <input
+            type="text"
+            name="surname"
+            placeholder="Soyisim"
+            class="register-input"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <input
+            type="password"
+            name="password"
+            placeholder="Şifre"
+            class="register-input"
+            required
+          />
+
+          <!-- BURASI KESİNLİKLE password2 OLACAK -->
+          <input
+            type="password"
+            name="password2"
+            placeholder="Şifre (Tekrar)"
+            class="register-input"
+            required
+          />
+        </div>
+
+        <div class="terms-container">
+          <label class="checkbox-label">
+            <input type="checkbox" name="kvkk" required />
+            <span>
+              <a href="/kvkk" target="_blank" class="terms-link">KVKK metnini</a>
+              okudum, kabul ediyorum.
+            </span>
+          </label>
+
+          <label class="checkbox-label">
+            <input type="checkbox" name="privacy" required />
+            <span>
+              <a href="/gizlilik" target="_blank" class="terms-link">Gizlilik
+                politikasını</a>
+              okudum, kabul ediyorum.
+            </span>
+          </label>
+
+          <label class="checkbox-label">
+            <input type="checkbox" name="terms" required />
+            <span>
+              <a
+                href="/kullanim-sartlari"
+                target="_blank"
+                class="terms-link"
+              >Kullanıcı Şartlarını</a>
+              okudum, kabul ediyorum.
+            </span>
+          </label>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Sağ Taraf - Mesaj ve Buton -->
+    <div class="register-right">
+      <h3 class="right-title">Tarih Kulübü Evrenine<br />Girmeye Hazırım!</h3>
+
+      <!-- BUTON ARTIK FORMU GÖNDERİYOR -->
+      <button type="submit" form="register-form" class="register-button">
+        Kayıt Ol
+      </button>
+
+      <p class="login-link">
+        Hesabın var mı?
+        <a href="/kullanici/oturumAc">Giriş yap</a>
+      </p>
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,33 @@
+<link rel="stylesheet" href="/css/profile.css" />
+
+<section class="profile-wrapper">
+
+  <h1 class="profile-title">@{{user.username}} — Yorumlar</h1>
+
+  {{#if comments.length}}
+    <div class="profile-comments-grid">
+
+      {{#each comments}}
+        <div class="comment-card-modern">
+
+          <p class="comment-text">{{content}}</p>
+
+          <div class="comment-footer">
+            <span class="comment-date">
+              {{generateDate date "DD/MM/YYYY HH:mm"}}
+            </span>
+
+            <a href="/blog/{{toString post_id}}" class="comment-link">
+              İlgili bloğa git →
+            </a>
+          </div>
+
+        </div>
+      {{/each}}
+
+    </div>
+  {{else}}
+    <p class="empty">Bu kullanıcının henüz yorumu yok.</p>
+  {{/if}}
+
+</section>

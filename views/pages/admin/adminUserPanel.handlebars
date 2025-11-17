@@ -1,0 +1,63 @@
+<link rel="stylesheet" href="/css/admin.css">
+
+<section class="admin-dashboard">
+
+  <div class="dashboard-tabs">
+    <button class="tab" onclick="location.href='/admin/blog'">Blog Paneli</button>
+    <button class="tab active" onclick="location.href='/admin/kullanici'">Kullanıcı Paneli</button>
+    <button class="tab" onclick="location.href='/admin/yorum'">Yorum Paneli</button>
+  </div>
+
+  <h1 class="dashboard-title">Kullanıcı Paneli</h1>
+
+  <div class="stats-container">
+    <div class="stat-card"><h3>Toplam Kullanıcı</h3><p>{{totalUsers}}</p></div>
+    <div class="stat-card"><h3>Blog Yazan Kullanıcı</h3><p>{{blogWriterCount}}</p></div>
+  </div>
+
+  <div class="table-container">
+    <h2 class="table-title">Kullanıcı Listesi</h2>
+
+    <table class="table">
+      <thead>
+      <tr>
+        <th>#</th>
+        <th>Avatar</th>
+        <th>Kullanıcı</th>
+        <th>Email</th>
+        <th>Ad Soyad</th>
+        <th>Blog</th>
+        <th>Tarih</th>
+        <th>İşlem</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      {{#each users}}
+      <tr>
+        <td>{{@index}}</td>
+
+        <td>
+          <img src="{{this.avatar}}" class="avatar-sm">
+        </td>
+
+        <td>{{this.username}}</td>
+        <td>{{this.email}}</td>
+        <td>{{this.name}} {{this.surname}}</td>
+        <td>{{lookup ../blogCountMap this._id}}</td>
+        <td>{{generateDate this.date "DD.MM.YYYY HH:mm"}}</td>
+
+        <td>
+          <button class="edit-btn" onclick="openUserEdit('{{this._id}}')">Düzenle</button>
+          <button class="delete-btn" onclick="openUserDelete('{{this._id}}')">Sil</button>
+        </td>
+
+      </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{{> adminModal}}
+<script src="/js/admin.js"></script>

@@ -1,0 +1,128 @@
+.pw-wrapper {
+  max-width: 500px;
+  margin: 60px auto;
+  padding: 20px;
+  font-family: "Cardo", serif;
+}
+
+.pw-box {
+  background: white;
+  padding: 32px;
+  border-radius: 18px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+}
+
+.pw-box h2 {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.pw-box .desc {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  font-weight: bold;
+}
+
+.form-group input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.btn.save {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  background: #c62828;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.btn.save:hover {
+  background: #a52020;
+}
+
+.pw-alert {
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.pw-alert.error {
+  background: #fde7e7;
+  border: 1px solid #f5bcbc;
+  color: #b62222;
+}
+
+.pw-alert.success {
+  background: #e8f7e8;
+  border: 1px solid #b6e2b6;
+  color: #2a7a2a;
+}
+
+/* =============================
+      ŞİFRE DEĞİŞTİR – UI
+============================= */
+
+.verify-wrapper {
+  margin-top: 20px;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: 0.4s ease;
+}
+
+.verify-wrapper.show {
+  opacity: 1;
+  max-height: 300px;
+}
+
+.pw-input {
+  padding: 13px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.btn.send-code {
+  background: #0d63c8;
+  color: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 17px;
+  width: 100%;
+}
+
+.btn.send-code:hover {
+  background: #094a96;
+}
+
+.btn.verify {
+  background: #2e7d32;
+  color: white;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 17px;
+  width: 100%;
+}
+
+.btn.verify:hover {
+  background: #1b5e20;
+}

@@ -1,0 +1,224 @@
+/* ======= VİZYON VE MİSYON ======= */
+.vision-mission {
+  width: 100%;
+  background: url("/img/aboutUs_bg.png") center/cover no-repeat;
+}
+
+/* Vizyon Bölümü */
+.vision-section {
+  padding: 80px 120px;
+  position: relative;
+}
+
+.vision-content {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.vision-banner {
+  position: relative;
+  background: rgba(26, 26, 46, 0.95);
+  color: white;
+  padding: 35px 60px;
+  font-size: 32px;
+  font-family: "Cardo", serif;
+  font-weight: 700;
+  min-width: 280px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* ✅ SAĞ OK (VİZYON) */
+.banner-arrow-right {
+  position: absolute;
+  top: 50%;
+  right: -30px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 55px solid transparent;
+  border-bottom: 55px solid transparent;
+  border-left: 30px solid rgba(26, 26, 46, 0.95);
+}
+
+/* Vizyon metni */
+.vision-text {
+  flex: 1;
+  color: rgb(0, 0, 0);
+  font-size: 20px;
+  font-family: "Cardo", serif;
+  line-height: 1.8;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+/* Misyon Bölümü */
+.mission-section {
+  padding: 80px 120px;
+  position: relative;
+}
+
+.mission-content {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.mission-text {
+  flex: 1;
+  color: rgb(0, 0, 0);
+  font-size: 20px;
+  font-family: "Cardo", serif;
+  line-height: 1.8;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.mission-banner {
+  position: relative;
+  background: rgba(26, 26, 46, 0.95);
+  color: white;
+  padding: 35px 60px;
+  font-size: 32px;
+  font-family: "Cardo", serif;
+  font-weight: 700;
+  min-width: 280px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* ✅ SOL OK (MİSYON) */
+.banner-arrow-left {
+  position: absolute;
+  top: 50%;
+  left: -30px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 55px solid transparent;
+  border-bottom: 55px solid transparent;
+  border-right: 30px solid rgba(26, 26, 46, 0.95);
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+  .vision-content,
+  .mission-content {
+    flex-direction: column;
+  }
+
+  .vision-section,
+  .mission-section {
+    padding: 60px 40px;
+  }
+
+  .banner-arrow-right,
+  .banner-arrow-left {
+    display: none;
+  }
+
+  .vision-banner,
+  .mission-banner {
+    width: 100%;
+  }
+
+  .vision-text,
+  .mission-text {
+    font-size: 18px;
+  }
+}
+/* ===== Yönetim Ekibi Bölümü ===== */
+.yonetim-ekibi {
+  width: 100%;
+  background: url("/img/yonetimKurul_bg.png") center/cover no-repeat;
+  padding: 100px 120px;
+  border-radius: 20px;
+  font-family: "Cardo", serif;
+  color: #000;
+}
+
+/* Başlık kısmı */
+.yonetim-header {
+  background: linear-gradient(to top, #e52b2b, #731919);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 70px;
+  border-bottom-right-radius: 70px;
+  width: 40%;
+  padding: 20px 50px;
+  margin-top: -55px;
+  margin-bottom: 80px;
+}
+
+.yonetim-header h2 {
+  font-size: 45px;
+  font-weight: bold;
+  background: linear-gradient(to right, #e9f0f3, #a2a5ac);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+/* Ana içerik */
+.yonetim-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* 1/3 - 2/3 oran */
+  gap: 80px;
+  align-items: flex-start;
+}
+
+/* Sol taraf (1 birim) */
+.yonetim-left .role,
+.yonetim-right .role {
+  margin-bottom: 35px;
+}
+
+.role h3 {
+  font-size: 26px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 8px;
+}
+
+.role p {
+  font-size: 26px;
+  color: #000;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Sağ taraf (2 birim) */
+.yonetim-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .yonetim-ekibi {
+    padding: 60px 40px;
+  }
+
+  .yonetim-container {
+    grid-template-columns: 1fr; /* Tek sütun */
+    gap: 40px;
+  }
+
+  .yonetim-header {
+    width: 100%;
+    border-radius: 20px;
+    text-align: center;
+  }
+
+  .yonetim-header h2 {
+    font-size: 38px;
+  }
+
+  .role h3,
+  .role p {
+    font-size: 22px;
+  }
+}

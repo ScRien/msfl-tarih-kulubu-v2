@@ -1,0 +1,176 @@
+<link rel="stylesheet" href="/css/profile.css" />
+
+<section class="profile-wrapper">
+
+  {{!-- ALERTS --}}
+  {{#if error}}
+    <div class="profile-alert error">❌ {{error}}</div>
+  {{/if}}
+
+  {{#if success}}
+    <div class="profile-alert success">✅ {{success}}</div>
+  {{/if}}
+
+  {{!-- ================= KAPAK FOTOĞRAFı ================= --}}
+  <div class="profile-cover">
+    <img 
+      src="{{#if user.coverPhoto}}{{user.coverPhoto}}{{else}}/img/default-cover.jpg{{/if}}" 
+      class="cover-img" 
+      alt="Kapak Fotoğrafı"
+    />
+  </div>
+
+  {{!-- ================= PROFIL BILGI ALANI ================= --}}
+  <div class="profile-info">
+
+    <div class="profile-avatar">
+      <img 
+        src="{{#if user.avatar}}{{user.avatar}}{{else}}/img/default-avatar.png{{/if}}" 
+        alt="Avatar"
+      />
+    </div>
+
+    <div class="profile-text">
+      <h2 class="username">@{{user.username}}</h2>
+      <p class="fullname">{{user.name}} {{user.surname}}</p>
+
+      <p class="bio">
+        {{#if user.bio}}
+          {{user.bio}}
+        {{else}}
+          Bu kullanıcı henüz bir biyografi eklemedi.
+        {{/if}}
+      </p>
+
+
+      {{!-- ================= SOCIAL + STATS (YAN YANA) ================= --}}
+      {{!-- ================= SOCIAL + STATS (YAN YANA) ================= --}}
+      <div class="profile-horizontal">
+
+      <div class="profile-social">
+
+        {{!-- Eğer hiçbir sosyal medya hesabı yoksa --}}
+        {{#unless user.social.instagram}}
+          {{#unless user.social.x}}
+            {{#unless user.social.github}}
+              {{#unless user.social.youtube}}
+                {{#unless user.social.website}}
+                  <p class="no-social">Sosyal medya hesabı eklenmedi.</p>
+                {{/unless}}
+              {{/unless}}
+            {{/unless}}
+          {{/unless}}
+        {{/unless}}
+
+        {{!-- Instagram --}}
+        {{#if user.social.instagram}}
+          <a href="https://instagram.com/{{user.social.instagram}}" target="_blank">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+        {{/if}}
+
+        {{!-- X --}}
+        {{#if user.social.x}}
+          <a href="https://x.com/{{user.social.x}}" target="_blank">
+            <i class="fa-brands fa-x-twitter"></i>
+          </a>
+        {{/if}}
+
+        {{!-- GitHub --}}
+        {{#if user.social.github}}
+          <a href="https://github.com/{{user.social.github}}" target="_blank">
+            <i class="fa-brands fa-github"></i>
+          </a>
+        {{/if}}
+
+        {{!-- YouTube --}}
+        {{#if user.social.youtube}}
+          <a href="https://youtube.com/{{user.social.youtube}}" target="_blank">
+            <i class="fa-brands fa-youtube"></i>
+          </a>
+        {{/if}}
+
+        {{!-- Website --}}
+        {{#if user.social.website}}
+          <a href="{{user.social.website}}" target="_blank">
+            <i class="fa-solid fa-globe"></i>
+          </a>
+        {{/if}}
+
+      </div>
+
+      <div class="profile-stats">
+        <span><b>{{stats.totalBlogs}}</b> Blog</span>
+        <span><b>{{stats.totalComments}}</b> Yorum</span>
+        <span>Katılım: {{generateDate user.date "DD/MM/YYYY"}}</span>
+      </div>
+
+    </div>
+
+      <button class="follow-btn" disabled>Takip Et (Yakında)</button>
+    </div>
+  </div>
+
+  {{!-- =================================================== --}}
+  {{!-- ================ SON BLOG GRID ===================== --}}
+  {{!-- =================================================== --}}
+  <div class="profile-section">
+    <div class="section-header">
+      <h3>Son Bloglar</h3>
+      <a href="/@{{user.username}}/blogs">Tümünü Gör</a>
+    </div>
+
+    {{#if lastBlogs.length}}
+      <div class="profile-blog-grid">
+        {{#each lastBlogs}}
+          <a href="/blog/{{this._id}}" class="blog-card-modern">
+
+            <div class="blog-card-img">
+              {{#if this.images.length}}
+                <img src="{{this.images.[0].url}}" alt="Blog Görseli">
+              {{else}}
+                <img src="/img/default-blog.jpg" alt="Varsayılan">
+              {{/if}}
+            </div>
+
+            <div class="blog-card-content">
+              <h4>{{this.title}}</h4>
+              <p>{{truncate this.content 120}}</p>
+              <span class="date">{{generateDate this.date "DD/MM/YYYY"}}</span>
+            </div>
+
+          </a>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="empty">Bu kullanıcı henüz blog yazmamış.</p>
+    {{/if}}
+  </div>
+
+  {{!-- =================================================== --}}
+  {{!-- ================= SON YORUMLAR ==================== --}}
+  {{!-- =================================================== --}}
+  <div class="profile-section">
+    <div class="section-header">
+      <h3>Son Yorumlar</h3>
+      <a href="/@{{user.username}}/comments">Tümünü Gör</a>
+    </div>
+
+    {{#if lastComments.length}}
+      <div class="profile-list">
+        {{#each lastComments}}
+          <div class="profile-card">
+            <p class="profile-comment-text">{{content}}</p>
+            <p class="profile-card-date">
+              {{generateDate date "DD/MM/YYYY HH:mm"}}
+            </p>
+            <a href="/blog/{{toString post_id}}" class="goto-post">İlgili bloğa git →</a>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="empty">Bu kullanıcı henüz yorum yapmamış.</p>
+    {{/if}}
+  </div>
+
+</section>

@@ -1,0 +1,89 @@
+<section class="blog-section">
+  <h1 class="main-title">Geçmişin İzinde, Geleceğin Peşinde</h1>
+  <p class="subtitle">
+    Her yazımızda geçmişin tozlu sayfalarından bir hikâye, geleceğe ilham
+    verecek bir iz bulacaksın.
+  </p>
+
+  <h2 class="blog-title">Bloglar</h2>
+
+  <!-- === BLOG GRID === -->
+  <div class="blogs-grid">
+    {{#each posts}}
+      <div class="blog-card">
+
+        <!-- GÖRSEL -->
+        <div class="blog-image-wrapper">
+          {{#if images.length}}
+            <img src="{{images.0.url}}" class="blog-image" />
+          {{else}}
+            <img src="/img/default-blog.jpg" class="blog-image" />
+          {{/if}}
+
+        </div>
+
+        <!-- BAŞLIK -->
+        <h3 class="blog-header">{{title}}</h3>
+
+        <!-- KISA ÖZET -->
+        <p class="blog-text">
+          {{truncate content 160}}
+        </p>
+
+        <!-- DEVAM BUTONU -->
+        <button
+          class="blog-button"
+          onclick="window.location.href='/blog/{{_id}}'"
+        >
+          Okumaya Devam Et
+        </button>
+
+        <!-- META -->
+        <p class="blog-meta">
+          Oluşturan: @{{username}}
+          <br />
+          Tarih:
+          {{generateDate date "DD/MM/YYYY"}}
+        </p>
+      </div>
+    {{/each}}
+  </div>
+</section>
+
+<!-- === PAGINATION === -->
+<div class="pagination">
+  {{#if (gt currentPage 1)}}
+    <a href="/blog?page={{decrement currentPage}}" class="page-btn">‹ Geri</a>
+  {{/if}}
+
+  <span class="page-info">Sayfa {{currentPage}} / {{totalPages}}</span>
+
+  {{#if (lt currentPage totalPages)}}
+    <a href="/blog?page={{increment currentPage}}" class="page-btn">İleri ›</a>
+  {{/if}}
+</div>
+
+<!-- === YENİ BLOG OLUŞTURMA === -->
+<section class="write-history">
+  <h2 class="write-title">Sen de kendi tarihini yaz!</h2>
+  <p class="write-text">
+    Düşüncelerini, araştırmalarını ve gözlemlerini paylaş; tarih senin
+    kaleminden canlansın.
+  </p>
+
+  {{#if isAuth}}
+    <div class="create-blog">
+      <a href="/blog/olustur" class="create-link">
+        <img src="/img/more.png" class="img-more" alt="Yeni Blog Oluştur" />
+        Yeni Blog Oluştur
+      </a>
+    </div>
+  {{else}}
+    <div class="create-blog">
+      <a href="/kullanici/oturumAc" class="create-link login-required">
+        <img src="/img/more.png" class="img-more" alt="Giriş Yap" />
+        Blog yazmak için giriş yapın
+      </a>
+    </div>
+  {{/if}}
+</section>

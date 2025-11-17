@@ -1,0 +1,189 @@
+.admin-dashboard {
+  width: 100%;
+  padding: 40px 60px;
+  background: #f5f5f5;
+  font-family: "Cardo", serif;
+}
+
+.dashboard-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.tab {
+  background: #a52020;
+  padding: 12px 30px;
+  border-radius: 40px;
+  color: #fff;
+  border: none;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: linear-gradient(to right, #b53a3a, #e52b2b);
+}
+
+.dashboard-title {
+  text-align: center;
+  font-size: 36px;
+  margin: 40px 0;
+  color: #7a0d0d;
+}
+
+.table-wrapper {
+  background: #fff;
+  padding: 35px 40px;
+  border-radius: 25px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.table-title {
+  font-size: 26px;
+  color: #7a0d0d;
+  margin-bottom: 20px;
+}
+
+.panel-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.panel-table th {
+  padding-bottom: 14px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #444;
+}
+
+.panel-table td {
+  padding: 14px 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+.edit-btn {
+  background: #d9d9d9;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background: #b53a3a;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+/* MODALS */
+.modal-bg {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.55);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
+  width: 460px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.modal-box textarea {
+  width: 100%;
+  height: 130px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.save-btn {
+  background: #3e8f3e;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.delete-confirm {
+  background: #b53a3a;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.cancel-btn {
+  background: #999;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.user-avatar-small {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Modal Ortak Tasarım */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 14px;
+  width: 450px;
+  text-align: center;
+}
+
+.modal-content.small {
+  width: 350px;
+}
+
+.modal textarea {
+  width: 100%;
+  min-height: 130px;
+  border-radius: 10px;
+  border: 1px solid #bbb;
+  padding: 10px;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.modal-btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btn.save {
+  background: #3a7f3a;
+}
+
+.btn.delete {
+  background: #b43030;
+}

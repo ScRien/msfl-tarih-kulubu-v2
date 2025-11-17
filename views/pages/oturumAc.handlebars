@@ -1,0 +1,47 @@
+<section class="login-section">
+  <div class="login-container">
+    <h2 class="login-title">Oturum Aç</h2>
+
+    {{#if success}}
+      <div class="login-alert success">
+        <i class="fa-solid fa-circle-check"></i>
+        {{success}}
+      </div>
+    {{/if}}
+
+    {{#if error}}
+      <div class="login-alert error">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        {{error}}
+      </div>
+    {{/if}}
+
+    <form class="login-form" action="/kullanici/oturumAc" method="POST">
+      <input
+        type="text"
+        name="username"
+        placeholder="Kullanıcı Adı"
+        class="login-input"
+        required
+      />
+      <input
+        type="password"
+        name="password"
+        placeholder="Şifre"
+        class="login-input"
+        required
+      />
+      <button type="submit" class="login-button">Oturum Aç</button>
+    </form>
+
+    <p class="register-link">
+      Kayıt olmak için
+      <a href="/kullanici/kayitOl">tıklayın</a>
+    </p>
+
+    <p class="forgot-link">
+      Şifre sıfırlamak için
+      <a href="/sifre-unuttum">tıklayın</a>
+    </p>
+  </div>
+</section>

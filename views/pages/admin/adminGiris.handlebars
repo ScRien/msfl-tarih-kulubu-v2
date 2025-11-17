@@ -1,0 +1,21 @@
+<section class="admin-login">
+  <div class="admin-wrapper">
+    <h1 class="admin-title">Admin Panel Girişi</h1>
+
+    {{#if error}}
+      <div class="admin-error">
+        ❌ {{error}}
+      </div>
+    {{/if}}
+
+    <form class="admin-form" method="POST" action="/admin/giris">
+      <div class="input-group">
+        <input type="password" name="password1" placeholder="Şifre1" required />
+        <input type="password" name="password2" placeholder="Şifre2" required />
+        <input type="password" name="password3" placeholder="Şifre3" required />
+      </div>
+
+      <button type="submit" class="admin-button">Gir</button>
+    </form>
+  </div>
+</section>

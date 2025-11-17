@@ -1,0 +1,163 @@
+/* ===== OTURUM AÇ SAYFASI ===== */
+.login-section {
+  width: 100%;
+  background: url("/img/oturumAc_bg.png") center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+}
+
+.login-container {
+  text-align: center;
+  background: rgba(255, 255, 255, 0);
+  padding: 50px 40px;
+  border-radius: 30px;
+  box-shadow: none;
+}
+
+.login-title {
+  font-family: glacial, sans-serif;
+  font-size: 35px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 40px;
+}
+
+/* Input alanları */
+.login-input {
+  display: block;
+  width: 350px;
+  max-width: 90%;
+  margin: 15px auto;
+  padding: 14px 20px;
+  border: none;
+  outline: none;
+  border-radius: 30px;
+  font-size: 18px;
+  font-family: glacial, sans-serif;
+  background: linear-gradient(to bottom, #dfdcda, #858176);
+  color: #000;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.login-input::placeholder {
+  font-family: glacial, sans-serif;
+  color: #f2f2f2;
+}
+
+.login-input:focus {
+  transform: scale(1.03);
+}
+
+/* Buton */
+.login-button {
+  display: block;
+  margin: 30px auto 20px;
+  padding: 12px 40px;
+  font-family: glacial, sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(to right, #ff3131, #ff914d);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 20px rgba(255, 49, 49, 0.3);
+}
+
+/* Kayıt linki */
+.register-link {
+  font-family: glacial, sans-serif;
+  font-style: italic;
+  font-size: 15px;
+  color: #000;
+}
+
+.register-link a {
+  color: #000;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.register-link a:hover {
+  color: #ff3131;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .login-input {
+    width: 280px;
+  }
+  .login-title {
+    font-size: 30px;
+  }
+}
+
+/* Alert kutuları */
+.login-alert {
+  width: 420px;
+  margin: 20px auto;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-family: glacial, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  animation: fadeIn 0.4s ease;
+}
+
+.login-alert i {
+  font-size: 20px;
+}
+
+/* Başarı */
+.login-alert.success {
+  background: #eafbf1;
+  color: #1b7a3d;
+  border: 2px solid #b5efcb;
+}
+
+/* Hata */
+.login-alert.error {
+  background: #fdeaea;
+  color: #b93838;
+  border: 2px solid #f8b4b4;
+}
+
+/* Fade-in animasyonu */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Şifremi unuttum linki */
+.forgot-link {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 15px;
+  font-family: glacial, sans-serif;
+  margin-top: 2px;
+}
+
+.forgot-link a {
+  color: #000;
+  text-decoration: underline;
+}
+
+.forgot-link a:hover {
+  color: #ff3131;
+}

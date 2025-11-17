@@ -1,0 +1,61 @@
+<link rel="stylesheet" href="/css/admin.css">
+
+<section class="admin-dashboard">
+
+  <div class="dashboard-tabs">
+    <button class="tab" onclick="location.href='/admin/blog'">Blog Paneli</button>
+    <button class="tab" onclick="location.href='/admin/kullanici'">Kullanıcı Paneli</button>
+    <button class="tab active" onclick="location.href='/admin/yorum'">Yorum Paneli</button>
+  </div>
+
+  <h1 class="dashboard-title">Yorum Paneli</h1>
+
+  <div class="stats-container">
+    <div class="stat-card"><h3>Toplam Yorum</h3><p>{{totalComments}}</p></div>
+  </div>
+
+  <div class="table-container">
+    <h2 class="table-title">Yorum Listesi</h2>
+
+    <table class="table">
+      <thead>
+      <tr>
+        <th>#</th>
+        <th>Kullanıcı</th>
+        <th>Blog</th>
+        <th>Yorum</th>
+        <th>Tarih</th>
+        <th>İşlem</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      {{#each comments}}
+      <tr>
+        <td>{{@index}}</td>
+
+        <td>
+          <img src="{{this.user_id.avatar}}" class="avatar-sm">
+          {{this.user_id.username}}
+        </td>
+
+        <td>{{this.post_id.title}}</td>
+
+        <td>{{this.content}}</td>
+
+        <td>{{generateDate this.date "DD.MM.YYYY HH:mm"}}</td>
+
+        <td>
+          <button class="edit-btn" onclick="openCommentEdit('{{this._id}}')">Düzenle</button>
+          <button class="delete-btn" onclick="openCommentDelete('{{this._id}}')">Sil</button>
+        </td>
+
+      </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{{> adminModal}}
+<script src="/js/admin.js"></script>

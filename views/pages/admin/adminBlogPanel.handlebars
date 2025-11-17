@@ -1,0 +1,61 @@
+<link rel="stylesheet" href="/css/admin.css">
+
+<section class="admin-dashboard">
+
+  <div class="dashboard-tabs">
+    <button class="tab active" onclick="location.href='/admin/blog'">Blog Paneli</button>
+    <button class="tab" onclick="location.href='/admin/kullanici'">Kullanıcı Paneli</button>
+    <button class="tab" onclick="location.href='/admin/yorum'">Yorum Paneli</button>
+  </div>
+
+  <h1 class="dashboard-title">Blog Yönetim Paneli</h1>
+
+  <div class="stats-container">
+    <div class="stat-card"><h3>Blog Sayısı</h3><p>{{stats.totalBlogs}}</p></div>
+    <div class="stat-card"><h3>Görsel Sayısı</h3><p>{{stats.totalImages}}</p></div>
+    <div class="stat-card"><h3>Yorum Sayısı</h3><p>{{stats.totalComments}}</p></div>
+  </div>
+
+  <div class="table-container">
+    <h2 class="table-title">Eklenen Bloglar</h2>
+
+    <table class="table">
+      <thead>
+      <tr>
+        <th>#</th>
+        <th>Başlık</th>
+        <th>Kullanıcı</th>
+        <th>Görseller</th>
+        <th>Tarih</th>
+        <th>İşlem</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      {{#each posts}}
+      <tr>
+        <td>{{@index}}</td>
+        <td>{{this.title}}</td>
+        <td>{{this.user_id.username}}</td>
+
+        <td>
+          {{#each this.images}}
+            <img src="{{this.url}}" class="mini-img" />
+          {{/each}}
+        </td>
+
+        <td>{{generateDate this.date "DD.MM.YYYY HH:mm"}}</td>
+
+        <td>
+          <button class="edit-btn" onclick="openEdit('{{this._id}}')">Düzenle</button>
+          <button class="delete-btn" onclick="openDelete('{{this._id}}')">Sil</button>
+        </td>
+      </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{{> adminModal}}
+<script src="/js/admin.js"></script>

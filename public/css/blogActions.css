@@ -1,0 +1,41 @@
+/* BLOG ACTION BUTTONS */
+.blog-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.action-btn {
+  padding: 8px 20px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-size: 14px;
+  font-family: "glacial", sans-serif;
+  transition: 0.3s ease;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.edit-btn {
+  background: linear-gradient(to right, #4c6e4c, #2e4a2e);
+}
+
+.edit-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(to right, #5f865f, #385c38);
+}
+
+.delete-btn {
+  background: linear-gradient(to right, #8a1b1b, #5d0000);
+}
+
+.delete-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(to right, #b02020, #7a0000);
+}
+
+.delete-form {
+  display: inline;
+}

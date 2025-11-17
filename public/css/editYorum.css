@@ -1,0 +1,135 @@
+.comment-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-comment-btn,
+.delete-comment-btn {
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-family: "Cardo", serif;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.edit-comment-btn {
+  background: #4a6073;
+  color: white;
+}
+
+.delete-comment-btn {
+  background: #9c1b1b;
+  color: white;
+}
+
+/* Düzenleme Modal */
+.comment-edit-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(5px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.comment-edit-modal.active {
+  display: flex;
+}
+
+.edit-modal-content {
+  background: linear-gradient(to bottom right, #ffffff, #f1f1f1);
+  padding: 35px 45px;
+  width: 520px;
+  max-width: 90%;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.28);
+  position: relative;
+  text-align: center;
+  animation: scaleUp 0.25s ease;
+}
+@keyframes scaleUp {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.close-edit-modal {
+  position: absolute;
+  right: 18px;
+  top: 12px;
+  font-size: 30px;
+  cursor: pointer;
+  color: #731919;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.close-edit-modal:hover {
+  color: #e52b2b;
+  transform: scale(1.15);
+}
+
+.edit-modal-content h3 {
+  font-family: "Cardo", serif;
+  font-size: 27px;
+  margin-bottom: 20px;
+  background: linear-gradient(to right, #731919, #e52b2b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Textarea */
+#edit-comment-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(to bottom, #eeeeee, #d4d4d4);
+  font-family: "Cardo", serif;
+  font-size: 16px;
+  resize: vertical;
+  outline: none;
+  margin-bottom: 20px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* Kaydet butonu */
+.submit-comment-btn {
+  border: none;
+  padding: 12px 40px;
+  border-radius: 40px;
+  background: linear-gradient(to right, #ff3131, #ff914d);
+  color: white;
+  font-weight: bold;
+  font-family: "Cardo", serif;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.2s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.submit-comment-btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobil uyum */
+@media (max-width: 480px) {
+  .edit-modal-content {
+    padding: 25px 20px;
+  }
+
+  #edit-comment-textarea {
+    min-height: 100px;
+  }
+}

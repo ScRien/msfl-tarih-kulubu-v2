@@ -1,0 +1,35 @@
+<link rel="stylesheet" href="/css/profile.css" />
+
+<section class="profile-wrapper">
+
+  <h1 class="profile-title">@{{user.username}} — Blogları</h1>
+
+  {{#if blogs.length}}
+    <div class="profile-blog-grid">
+
+      {{#each blogs}}
+        <a href="/blog/{{this._id}}" class="blog-card-modern">
+          
+          <div class="blog-card-img">
+            {{#if this.images.length}}
+              <img src="{{this.images.[0].url}}" alt="Blog Görseli">
+            {{else}}
+              <img src="/img/default-blog.jpg" alt="Varsayılan">
+            {{/if}}
+          </div>
+
+          <div class="blog-card-content">
+            <h4>{{this.title}}</h4>
+            <p>{{truncate this.content 150}}</p>
+            <span class="date">{{generateDate this.date "DD/MM/YYYY"}}</span>
+          </div>
+
+        </a>
+      {{/each}}
+
+    </div>
+  {{else}}
+    <p class="empty">Bu kullanıcı henüz blog yazmamış.</p>
+  {{/if}}
+
+</section>
