@@ -1,3 +1,3 @@
-export default function eq(a, b) {
-  return a?.toString() === b?.toString();
-}
+export const eq = (a, b) => {
+  return a == b;
+};
