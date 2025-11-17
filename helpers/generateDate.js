@@ -1,10 +1,8 @@
 import moment from "moment";
+import "moment/locale/tr.js";
 
-export default function generateDate(date, format) {
-  // format bir object geldiyse (Handlebars bug'i)
-  if (typeof format === "object" || !format) {
-    format = "DD.MM.YYYY"; // varsayılan
-  }
+moment.locale("tr");
 
+export const generateDate = (date, format) => {
   return moment(date).format(format);
-}
+};
