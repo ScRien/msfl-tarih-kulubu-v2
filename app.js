@@ -44,6 +44,8 @@ mongoose
 // ===============================
 // SESSION
 // ===============================
+const isProd = process.env.NODE_ENV === "production";
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "secret_x",
@@ -51,11 +53,13 @@ app.use(
     saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URL,
-      ttl: 1000 * 60 * 60 * 24 * 7, // 7 gün
+      ttl: 60 * 60 * 24 * 7, // 1 hafta (saniye)
     }),
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 hafta
-      secure: false,
+      httpOnly: true,
+      secure: isProd, // Prod = true, Local = false
+      sameSite: isProd ? "none" : "lax",
     },
   })
 );
@@ -115,7 +119,7 @@ app.use((req, res) => {
 });
 
 // ===============================
-// LOCAL → (Opsiyonel) 
+// LOCAL → (Opsiyonel)
 // ===============================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
