@@ -1,116 +1,128 @@
-// app.js
-import bodyParser from "body-parser";
 import express from "express";
-import router from "./routes/main.js";
-import "dotenv/config";
-import { create } from "express-handlebars";
-import generateDate from "./helpers/generateDate.js";
-import mongoose from "mongoose";
-import blogs from "./routes/blogs.js";
-import admin from "./routes/admin.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import eq from "./helpers/eq.js";
-import kullaniciRouter from "./routes/kullanici.js";
-import hesapRouter from "./routes/hesap.js";
-import publicProfile from "./routes/publicProfile.js";
-import handlebarsHelpers from "./helpers/handlebarsHelpers.js"; // helper’lar için import
-import legalRouter from "./routes/legal.js";
-import sifreUnuttumRouter from "./routes/sifreUnuttum.js";
+import mongoose from "mongoose";
+import path from "path";
+import { fileURLToPath } from "url";
+import exphbs from "express-handlebars";
+import "dotenv/config";
+
+// Helpers
+import { eq } from "./helpers/eq.js";
+import { generateDate } from "./helpers/generateDate.js";
+import handlebarsHelpers from "./helpers/handlebarsHelpers.js";
+
+// Routes
+import mainRoute from "./routes/main.js";
+import blogsRoute from "./routes/blogs.js";
+import kullaniciRoute from "./routes/kullanici.js";
+import legalRoute from "./routes/legal.js";
+import hesapRoute from "./routes/hesap.js";
+import profileRoute from "./routes/profile.js";
+import publicProfileRoute from "./routes/publicProfile.js";
+import sifreUnuttumRoute from "./routes/sifreUnuttum.js";
+import adminRoute from "./routes/admin.js";
+
+// ===============================
+// VERCEL PATH FIX
+// ===============================
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// PORT/HOSTNAME BURADAN GİDİYOR – sadece Vercel veya server.js kullanacak
+// ===============================
+// MONGODB BAĞLANTISI
+// ===============================
+mongoose
+  .connect(process.env.MONGO_URL, {
+    dbName: "tarihKulubu",
+  })
+  .then(() => console.log("MongoDB bağlantısı başarılı."))
+  .catch((err) => console.log("MongoDB bağlantı hatası:", err));
 
-// MongoDB
-await mongoose.connect(process.env.MONGO_URL);
-console.log("MongoDB bağlantısı başarılı.");
-
-// Cache kontrol
-app.use((req, res, next) => {
-  res.setHeader("Cache-Control", "no-store");
-  next();
-});
-
-// Statik dosyalar
-app.use(express.static("public"));
-
-// ==== SESSION ====
+// ===============================
+// SESSION
+// ===============================
 app.use(
   session({
-    secret: "tarih-kulubu-gizli",
+    secret: process.env.SESSION_SECRET || "secret_x",
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URL }),
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URL,
+      ttl: 1000 * 60 * 60 * 24 * 7, // 7 gün
+    }),
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 hafta
+      secure: false,
     },
   })
 );
 
-// Navbar için global template değişkenleri
-app.use((req, res, next) => {
-  res.locals.isAuth = !!req.session.userId;
-  res.locals.currentUser = req.session.username || null;
-  res.locals.currentUserId = req.session.userId || null;
-  res.locals.currentRole = req.session.role || null;
-  next();
-});
+// ===============================
+// BODY-PARSER
+// ===============================
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-// ==== HANDLEBARS ====
-const hbs = create({
+// ===============================
+// PUBLIC KLASÖRÜ
+// ===============================
+app.use("/public", express.static(path.join(__dirname, "public")));
+app.use("/img", express.static(path.join(__dirname, "public/img")));
+app.use("/css", express.static(path.join(__dirname, "public/css")));
+app.use("/js", express.static(path.join(__dirname, "public/js")));
+app.use("/fonts", express.static(path.join(__dirname, "public/fonts")));
+
+// ===============================
+// HANDLEBARS AYARLARI
+// ===============================
+const hbs = exphbs.create({
   defaultLayout: "main",
-  partialsDir: ["views/partials"],
-  helpers: { generateDate, eq },
-  runtimeOptions: {
-    allowProtoPropertiesByDefault: true,
-    allowProtoMethodsByDefault: true,
+  layoutsDir: path.join(__dirname, "views/layouts"),
+  partialsDir: path.join(__dirname, "views/partials"),
+  extname: ".handlebars",
+  helpers: {
+    eq,
+    generateDate,
+    ...handlebarsHelpers,
   },
-});
-
-// helpers/handlebarsHelpers.js içinde zaten global register yapıyorsun,
-// bu yüzden sadece import etmemiz yeterli (yukarıda import var).
-
-hbs.handlebars.registerHelper("toString", function (value) {
-  return value ? value.toString() : "";
 });
 
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
-app.set("views", "./views");
+app.set("views", path.join(__dirname, "views"));
 
-// ==== BODY PARSER ====
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// ===============================
+// ROUTES
+// ===============================
+app.use("/", mainRoute);
+app.use("/blog", blogsRoute);
+app.use("/kullanici", kullaniciRoute);
+app.use("/legal", legalRoute);
+app.use("/hesap", hesapRoute);
+app.use("/profile", profileRoute);
+app.use("/", publicProfileRoute);
+app.use("/sifre-unuttum", sifreUnuttumRoute);
+app.use("/admin", adminRoute);
 
-// 1) Kullanıcı
-app.use("/kullanici", kullaniciRouter);
-
-// 2) Hesap
-app.use("/hesap", hesapRouter);
-
-// 3) Şifre Unuttum
-app.use("/sifre-unuttum", sifreUnuttumRouter);
-
-// 4) Blog
-app.use("/blog", blogs);
-
-// 5) Admin
-app.use("/admin", admin);
-
-// 6) Statik sayfalar / Anasayfa
-app.use("/", router);
-
-// 7) Public profile
-app.use("/", publicProfile);
-
-// 8) KVKK / Gizlilik / Kullanım Şartları
-app.use("/", legalRouter);
-
+// ===============================
 // 404
+// ===============================
 app.use((req, res) => {
   res.status(404).render("pages/404");
 });
 
-// *** EN ÖNEMLİ KISIM ***
+// ===============================
+// LOCAL → (Opsiyonel) 
+// ===============================
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Sunucu çalışıyor: http://localhost:${PORT}`);
+});
+
+// ===============================
+// VERCEL EXPORT
+// ===============================
 export default app;
