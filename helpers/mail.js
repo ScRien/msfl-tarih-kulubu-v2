@@ -1,29 +1,22 @@
 // helpers/mail.js
 import nodemailer from "nodemailer";
 
+// === SMTP BAĞLANTISI ===
 const transporter = nodemailer.createTransport({
-  host: "smtp.office365.com",
-  port: 587,
-  secure: false,
+  host: process.env.SMTP_HOST, // smtp.gmail.com
+  port: process.env.SMTP_PORT, // 587
+  secure: process.env.SMTP_SECURE === "true", // false
   auth: {
-    user: process.env.OUTLOOK_USER,   // Örn: msfltarihkulubu@outlook.com
-    pass: process.env.OUTLOOK_PASS,   // .env'de saklanacak
-  },
-  tls: {
-    ciphers: "SSLv3",
+    user: process.env.SMTP_USER, // Gmail adresi
+    pass: process.env.SMTP_PASS, // Gmail uygulama şifresi
   },
 });
 
-/**
- * Genel mail gönderme fonksiyonu
- * @param {string|string[]} to 
- * @param {string} subject 
- * @param {string} html 
- */
+// === GENEL MAİL GÖNDERME FONKSİYONU ===
 export async function sendMail(to, subject, html) {
   try {
     const info = await transporter.sendMail({
-      from: `"MSFL Tarih Kulübü" <${process.env.OUTLOOK_USER}>`,
+      from: `"MSFL Tarih Kulübü" <${process.env.SMTP_USER}>`,
       to,
       subject,
       html,
