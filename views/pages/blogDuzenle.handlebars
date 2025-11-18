@@ -36,13 +36,17 @@
         {{#if post.images.length}}
           {{#each post.images}}
             <div class="existing-img-wrapper">
-              
+
               <!-- GÖRSEL -->
               <img src="{{this.url}}" class="existing-img" alt="Blog Görseli" />
 
               <!-- SİLME CHECKBOX -->
               <label class="delete-badge">
-                <input type="checkbox" name="deleteImages" value="{{this.public_id}}" />
+                <input
+                  type="checkbox"
+                  name="deleteImages"
+                  value="{{this.public_id}}"
+                />
                 Sil
               </label>
 
@@ -64,12 +68,13 @@
 
         <input
           type="file"
-          id="newImages"
           name="newImages"
+          id="newBlogImages"
           accept="image/*"
           multiple
-          class="edit-file-input"
+          data-max="5"
         />
+        <p class="image-info">En fazla 5 yeni görsel eklenebilir.</p>
 
         <span id="new-file-count" class="new-file-count">
           Henüz yeni görsel seçilmedi
@@ -91,61 +96,23 @@
 </section>
 
 <script>
-  const input = document.getElementById("newImages");
-  const preview = document.getElementById("preview-container");
-  const fileCount = document.getElementById("new-file-count");
-
-  let selectedNewFiles = [];
-
-  if (input) {
-    input.addEventListener("change", () => {
-      selectedNewFiles = [...input.files];
-      updatePreview();
-    });
-  }
-
-  function updatePreview() {
-    preview.innerHTML = "";
-
-    if (!selectedNewFiles.length) {
-      fileCount.textContent = "Henüz yeni görsel seçilmedi";
-      return;
-    }
-
-    fileCount.textContent = selectedNewFiles.length + " yeni görsel seçildi";
-
-    selectedNewFiles.forEach((file, index) => {
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const box = document.createElement("div");
-        box.className = "preview-item";
-
-        const img = document.createElement("img");
-        img.src = e.target.result;
-        img.className = "preview-img";
-
-        const removeBtn = document.createElement("button");
-        removeBtn.className = "remove-btn";
-        removeBtn.innerHTML = "×";
-        removeBtn.onclick = () => removeNewImage(index);
-
-        box.appendChild(img);
-        box.appendChild(removeBtn);
-        preview.appendChild(box);
-      };
-
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function removeNewImage(index) {
-    selectedNewFiles.splice(index, 1);
-
-    const dataTransfer = new DataTransfer();
-    selectedNewFiles.forEach((f) => dataTransfer.items.add(f));
-    input.files = dataTransfer.files;
-
-    updatePreview();
-  }
+  const input = document.getElementById("newImages"); const preview =
+  document.getElementById("preview-container"); const fileCount =
+  document.getElementById("new-file-count"); let selectedNewFiles = []; if
+  (input) { input.addEventListener("change", () => { selectedNewFiles =
+  [...input.files]; updatePreview(); }); } function updatePreview() {
+  preview.innerHTML = ""; if (!selectedNewFiles.length) { fileCount.textContent
+  = "Henüz yeni görsel seçilmedi"; return; } fileCount.textContent =
+  selectedNewFiles.length + " yeni görsel seçildi";
+  selectedNewFiles.forEach((file, index) => { const reader = new FileReader();
+  reader.onload = (e) => { const box = document.createElement("div");
+  box.className = "preview-item"; const img = document.createElement("img");
+  img.src = e.target.result; img.className = "preview-img"; const removeBtn =
+  document.createElement("button"); removeBtn.className = "remove-btn";
+  removeBtn.innerHTML = "×"; removeBtn.onclick = () => removeNewImage(index);
+  box.appendChild(img); box.appendChild(removeBtn); preview.appendChild(box); };
+  reader.readAsDataURL(file); }); } function removeNewImage(index) {
+  selectedNewFiles.splice(index, 1); const dataTransfer = new DataTransfer();
+  selectedNewFiles.forEach((f) => dataTransfer.items.add(f)); input.files =
+  dataTransfer.files; updatePreview(); }
 </script>

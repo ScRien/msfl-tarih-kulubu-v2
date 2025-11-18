@@ -15,7 +15,7 @@ blogs.get("/olustur", auth, (req, res) => {
   res.render("pages/blogOlustur");
 });
 
-blogs.post("/olustur", auth, upload.array("images", 10), async (req, res) => {
+blogs.post("/olustur", auth, upload.array("images", 5), async (req, res) => {
   try {
     const { title, content } = req.body;
 
@@ -25,9 +25,11 @@ blogs.post("/olustur", auth, upload.array("images", 10), async (req, res) => {
 
     const uploadedImages = [];
 
+    // Çoklu upload → Cloudinary Upload Buffer
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const result = await uploadBuffer(file.buffer, "blog_images");
+
         uploadedImages.push({
           url: result.secure_url,
           public_id: result.public_id,
@@ -36,8 +38,8 @@ blogs.post("/olustur", auth, upload.array("images", 10), async (req, res) => {
     }
 
     await Post.create({
-      user_id: req.user.id,
-      username: req.user.username,
+      user_id: req.session.userId,
+      username: req.session.username,
       title,
       content,
       images: uploadedImages,
@@ -75,15 +77,15 @@ blogs.get("/:id/duzenle", auth, async (req, res) => {
 blogs.post(
   "/:id/duzenle",
   auth,
-  upload.array("newImages", 10),
+  upload.array("newImages", 5),
   async (req, res) => {
     try {
       const post = await Post.findById(req.params.id);
       if (!post) return res.status(404).send("Blog bulunamadı");
 
       if (
-        post.user_id.toString() !== req.user.id &&
-        req.user.role !== "admin"
+        post.user_id.toString() !== req.session.userId &&
+        req.session.role !== "admin"
       ) {
         return res.status(403).send("Yetkiniz yok.");
       }
@@ -91,6 +93,7 @@ blogs.post(
       post.title = req.body.title;
       post.content = req.body.content;
 
+      // Silinecek görseller
       const toDelete = req.body.deleteImages;
       if (toDelete) {
         const deleteArray = Array.isArray(toDelete) ? toDelete : [toDelete];
@@ -104,6 +107,7 @@ blogs.post(
         );
       }
 
+      // Yeni eklenen dosyalar
       if (req.files && req.files.length > 0) {
         for (const file of req.files) {
           const result = await uploadBuffer(file.buffer, "blog_images");
