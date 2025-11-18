@@ -44,25 +44,34 @@ mongoose
 // ===============================
 // SESSION
 // ===============================
-const isProd = process.env.NODE_ENV === "production";
-
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "secret_x",
+    secret: process.env.SESSION_SECRET || "supersecretvalue123",
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    },
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URL,
-      ttl: 1000 * 60 * 60 * 24 * 7,
+      dbName: "tarihKulubu",
+      collectionName: "sessions",
+      ttl: 60 * 60 * 24,
+      autoRemove: "native",
     }),
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      secure: isProd, // ❗ Prod = true, Local = false
-      httpOnly: isProd, // 🔒 Prod = true (güvenli)
-      sameSite: isProd ? "none" : "lax",
-    },
   })
 );
+
+// ===============================
+// AUTH DURUMUNU HANDLEBARS’A AKTARAN MIDDLEWARE
+// ===============================
+app.use((req, res, next) => {
+  res.locals.isAuth = !!req.session.userId;
+  res.locals.currentUser = req.session.username || null;
+  next();
+});
 
 // ===============================
 // BODY-PARSER
@@ -119,7 +128,7 @@ app.use((req, res) => {
 });
 
 // ===============================
-// LOCAL → (Opsiyonel)
+// LOCAL
 // ===============================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
