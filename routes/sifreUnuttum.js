@@ -1,6 +1,7 @@
 import express from "express";
 import User from "../models/User.js";
 import { sendMail } from "../helpers/mail.js";
+import { verificationMailTemplate } from "../helpers/mailTemplates.js";
 
 const sifreUnuttumRouter = express.Router();
 
