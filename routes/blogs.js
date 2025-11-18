@@ -22,32 +22,26 @@ blogs.get("/olustur", auth, (req, res) => {
 ================================ */
 blogs.post("/olustur", auth, async (req, res) => {
   try {
-    const { title, content, imageUrls } = req.body;
+    const { title, content } = req.body;
 
-    if (!title || !content) {
-      return res.redirect("/blog/olustur?error=Başlık+ve+içerik+zorunludur");
-    }
-
+    // imageUrls hiçbir zaman undefined olmayacak şekilde al
     let images = [];
 
-    if (imageUrls) {
-      try {
-        const parsed = JSON.parse(imageUrls);
-
+    try {
+      if (req.body.imageUrls) {
+        const parsed = JSON.parse(req.body.imageUrls);
         if (Array.isArray(parsed)) {
           images = parsed.filter(
-            (img) =>
-              img &&
-              typeof img.url === "string" &&
-              typeof img.public_id === "string" &&
-              img.url.trim() !== "" &&
-              img.public_id.trim() !== ""
+            (img) => img.url && img.public_id
           );
         }
-      } catch (err) {
-        console.error("imageUrls parse hatası:", err);
-        // parse hatası varsa images boş kalsın, zorunlu değil
       }
+    } catch (e) {
+      console.log("JSON parse error:", e);
+    }
+
+    if (images.length === 0) {
+      console.log("⚠ UYARI: Backend'e boş görsel geldi!");
     }
 
     await Post.create({
@@ -60,7 +54,7 @@ blogs.post("/olustur", auth, async (req, res) => {
 
     return res.redirect("/blog?success=Blog+başarıyla+oluşturuldu");
   } catch (err) {
-    console.error("BLOG ERROR (create):", err);
+    console.error("BLOG ERROR:", err);
     return res.redirect("/blog/olustur?error=Bir+hata+oluştu");
   }
 });

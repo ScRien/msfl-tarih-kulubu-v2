@@ -23,8 +23,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (files.length > 5) {
+      alert("En fazla 5 görsel yükleyebilirsiniz!");
+      fileInput.value = "";
+      return;
+    }
+
     uploadedUrls = [];
-    previewBox.innerHTML = "<p>Yükleniyor...</p>";
+    previewBox.innerHTML = "<p style='text-align:center; padding:20px;'>Yükleniyor...</p>";
     if (fileCount) fileCount.textContent = `Seçili dosya: ${files.length}`;
 
     const previews = [];
@@ -53,20 +59,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
           previews.push(`
             <div class="preview-item">
-              <img src="${result.secure_url}" class="preview-img" />
+              <img src="${result.secure_url}" class="preview-img" alt="Preview" />
             </div>
           `);
         } else {
           console.error("Cloudinary upload hatası:", result);
+          alert(`Görsel yüklenemedi: ${file.name}`);
         }
       } catch (err) {
         console.error("Upload error:", err);
+        alert(`Bir hata oluştu: ${file.name}`);
       }
     }
 
     if (uploadedUrls.length === 0) {
       previewBox.innerHTML =
-        "<p style='color:red'>Görsel yüklenemedi. Lütfen tekrar deneyin.</p>";
+        "<p style='color:red; text-align:center; padding:20px;'>Görsel yüklenemedi. Lütfen tekrar deneyin.</p>";
       imageUrlsInput.value = "[]";
       return;
     }

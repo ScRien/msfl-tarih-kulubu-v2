@@ -21,8 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (files.length > 5) {
+      alert("En fazla 5 yeni görsel ekleyebilirsiniz!");
+      editFileInput.value = "";
+      return;
+    }
+
     newUploadedImages = [];
-    editPreviewBox.innerHTML = "<p>Yükleniyor...</p>";
+    editPreviewBox.innerHTML = "<p style='text-align:center; padding:20px;'>Yükleniyor...</p>";
 
     const previews = [];
 
@@ -50,20 +56,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
           previews.push(`
             <div class="preview-item">
-              <img src="${result.secure_url}" class="preview-img" />
+              <img src="${result.secure_url}" class="preview-img" alt="Preview" />
             </div>
           `);
         } else {
           console.error("Cloudinary edit upload hatası:", result);
+          alert(`Görsel yüklenemedi: ${file.name}`);
         }
       } catch (err) {
         console.error("Edit upload error:", err);
+        alert(`Bir hata oluştu: ${file.name}`);
       }
     }
 
     if (newUploadedImages.length === 0) {
       editPreviewBox.innerHTML =
-        "<p style='color:red'>Görsel yüklenemedi. Lütfen tekrar deneyin.</p>";
+        "<p style='color:red; text-align:center; padding:20px;'>Görsel yüklenemedi. Lütfen tekrar deneyin.</p>";
       newImagesInput.value = "[]";
       return;
     }

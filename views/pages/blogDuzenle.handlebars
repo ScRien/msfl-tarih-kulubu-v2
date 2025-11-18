@@ -1,5 +1,15 @@
+{{!-- views/pages/blogDuzenle.handlebars --}}
+<link rel="stylesheet" href="/css/blogDuzenle.css" />
+
 <section class="blog-edit-section">
   <h1 class="blog-edit-title">Blogu Düzenle</h1>
+
+  {{#if error}}
+    <div class="blog-edit-alert error">{{error}}</div>
+  {{/if}}
+  {{#if success}}
+    <div class="blog-edit-alert success">{{success}}</div>
+  {{/if}}
 
   <form class="blog-edit-form" action="/blog/{{post._id}}/duzenle" method="POST">
     
@@ -17,37 +27,41 @@
     <textarea
       class="textarea-field"
       name="content"
+      rows="8"
+      placeholder="Blog içeriği..."
       required
     >{{post.content}}</textarea>
 
     <!-- Mevcut Görseller -->
+    {{#if post.images}}
     <h3 class="images-title">Mevcut Görseller</h3>
     <div class="old-images-grid">
       {{#each post.images}}
         <div class="old-img-box">
-          <img src="{{this.url}}" class="old-img" />
+          <img src="{{this.url}}" class="old-img" alt="Blog görseli" />
           <label class="delete-check">
             <input type="checkbox" name="deleteImages" value="{{this.public_id}}" /> Sil
           </label>
         </div>
       {{/each}}
     </div>
+    {{/if}}
 
     <!-- Yeni Görsel Yükleme -->
     <h3 class="images-title">Yeni Görseller Ekle</h3>
 
     <div class="upload-wrapper">
-      <label for="newImages" class="upload-label">Yeni Görsel Yükle</label>
-      <input type="file" id="newImages" class="file-input" multiple accept="image/*" />
+      <label for="newImages" class="upload-label">Yeni Görsel Yükle (max 5)</label>
+      <input type="file" id="newImages" name="newImages" class="file-input" multiple accept="image/*" />
     </div>
 
     <!-- Önizleme -->
     <div id="editPreviewBox" class="preview-container"></div>
 
     <!-- JSON Veri -->
-    <input type="hidden" id="newImagesJson" name="newImagesJson" />
+    <input type="hidden" id="newImagesJson" name="newImagesJson" value="[]" />
 
-    <button type="submit" class="save-btn">Kaydet</button>
+    <button type="submit" class="save-btn">Değişiklikleri Kaydet</button>
 
   </form>
 </section>

@@ -1,60 +1,99 @@
-// === Cloudinary Ayarları ===
-const cloudName = "deuntxojs";
-const uploadPreset = "unsigned_upload";
+// public/js/avatarCoverUpload.js
+document.addEventListener("DOMContentLoaded", () => {
+  const cloudName = "deuntxojs";
+  const uploadPreset = "unsigned_upload";
 
-// === Avatar Upload ===
-const avatarInput = document.getElementById("avatarUpload");
-const avatarPreview = document.getElementById("avatarPreview");
-const avatarUrlInput = document.getElementById("avatarUrl");
+  // Avatar Upload
+  const avatarUpload = document.getElementById("avatarUpload");
+  const avatarPreview = document.getElementById("avatarPreview");
+  const avatarUrl = document.getElementById("avatarUrl");
 
-if (avatarInput) {
-  avatarInput.addEventListener("change", async () => {
-    const file = avatarInput.files[0];
-    if (!file) return;
+  if (avatarUpload && avatarPreview && avatarUrl) {
+    avatarUpload.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("upload_preset", uploadPreset);
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", uploadPreset);
 
-    avatarPreview.src = "/img/loading.gif";
+        // Önizleme göster
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          avatarPreview.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
 
-    const upload = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      {
-        method: "POST",
-        body: fd,
+        // Cloudinary'ye yükle
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const result = await response.json();
+
+        if (result.secure_url) {
+          avatarUrl.value = result.secure_url;
+          console.log("Avatar yüklendi:", result.secure_url);
+        } else {
+          alert("Avatar yüklenemedi. Lütfen tekrar deneyin.");
+          console.error("Cloudinary error:", result);
+        }
+      } catch (err) {
+        console.error("Avatar upload error:", err);
+        alert("Bir hata oluştu. Lütfen tekrar deneyin.");
       }
-    );
+    });
+  }
 
-    const result = await upload.json();
-    avatarPreview.src = result.secure_url;
-    avatarUrlInput.value = result.secure_url;
-  });
-}
+  // Cover Upload
+  const coverUpload = document.getElementById("coverUpload");
+  const coverPreview = document.getElementById("coverPreview");
+  const coverUrl = document.getElementById("coverUrl");
 
-// === Kapak Upload ===
-const coverInput = document.getElementById("coverUpload");
-const coverPreview = document.getElementById("coverPreview");
-const coverUrlInput = document.getElementById("coverUrl");
+  if (coverUpload && coverPreview && coverUrl) {
+    coverUpload.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-if (coverInput) {
-  coverInput.addEventListener("change", async () => {
-    const file = coverInput.files[0];
-    if (!file) return;
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", uploadPreset);
 
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("upload_preset", uploadPreset);
+        // Önizleme göster
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          coverPreview.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
 
-    coverPreview.src = "/img/loading.gif";
+        // Cloudinary'ye yükle
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
-    const upload = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      { method: "POST", body: fd }
-    );
+        const result = await response.json();
 
-    const result = await upload.json();
-    coverPreview.src = result.secure_url;
-    coverUrlInput.value = result.secure_url;
-  });
-}
+        if (result.secure_url) {
+          coverUrl.value = result.secure_url;
+          console.log("Kapak yüklendi:", result.secure_url);
+        } else {
+          alert("Kapak fotoğrafı yüklenemedi. Lütfen tekrar deneyin.");
+          console.error("Cloudinary error:", result);
+        }
+      } catch (err) {
+        console.error("Cover upload error:", err);
+        alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+      }
+    });
+  }
+});
