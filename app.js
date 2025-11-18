@@ -1,3 +1,6 @@
+// ===============================
+// MODÜLLER
+// ===============================
 import express from "express";
 import mongoose from "mongoose";
 import path from "path";
@@ -6,11 +9,11 @@ import exphbs from "express-handlebars";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-
-import { apiLimiter } from "./middlewares/rateLimiter.js";
 import helmet from "helmet";
-import mongoSanitize from "express-mongo-sanitize";
+// import mongoSanitize from "express-mongo-sanitize";
+
 import { csrfProtection, addCsrfToken } from "./middlewares/csrf.js";
+import sanitizeBody from "./middlewares/sanitize.js";
 
 // Helpers
 import { eq } from "./helpers/eq.js";
@@ -45,11 +48,11 @@ mongoose
     dbName: "tarihKulubu",
   })
   .then(() => {
-    logger.info("✅ MongoDB bağlantısı başarılı");
+    logger.info("MongoDB bağlantısı başarılı");
     console.log("MongoDB bağlantısı başarılı.");
   })
   .catch((err) => {
-    logger.error("❌ MongoDB bağlantı hatası:", err);
+    logger.error("MongoDB bağlantı hatası:", err);
     console.log("MongoDB bağlantı hatası:", err);
   });
 
@@ -57,43 +60,25 @@ mongoose
 // GÜVENLİK MIDDLEWARE'LERİ
 // ===============================
 
-// Helmet - HTTP header güvenliği
+// Helmet (CSP kapalı - CSRF ile tam uyumlu)
 app.use(
   helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "https://cdnjs.cloudflare.com",
-          "'unsafe-inline'", // Handlebars inline scriptler için gerekli
-        ],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: [
-          "'self'",
-          "https://res.cloudinary.com",
-          "data:",
-          "https://*.cloudinary.com",
-        ],
-        connectSrc: ["'self'", "https://api.cloudinary.com"],
-        fontSrc: ["'self'", "data:"],
-      },
-    },
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: false,
+    crossOriginEmbedderPolicy: false,
   })
 );
 
-// MongoDB Injection Koruması
-app.use(
-  mongoSanitize({
-    replaceWith: "_",
-    onSanitize: ({ req, key }) => {
-      console.warn(`⚠️ MongoDB injection denemesi tespit edildi: ${key}`);
-    },
-  })
-);
+// MongoDB Sanitize (CSRF token'ı koru)
+// app.use(
+//   mongoSanitize({
+//     allow: ["_csrf"],
+//     sanitizeQuery: false,
+//     replaceWith: "_",
+//   })
+// );
 
-// Genel Rate Limiting
-app.use(apiLimiter);
+app.use(sanitizeBody);
 
 // ===============================
 // BODY & COOKIE PARSER
@@ -103,7 +88,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // ===============================
-// JWT TABANLI AUTH DURUMU
+// JWT TABANLI AUTH
 // ===============================
 const JWT_SECRET = process.env.JWT_SECRET || "jwt_super_secret_123";
 
@@ -120,7 +105,6 @@ app.use((req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    // decoded: { id, username, role, iat, exp }
 
     req.user = {
       id: decoded.id,
@@ -132,7 +116,6 @@ app.use((req, res, next) => {
     res.locals.currentUser = decoded.username;
     res.locals.currentUserRole = decoded.role;
   } catch (err) {
-    // Token bozuk / süresi dolmuşsa cookie'yi temizle
     res.clearCookie("auth_token", {
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
@@ -147,7 +130,7 @@ app.use((req, res, next) => {
 });
 
 // ===============================
-// PUBLIC KLASÖRÜ
+// STATIC DOSYALAR
 // ===============================
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/img", express.static(path.join(__dirname, "public/img")));
@@ -175,7 +158,7 @@ app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "views"));
 
 // ===============================
-// CSRF KORUMASI (Routes'tan önce)
+// CSRF KORUMASI
 // ===============================
 app.use(csrfProtection);
 app.use(addCsrfToken);
@@ -201,7 +184,7 @@ app.use((req, res) => {
 });
 
 // ===============================
-// LOCAL (geliştirme için)
+// LOCAL SERVER
 // ===============================
 const PORT = process.env.PORT || 3000;
 if (!process.env.VERCEL) {
@@ -210,7 +193,5 @@ if (!process.env.VERCEL) {
   });
 }
 
-// ===============================
-// VERCEL EXPORT
-// ===============================
+// Vercel Export
 export default app;
