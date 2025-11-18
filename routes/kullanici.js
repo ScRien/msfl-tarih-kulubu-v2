@@ -74,7 +74,9 @@ userRouter.post("/kayitOl", async (req, res) => {
     req.session.username = user.username;
     req.session.role = user.role;
 
-    return res.redirect("/");
+    req.session.save(() => {
+      res.redirect("/");
+    });
   } catch (err) {
     console.error("Kayıt hatası:", err);
     return res.render("pages/kayitOl", {
@@ -127,7 +129,9 @@ userRouter.post("/oturumAc", async (req, res) => {
     req.session.username = user.username;
     req.session.role = user.role;
 
-    return res.redirect("/");
+    req.session.save(() => {
+      res.redirect("/");
+    });
   } catch (err) {
     console.error("Giriş hatası:", err);
     return res.render("pages/oturumAc", {

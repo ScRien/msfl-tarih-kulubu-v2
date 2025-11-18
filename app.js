@@ -64,6 +64,8 @@ app.use(
   })
 );
 
+app.use(cookieParser());
+
 // ===============================
 // AUTH DURUMUNU HANDLEBARS’A AKTARAN MIDDLEWARE
 // ===============================
