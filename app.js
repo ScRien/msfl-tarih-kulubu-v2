@@ -1,12 +1,11 @@
 import express from "express";
-import session from "express-session";
-import MongoStore from "connect-mongo";
 import mongoose from "mongoose";
 import path from "path";
 import { fileURLToPath } from "url";
 import exphbs from "express-handlebars";
-import "dotenv/config";
 import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
+import "dotenv/config";
 
 // Helpers
 import { eq } from "./helpers/eq.js";
@@ -25,7 +24,7 @@ import sifreUnuttumRoute from "./routes/sifreUnuttum.js";
 import adminRoute from "./routes/admin.js";
 
 // ===============================
-// VERCEL PATH FIX
+// PATH FIX
 // ===============================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,7 +32,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // ===============================
-// MONGODB BAĞLANTISI
+// MONGODB
 // ===============================
 mongoose
   .connect(process.env.MONGO_URL, {
@@ -43,44 +42,55 @@ mongoose
   .catch((err) => console.log("MongoDB bağlantı hatası:", err));
 
 // ===============================
-// SESSION
-// ===============================
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "supersecretvalue123",
-    resave: true,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    },
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URL,
-      dbName: "tarihKulubu",
-      collectionName: "sessions",
-      ttl: 60 * 60 * 24,
-      autoRemove: "native",
-    }),
-  })
-);
-
-app.use(cookieParser());
-
-// ===============================
-// AUTH DURUMUNU HANDLEBARS’A AKTARAN MIDDLEWARE
-// ===============================
-app.use((req, res, next) => {
-  res.locals.isAuth = !!req.session.userId;
-  res.locals.currentUser = req.session.username || null;
-  next();
-});
-
-// ===============================
-// BODY-PARSER
+// BODY & COOKIE PARSER
 // ===============================
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
+
+// ===============================
+// JWT TABANLI AUTH DURUMU
+// ===============================
+const JWT_SECRET = process.env.JWT_SECRET || "jwt_super_secret_123";
+
+app.use((req, res, next) => {
+  const token = req.cookies?.auth_token;
+
+  if (!token) {
+    req.user = null;
+    res.locals.isAuth = false;
+    res.locals.currentUser = null;
+    res.locals.currentUserRole = null;
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    // decoded: { id, username, role, iat, exp }
+
+    req.user = {
+      id: decoded.id,
+      username: decoded.username,
+      role: decoded.role,
+    };
+
+    res.locals.isAuth = true;
+    res.locals.currentUser = decoded.username;
+    res.locals.currentUserRole = decoded.role;
+  } catch (err) {
+    // Token bozuk / süresi dolmuşsa cookie'yi temizle
+    res.clearCookie("auth_token", {
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
+    req.user = null;
+    res.locals.isAuth = false;
+    res.locals.currentUser = null;
+    res.locals.currentUserRole = null;
+  }
+
+  next();
+});
 
 // ===============================
 // PUBLIC KLASÖRÜ
@@ -92,7 +102,7 @@ app.use("/js", express.static(path.join(__dirname, "public/js")));
 app.use("/fonts", express.static(path.join(__dirname, "public/fonts")));
 
 // ===============================
-// HANDLEBARS AYARLARI
+// HANDLEBARS
 // ===============================
 const hbs = exphbs.create({
   defaultLayout: "main",
@@ -131,12 +141,14 @@ app.use((req, res) => {
 });
 
 // ===============================
-// LOCAL
+// LOCAL (geliştirme için)
 // ===============================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Sunucu çalışıyor: http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Sunucu çalışıyor: http://localhost:${PORT}`);
+  });
+}
 
 // ===============================
 // VERCEL EXPORT

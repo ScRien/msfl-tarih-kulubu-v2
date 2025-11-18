@@ -15,7 +15,7 @@ const router = express.Router();
 ============================================================ */
 router.get("/", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId).lean();
+    const user = await User.findById(req.user.id).lean();
 
     res.render("pages/hesap", {
       user,
@@ -36,12 +36,11 @@ router.post("/profil", auth, async (req, res) => {
   try {
     const { name, surname, email, bio } = req.body;
 
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.user.id);
     if (!user) {
       return res.redirect("/hesap?error=Kullanıcı+bulunamadı");
     }
 
-    // Email başka biri tarafından kullanılıyor mu?
     if (email !== user.email) {
       const exists = await User.findOne({
         email,
@@ -72,7 +71,7 @@ router.post("/profil", auth, async (req, res) => {
 ============================================================ */
 router.post("/cookies", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.user.id);
 
     user.analyticsCookies = !!req.body.analyticsCookies;
     user.personalizationCookies = !!req.body.personalizationCookies;
@@ -91,7 +90,7 @@ router.post("/cookies", auth, async (req, res) => {
 ============================================================ */
 router.post("/data-usage", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.user.id);
 
     user.serviceDataUsage = !!req.body.serviceDataUsage;
     user.personalizedContent = !!req.body.personalizedContent;
@@ -120,11 +119,11 @@ router.post(
       try {
         const uploadResult = await cloudinary.uploader.upload(req.file.path, {
           folder: "avatars",
-          public_id: `avatar_${req.session.userId}`,
+          public_id: `avatar_${req.user.id}`,
           overwrite: true,
         });
 
-        await User.findByIdAndUpdate(req.session.userId, {
+        await User.findByIdAndUpdate(req.user.id, {
           avatar: uploadResult.secure_url,
         });
 
@@ -156,11 +155,11 @@ router.post("/kapak-yukle", auth, upload.single("cover"), async (req, res) => {
     try {
       const uploadResult = await cloudinary.uploader.upload(req.file.path, {
         folder: "covers",
-        public_id: `cover_${req.session.userId}`,
+        public_id: `cover_${req.user.id}`,
         overwrite: true,
       });
 
-      await User.findByIdAndUpdate(req.session.userId, {
+      await User.findByIdAndUpdate(req.user.id, {
         coverPhoto: uploadResult.secure_url,
       });
 
@@ -186,7 +185,7 @@ router.post("/social", auth, async (req, res) => {
   try {
     const { instagram, x, github } = req.body;
 
-    await User.findByIdAndUpdate(req.session.userId, {
+    await User.findByIdAndUpdate(req.user.id, {
       social: { instagram, x, github },
     });
 
@@ -202,20 +201,19 @@ router.post("/social", auth, async (req, res) => {
 ============================================================ */
 router.post("/sil", auth, async (req, res) => {
   try {
-    const userId = req.session.userId;
+    const userId = req.user.id;
 
     const user = await User.findById(userId);
     if (!user) {
       return res.redirect("/hesap?error=Kullanıcı+bulunamadı");
     }
 
-    /* 1) Bloglar */
     const blogs = await Post.find({ user_id: userId });
 
     for (const blog of blogs) {
       if (blog.images && blog.images.length) {
         for (const img of blog.images) {
-          const publicId = img.split("/").pop().split(".")[0];
+          const publicId = img.public_id;
           try {
             await cloudinary.uploader.destroy(publicId);
           } catch (_) {}
@@ -224,22 +222,17 @@ router.post("/sil", auth, async (req, res) => {
     }
 
     await Post.deleteMany({ user_id: userId });
-
-    /* 2) Yorumlar */
     await Comment.deleteMany({ user_id: userId });
 
-    /* 3) Profil görselleri */
     if (user.avatarPublicId)
       await cloudinary.uploader.destroy(user.avatarPublicId);
     if (user.coverPublicId)
       await cloudinary.uploader.destroy(user.coverPublicId);
 
-    /* 4) Hesabı sil */
     await User.findByIdAndDelete(userId);
 
-    req.session.destroy(() => {
-      res.redirect("/?success=Hesap+başarıyla+silindi");
-    });
+    res.clearCookie("auth_token");
+    return res.redirect("/?success=Hesap+başarıyla+silindi");
   } catch (err) {
     console.log(err);
     res.redirect("/hesap?error=Hesap+silinemedi");
@@ -247,11 +240,11 @@ router.post("/sil", auth, async (req, res) => {
 });
 
 /* ============================================================
-   ŞİFRE DEĞİŞTİRME — KOD GÖNDER (DB)
+   ŞİFRE DEĞİŞTİRME — KOD GÖNDER
 ============================================================ */
 router.post("/sifre-kod", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.user.id);
     if (!user) return res.redirect("/hesap?error=Kullanıcı+bulunamadı");
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
@@ -277,12 +270,12 @@ router.post("/sifre-kod", auth, async (req, res) => {
 });
 
 /* ============================================================
-   ŞİFRE DEĞİŞTİRME — KOD DOĞRULA (DB)
+   ŞİFRE DEĞİŞTİRME — KOD DOĞRULA
 ============================================================ */
 router.post("/sifre-kod-dogrula-form", auth, async (req, res) => {
   const { code } = req.body;
 
-  const user = await User.findById(req.session.userId);
+  const user = await User.findById(req.user.id);
 
   if (!user || !user.resetCode) {
     return res.redirect("/hesap?error=Kod+talep+edilmedi&showVerify=1");
@@ -296,18 +289,17 @@ router.post("/sifre-kod-dogrula-form", auth, async (req, res) => {
     return res.redirect("/hesap?error=Kod+yanlış&showVerify=1");
   }
 
-  // Kod doğru → yeni şifre sayfasına yönlendir
   return res.redirect("/hesap/sifre-yeni");
 });
 
 /* ============================================================
-   ŞİFREYİ GERÇEKTEN DEĞİŞTİR (DB)
+   ŞİFREYİ GERÇEKTEN DEĞİŞTİR
 ============================================================ */
 router.post("/sifre-yeni", auth, async (req, res) => {
   try {
     const { password1, password2 } = req.body;
 
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.user.id);
     if (!user || !user.resetCode) {
       return res.redirect("/hesap?error=Yetkisiz+işlem");
     }
@@ -323,11 +315,11 @@ router.post("/sifre-yeni", auth, async (req, res) => {
     const bcrypt = await import("bcrypt");
     const hashed = await bcrypt.hash(password1, 10);
 
-    await User.findByIdAndUpdate(req.session.userId, {
-      password: hashed,
-      resetCode: null,
-      resetCodeExpires: null,
-    });
+    user.password = hashed;
+    user.resetCode = null;
+    user.resetCodeExpires = null;
+
+    await user.save();
 
     return res.redirect("/hesap?success=Şifre+başarıyla+değiştirildi");
   } catch (err) {

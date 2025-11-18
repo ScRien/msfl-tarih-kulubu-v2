@@ -1,6 +1,8 @@
+// middlewares/auth.js
+
 export default function auth(req, res, next) {
-  if (!req.session.userId) {
-    return res.redirect("/kullanici/oturumAc");
+  if (!req.user) {
+    return res.redirect("/kullanici/oturumAc?error=Oturum+açmanız+gerekiyor");
   }
   next();
 }
