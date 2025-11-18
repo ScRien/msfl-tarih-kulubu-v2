@@ -1,6 +1,6 @@
 import multer from "multer";
 
-// Vercel uyumlu — dosyalar RAM üzerinde tutulacak
+// Vercel uyumlu — disk yok, RAM kullanılır
 const storage = multer.memoryStorage();
 
 const upload = multer({

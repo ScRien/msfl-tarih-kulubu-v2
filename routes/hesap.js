@@ -116,28 +116,22 @@ router.post(
         return res.redirect("/hesap?error=Dosya+seçilmedi");
       }
 
-      try {
-        const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-          folder: "avatars",
-          public_id: `avatar_${req.user.id}`,
-          overwrite: true,
-        });
+      const buffer = req.file.buffer;
 
-        await User.findByIdAndUpdate(req.user.id, {
-          avatar: uploadResult.secure_url,
-        });
+      const result = await uploadBuffer(
+        buffer,
+        "avatars",
+        `avatar_${req.user.id}`
+      );
 
-        return res.redirect("/hesap?success=Profil+fotoğrafı+güncellendi");
-      } catch (err) {
-        if (err.message.includes("File size too large")) {
-          return res.redirect("/hesap?error=Görsel+10MB'den+küçük+olmalıdır");
-        }
+      await User.findByIdAndUpdate(req.user.id, {
+        avatar: result.secure_url,
+        avatarPublicId: result.public_id,
+      });
 
-        console.error("Avatar upload error:", err);
-        return res.redirect("/hesap?error=Avatar+yüklenemedi");
-      }
+      return res.redirect("/hesap?success=Profil+fotoğrafı+güncellendi");
     } catch (err) {
-      console.log(err);
+      console.error("Avatar upload error:", err);
       return res.redirect("/hesap?error=Avatar+yüklenemedi");
     }
   }
@@ -152,28 +146,18 @@ router.post("/kapak-yukle", auth, upload.single("cover"), async (req, res) => {
       return res.redirect("/hesap?error=Dosya+seçilmedi");
     }
 
-    try {
-      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-        folder: "covers",
-        public_id: `cover_${req.user.id}`,
-        overwrite: true,
-      });
+    const buffer = req.file.buffer;
 
-      await User.findByIdAndUpdate(req.user.id, {
-        coverPhoto: uploadResult.secure_url,
-      });
+    const result = await uploadBuffer(buffer, "covers", `cover_${req.user.id}`);
 
-      return res.redirect("/hesap?success=Kapak+fotoğrafı+güncellendi");
-    } catch (err) {
-      if (err.message.includes("File size too large")) {
-        return res.redirect("/hesap?error=Görsel+10MB'den+küçük+olmalıdır");
-      }
+    await User.findByIdAndUpdate(req.user.id, {
+      coverPhoto: result.secure_url,
+      coverPublicId: result.public_id,
+    });
 
-      console.error("Cover upload error:", err);
-      return res.redirect("/hesap?error=Kapak+yüklenemedi");
-    }
+    return res.redirect("/hesap?success=Kapak+fotoğrafı+güncellendi");
   } catch (err) {
-    console.log(err);
+    console.error("Cover upload error:", err);
     return res.redirect("/hesap?error=Kapak+yüklenemedi");
   }
 });

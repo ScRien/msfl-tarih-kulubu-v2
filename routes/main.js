@@ -11,24 +11,30 @@ router.get("/hakkinda", (req, res) => res.render("pages/hakkinda"));
 router.get("/etkinlikler", (req, res) => res.render("pages/etkinlikler"));
 router.get("/tarihteBugun", (req, res) => res.render("pages/tarihteBugun"));
 
-// === BLOG: Pagination Destekli ===
+/* ============================================================
+   BLOG SAYFASI (Pagination + JWT DESTEKLİ)
+============================================================ */
 router.get("/blog", async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1; // mevcut sayfa
-    const limit = 6; // her sayfada 6 blog
+    const page = parseInt(req.query.page) || 1;
+    const limit = 6;
 
     const totalBlogs = await Post.countDocuments();
     const totalPages = Math.ceil(totalBlogs / limit);
 
     const posts = await Post.find()
-      .sort({ date: -1 }) // en yeni blog en üstte
+      .sort({ date: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();
 
     res.render("pages/blog", {
       posts,
-      isAuth: !!req.session.userId,
+
+      // 🔥 Artık JWT üzerinden kullanıcı bilgisi geliyor
+      isAuth: !!req.user,
+      currentUser: req.user ? req.user.username : null,
+
       currentPage: page,
       totalPages,
     });
@@ -37,7 +43,9 @@ router.get("/blog", async (req, res) => {
 
     res.render("pages/blog", {
       posts: [],
-      isAuth: !!req.session.userId,
+      isAuth: !!req.user,
+      currentUser: req.user ? req.user.username : null,
+
       currentPage: 1,
       totalPages: 1,
     });
