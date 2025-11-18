@@ -23,7 +23,10 @@ blogs.post("/olustur", auth, async (req, res) => {
       return res.redirect("/blog/olustur?error=Başlık+ve+içerik+zorunludur");
     }
 
-    const images = imageUrls ? JSON.parse(imageUrls) : [];
+    let images = [];
+    if (imageUrls) {
+      images = JSON.parse(imageUrls);
+    }
 
     await Post.create({
       user_id: req.user.id,
@@ -33,10 +36,10 @@ blogs.post("/olustur", auth, async (req, res) => {
       images,
     });
 
-    res.redirect("/blog?success=Blog+başarıyla+oluşturuldu");
+    return res.redirect("/blog?success=Blog+başarıyla+oluşturuldu");
   } catch (err) {
     console.error("BLOG ERROR:", err);
-    res.redirect("/blog/olustur?error=Bir+hata+oluştu");
+    return res.redirect("/blog/olustur?error=Bir+hata+oluştu");
   }
 });
 
@@ -48,10 +51,7 @@ blogs.get("/:id/duzenle", auth, async (req, res) => {
     const post = await Post.findById(req.params.id).lean();
     if (!post) return res.status(404).send("Blog bulunamadı");
 
-    if (
-      post.user_id.toString() !== req.session.userId &&
-      req.session.role !== "admin"
-    ) {
+    if (post.user_id.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(403).send("Yetkiniz yok.");
     }
 
@@ -70,7 +70,6 @@ blogs.post("/:id/duzenle", auth, async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).send("Blog bulunamadı");
 
-    // Yetki kontrol
     if (post.user_id.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(403).send("Yetkiniz yok.");
     }
@@ -78,37 +77,28 @@ blogs.post("/:id/duzenle", auth, async (req, res) => {
     post.title = req.body.title;
     post.content = req.body.content;
 
-    // === 1) SİLİNECEK GÖRSELLER ===
+    // Silinecekler
     const toDelete = req.body.deleteImages;
     if (toDelete) {
-      const deleteArray = Array.isArray(toDelete) ? toDelete : [toDelete];
+      const arr = Array.isArray(toDelete) ? toDelete : [toDelete];
 
-      for (const publicId of deleteArray) {
+      for (const publicId of arr) {
         await cloudinary.uploader.destroy(publicId);
       }
 
-      post.images = post.images.filter(
-        (img) => !deleteArray.includes(img.public_id)
-      );
+      post.images = post.images.filter((img) => !arr.includes(img.public_id));
     }
 
-    // === 2) YENİ EKLENEN GÖRSELLER ===
+    // Yeni eklenen görseller
     if (req.body.newImagesJson) {
-      const newImages = JSON.parse(req.body.newImagesJson);
-
-      for (const img of newImages) {
-        post.images.push({
-          url: img.url,
-          public_id: img.public_id,
-        });
-      }
+      const newImgs = JSON.parse(req.body.newImagesJson);
+      post.images.push(...newImgs);
     }
 
     await post.save();
-
     res.redirect(`/blog/${post._id}`);
-  } catch (err) {
-    console.error("EDIT ERROR:", err);
+  } catch (error) {
+    console.error(error);
     res.status(500).send("Blog düzenlenirken hata oluştu");
   }
 });
@@ -122,17 +112,14 @@ blogs.post("/:id/sil", auth, async (req, res) => {
 
     if (!post) return res.status(404).send("Blog bulunamadı");
 
-    if (
-      post.user_id.toString() !== req.session.userId &&
-      req.session.role !== "admin"
-    ) {
+    if (post.user_id.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(403).send("Bu blogu silemezsiniz.");
     }
 
     for (const img of post.images) {
       try {
         await cloudinary.uploader.destroy(img.public_id);
-      } catch (err) {}
+      } catch (_) {}
     }
 
     await Post.findByIdAndDelete(req.params.id);
@@ -157,8 +144,8 @@ blogs.post("/:id/yorum", auth, async (req, res) => {
 
     await Comment.create({
       post_id: post._id,
-      user_id: req.session.userId,
-      username: req.session.username,
+      user_id: req.user.id,
+      username: req.user.username,
       content,
     });
 
@@ -175,9 +162,9 @@ blogs.post("/:id/yorum", auth, async (req, res) => {
 blogs.post("/:postId/yorum/:commentId/sil", auth, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.commentId);
-    if (!comment) return res.status(404).send("Yorum bulunamadı.");
+    if (!comment) return res.status(404).send("Yorum bulunamadı");
 
-    if (comment.user_id.toString() !== req.session.userId) {
+    if (comment.user_id.toString() !== req.user.id) {
       return res.status(403).send("Bu yorumu silemezsiniz.");
     }
 
@@ -204,12 +191,13 @@ blogs.get("/:id", async (req, res) => {
     res.render("pages/blogDetay", {
       post,
       comments,
-      isAuth: !!req.session.userId,
-      currentUserId: req.session.userId,
-      currentUsername: req.session.username,
+      isAuth: !!req.user,
+      currentUserId: req.user?.id,
+      currentUsername: req.user?.username,
+      currentRole: req.user?.role,
     });
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     res.status(500).send("Hata oluştu");
   }
 });
