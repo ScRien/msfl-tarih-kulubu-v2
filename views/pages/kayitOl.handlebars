@@ -1,7 +1,7 @@
 <section class="register-section">
   <div class="register-container">
 
-    <!-- Sol Taraf - Form -->
+    <!-- Sol Taraf -->
     <div class="register-left">
       <h2 class="register-title">Kayıt Ol</h2>
 
@@ -22,13 +22,18 @@
             name="username"
             placeholder="Kullanıcı Adı"
             class="register-input"
+            minlength="3"
+            maxlength="24"
+            value="{{username}}"
             required
           />
+
           <input
             type="email"
             name="email"
             placeholder="E-mail"
             class="register-input"
+            value="{{email}}"
             required
           />
         </div>
@@ -39,6 +44,7 @@
             name="name"
             placeholder="İsim"
             class="register-input"
+            value="{{name}}"
             required
           />
           <input
@@ -46,6 +52,7 @@
             name="surname"
             placeholder="Soyisim"
             class="register-input"
+            value="{{surname}}"
             required
           />
         </div>
@@ -54,36 +61,38 @@
           <input
             type="password"
             name="password"
-            placeholder="Şifre"
+            placeholder="Şifre (min. 6 karakter)"
+            minlength="6"
             class="register-input"
             required
           />
 
-          <!-- BURASI KESİNLİKLE password2 OLACAK -->
           <input
             type="password"
             name="password2"
             placeholder="Şifre (Tekrar)"
+            minlength="6"
             class="register-input"
             required
           />
         </div>
 
+        <!-- KVKK ve Şartlar -->
         <div class="terms-container">
           <label class="checkbox-label">
             <input type="checkbox" name="kvkk" required />
             <span>
-              <a href="/kvkk" target="_blank" class="terms-link">KVKK metnini</a>
-              okudum, kabul ediyorum.
+              <a href="/kvkk" class="terms-link" target="_blank">KVKK metnini</a>
+              kabul ediyorum.
             </span>
           </label>
 
           <label class="checkbox-label">
             <input type="checkbox" name="privacy" required />
             <span>
-              <a href="/gizlilik" target="_blank" class="terms-link">Gizlilik
+              <a href="/gizlilik" class="terms-link" target="_blank">Gizlilik
                 politikasını</a>
-              okudum, kabul ediyorum.
+              kabul ediyorum.
             </span>
           </label>
 
@@ -92,10 +101,10 @@
             <span>
               <a
                 href="/kullanim-sartlari"
-                target="_blank"
                 class="terms-link"
-              >Kullanıcı Şartlarını</a>
-              okudum, kabul ediyorum.
+                target="_blank"
+              >Kullanıcı şartlarını</a>
+              kabul ediyorum.
             </span>
           </label>
         </div>
@@ -103,11 +112,10 @@
       </form>
     </div>
 
-    <!-- Sağ Taraf - Mesaj ve Buton -->
+    <!-- Sağ Taraf -->
     <div class="register-right">
       <h3 class="right-title">Tarih Kulübü Evrenine<br />Girmeye Hazırım!</h3>
 
-      <!-- BUTON ARTIK FORMU GÖNDERİYOR -->
       <button type="submit" form="register-form" class="register-button">
         Kayıt Ol
       </button>

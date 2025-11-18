@@ -1,31 +1,49 @@
 <!-- NAVBAR -->
 <header class="navbar">
   <div class="nav-left">
-    <img src="/img/msfltemiz.png" class="logo" alt="MSFL" />
-    <img src="/img/kulup_temiz.png" class="logo" alt="Kulüp" />
+    <a href="/">
+      <img src="/img/msfltemiz.png" class="logo" alt="MSFL" />
+    </a>
+    <a href="/">
+      <img src="/img/kulup_temiz.png" class="logo" alt="Kulüp" />
+    </a>
   </div>
 
   <div class="nav-center">
-    <a href="/">Mustafa Saffet Fen Lisesi Tarih Kulübü</a>
+    <a href="/" class="nav-title">
+      Mustafa Saffet Fen Lisesi Tarih Kulübü
+    </a>
   </div>
 
   <div class="nav-right">
-    <a href="/hakkinda">Hakkında</a>
-    <a href="/blog">Blog</a>
-    <a href="/etkinlikler">Etkinlikler</a>
-    <a href="/tarihteBugun">Tarihte Bugün</a>
+    <a href="/hakkinda" class="nav-link">Hakkında</a>
+    <a href="/blog" class="nav-link">Blog</a>
+    <a href="/etkinlikler" class="nav-link">Etkinlikler</a>
+    <a href="/tarihteBugun" class="nav-link">Tarihte Bugün</a>
 
     {{#if isAuth}}
-      <a href="/hesap" class="account-btn">Hesabım ({{currentUser}})</a>
-      <a href="/kullanici/cikis" class="logout-btn">Çıkış</a>
+      <a href="/hesap" class="account-btn">
+        <i class="fa-solid fa-user"></i>
+        {{currentUser}}
+      </a>
+      <a href="/kullanici/cikis" class="logout-btn">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        Çıkış
+      </a>
     {{else}}
-      <a href="/kullanici/oturumAc" class="login-btn">Oturum Aç</a>
-      <a href="/kullanici/kayitOl" class="register-btn">Kayıt Ol</a>
+      <a href="/kullanici/oturumAc" class="login-btn">
+        <i class="fa-solid fa-right-to-bracket"></i>
+        Oturum Aç
+      </a>
+      <a href="/kullanici/kayitOl" class="register-btn">
+        <i class="fa-solid fa-user-plus"></i>
+        Kayıt Ol
+      </a>
     {{/if}}
   </div>
 </header>
 
-<!-- SOSYAL MEDYA -->
+<!-- SOSYAL MEDYA ÇUBUĞU -->
 <div class="social-media">
   <a
     href="https://www.instagram.com/msfl_tarihkulubu"
@@ -37,7 +55,7 @@
       alt="Instagram"
       class="media-icon"
     />
-    <span class="media-link">msfltarihkulubu</span>
+    <span class="media-link">@msfltarihkulubu</span>
   </a>
 
   <a
@@ -46,7 +64,7 @@
     class="social-group"
   >
     <img src="/img/socialmedia/twitter.png" alt="Twitter" class="media-icon" />
-    <span class="media-link">msfltarihkulubu</span>
+    <span class="media-link">@msfltarihkulubu</span>
   </a>
 
   <a
@@ -59,7 +77,7 @@
       alt="Facebook"
       class="media-icon"
     />
-    <span class="media-link">msfltarihkulubu</span>
+    <span class="media-link">/msfltarihkulubu</span>
   </a>
 
   <a
