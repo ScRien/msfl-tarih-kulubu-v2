@@ -47,7 +47,7 @@ mongoose
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "supersecretvalue123",
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24,
