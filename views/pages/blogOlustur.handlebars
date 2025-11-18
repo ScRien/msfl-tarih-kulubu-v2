@@ -1,26 +1,63 @@
-<h2>Blog Oluştur</h2>
+{{!-- views/pages/blogOlustur.handlebars --}}
+<section class="blog-add-section">
+  <div class="blog-add-form">
+    <h1 class="blog-add-title">Kendi Tarihini Yaz!</h1>
 
-{{#if error}}
-  <p class="error">{{error}}</p>
-{{/if}}
-{{#if success}}
-  <p class="success">{{success}}</p>
-{{/if}}
+    {{#if error}}
+      <div class="blog-add-alert error">{{error}}</div>
+    {{/if}}
+    {{#if success}}
+      <div class="blog-add-alert success">{{success}}</div>
+    {{/if}}
 
-<form id="blogForm" method="POST" action="/blog/olustur">
-  <input type="text" name="title" placeholder="Başlık" required />
+    <form id="blogForm" method="POST" action="/blog/olustur">
+      <div class="form-top">
+        <input
+          type="text"
+          name="title"
+          placeholder="Blog Başlığı"
+          class="input-field"
+          required
+        />
 
-  <textarea name="content" placeholder="İçerik" required></textarea>
+        <div class="upload-wrapper">
+          <label for="blogImages" class="upload-label">
+            Görsel Yükle (max 5)
+          </label>
+          <input
+            type="file"
+            id="blogImages"
+            class="file-input"
+            accept="image/*"
+            multiple
+          />
+          <span id="fileCount" class="file-count">Seçili dosya yok</span>
+        </div>
+      </div>
 
-  <!-- Çoklu resim -->
-  <p>Resim Yükle:</p>
-  <input type="file" id="blogImages" multiple accept="image/*" />
+      <div id="previewBox" class="preview-container"></div>
 
-  <div id="previewBox"></div>
+      <textarea
+        name="content"
+        class="textarea-field"
+        rows="8"
+        placeholder="Blog içeriğini buraya yaz..."
+        required
+      ></textarea>
 
-  <input type="hidden" id="imageUrls" name="imageUrls" />
+      <div class="warning-box">
+        <strong>Uyarı:</strong>
+        Lütfen hakaret içeren, yanlış veya yanıltıcı tarih bilgileri,
+        kişisel veriler ve telif hakkı ihlali olabilecek içerikler
+        paylaşmayınız. Gönderilen bloglar, kulüp danışman öğretmeni
+        tarafından kontrol edilebilir.
+      </div>
 
-  <button type="submit">Blogu Oluştur</button>
-</form>
+      <input type="hidden" id="imageUrls" name="imageUrls" value="[]" />
+
+      <button type="submit" class="submit-btn">Blogu Oluştur</button>
+    </form>
+  </div>
+</section>
 
 <script src="/js/blogUpload.js"></script>

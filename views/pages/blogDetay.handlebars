@@ -1,3 +1,4 @@
+{{!-- views/pages/blogDetay.handlebars --}}
 <section class="blog-read-section">
   <div class="blog-read-container">
 
@@ -9,22 +10,28 @@
 
       {{!-- BLOG EYLEMLERİ --}}
       {{#if isAuth}}
-        {{!-- Kullanıcı blog sahibiyse --}}
-        {{#if (eq post.user_id currentUserId)}}
+        {{#if isOwner}}
           <div class="blog-actions">
-            <a href="/blog/{{post._id}}/duzenle" class="action-btn edit-btn">Düzenle</a>
+            <a href="/blog/{{post._id}}/duzenle" class="action-btn edit-btn">
+              Düzenle
+            </a>
             <form action="/blog/{{post._id}}/sil" method="POST">
-              <button type="submit" class="action-btn delete-btn">Sil</button>
+              <button type="submit" class="action-btn delete-btn">
+                Sil
+              </button>
             </form>
           </div>
         {{/if}}
 
-        {{!-- Admin ise --}}
-        {{#if (eq currentRole "admin")}}
+        {{#if isAdmin}}
           <div class="blog-actions">
-            <a href="/blog/{{post._id}}/duzenle" class="action-btn edit-btn">Düzenle</a>
+            <a href="/blog/{{post._id}}/duzenle" class="action-btn edit-btn">
+              Düzenle (Admin)
+            </a>
             <form action="/blog/{{post._id}}/sil" method="POST">
-              <button type="submit" class="action-btn delete-btn">Sil</button>
+              <button type="submit" class="action-btn delete-btn">
+                Sil (Admin)
+              </button>
             </form>
           </div>
         {{/if}}
@@ -37,7 +44,8 @@
             @{{post.username}}
           </a>
         </p>
-        <p>Oluşturma Tarihi:
+        <p>
+          Oluşturma Tarihi:
           <span>{{generateDate post.date "DD/MM/YYYY"}}</span>
         </p>
       </div>
@@ -87,7 +95,9 @@
         <h3 class="section-title">Yorumlar</h3>
 
         {{#if isAuth}}
-          <button class="add-comment-btn">+ Yorum Ekle</button>
+          <button class="add-comment-btn" id="open-comment-modal">
+            + Yorum Ekle
+          </button>
         {{/if}}
       </div>
 
@@ -168,7 +178,10 @@
       <span class="close-edit-modal" id="close-edit-modal">&times;</span>
       <h3>Yorumu Düzenle</h3>
 
-      <form id="edit-comment-form" method="POST">
+      <form
+        id="edit-comment-form"
+        method="POST"
+      >
         <textarea
           name="content"
           id="edit-comment-textarea"
@@ -181,3 +194,5 @@
   </div>
 
 </section>
+
+<script src="/js/blogDetail.js"></script>
