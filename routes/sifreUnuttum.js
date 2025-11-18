@@ -33,13 +33,10 @@ sifreUnuttumRouter.post("/kod", async (req, res) => {
   req.session.resetCode = code;
   req.session.save();
 
-  const html = `
-    <h2>Şifre Sıfırlama Kodunuz</h2>
-    <p>Doğrulama Kodunuz: <b>${code}</b></p>
-    <p>Bu kod 10 dakika geçerlidir.</p>
-  `;
+  // ⭐ ŞABLONLU MAİL
+  const html = verificationMailTemplate(`${user.name} ${user.surname}`, code);
 
-  const ok = await sendMail(email, "Doğrulama Kodunuz", html);
+  const ok = await sendMail(email, "Şifre Sıfırlama Kodunuz", html);
 
   if (!ok) {
     return res.redirect("/sifre-unuttum?error=Mail+gönderilemedi");

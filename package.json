@@ -12,6 +12,7 @@
     "vercel-build": "echo 'Build aşamasında özel bir şey yok'"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "cloudinary": "^2.8.0",

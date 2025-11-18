@@ -277,17 +277,10 @@ router.post("/sifre-kod", auth, async (req, res) => {
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Session'a kaydet
     req.session.resetCode = code;
     req.session.save();
 
-    const html = `
-      <h2>MSFL Tarih Kulübü Doğrulama Kodu</h2>
-      <p>Sayın <b>${user.name} ${user.surname}</b>,</p>
-      <p>Şifre sıfırlama işleminiz için doğrulama kodunuz:</p>
-      <div style="font-size:28px;font-weight:bold;">${code}</div>
-      <p>Kod 10 dakika geçerlidir.</p>
-    `;
+    const html = verificationMailTemplate(`${user.name} ${user.surname}`, code);
 
     const ok = await sendMail(user.email, "Doğrulama Kodunuz", html);
 
@@ -295,9 +288,7 @@ router.post("/sifre-kod", auth, async (req, res) => {
       return res.redirect("/hesap?error=Mail+gönderilemedi");
     }
 
-    return res.redirect(
-      "/hesap?success=Doğrulama+kodu+gönderildi&showVerify=1"
-    );
+    return res.redirect("/hesap?success=Doğrulama+kodu+gönderildi&showVerify=1");
   } catch (err) {
     console.error(err);
     return res.redirect("/hesap?error=Beklenmeyen+hata");

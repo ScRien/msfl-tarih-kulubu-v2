@@ -1,165 +1,213 @@
-// helpers/mailTemplates.js
-
 export function verificationMailTemplate(name, code) {
   return `
   <!DOCTYPE html>
   <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <title>Tarih Kulübü - Doğrulama Kodu</title>
+    <title>Tarih Kulübü - Doğrulama Kodunuz</title>
     <style>
       body {
         margin: 0;
         padding: 0;
-        background: #f3f4f6;
+        background: #f5f6fa;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #333;
       }
+
       .wrapper {
         width: 100%;
-        padding: 20px 0;
+        padding: 25px 0;
       }
+
       .container {
         max-width: 600px;
         margin: 0 auto;
         background: #ffffff;
-        border-radius: 16px;
+        border-radius: 14px;
         overflow: hidden;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: 1px solid #ececec;
       }
+
+      /* HEADER */
       .header {
-        background: linear-gradient(to right, #731919, #e52b2b);
-        padding: 18px 24px;
-        color: #ffffff;
-        text-align: left;
-      }
-      .logo-title {
-        font-size: 18px;
-        font-weight: 700;
-        margin: 0;
-      }
-      .logo-sub {
-        font-size: 13px;
-        margin: 4px 0 0;
-        opacity: 0.9;
-      }
-      .badge {
-        display: inline-block;
-        margin-top: 8px;
-        padding: 3px 10px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.15);
-        font-size: 11px;
-      }
-      .content {
-        padding: 24px;
-        color: #111827;
-        font-size: 15px;
-        line-height: 1.6;
-      }
-      .content h1 {
-        font-size: 20px;
-        margin: 0 0 10px;
-        color: #111827;
-      }
-      .code-box {
-        margin: 18px 0;
-        padding: 14px 18px;
-        border-radius: 12px;
-        background: #0a0d13;
-        color: #f9fafb;
+        background: #ffffff;
+        padding: 25px;
         text-align: center;
+        border-bottom: 1px solid #e5e5e5;
       }
-      .code-label {
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        opacity: 0.8;
-        margin-bottom: 6px;
+      .header-logo {
+        font-size: 22px;
+        font-weight: 800;
+        color: #222;
       }
-      .code {
+      .header-sub {
+        font-size: 13px;
+        color: #555;
+        margin-top: 4px;
+      }
+
+      /* MAIN CONTENT */
+      .content {
+        padding: 30px 30px 20px;
+        color: #333;
+      }
+
+      .content h1 {
         font-size: 26px;
         font-weight: 700;
-        letter-spacing: 0.28em;
+        margin-bottom: 12px;
+        color: #222;
+        text-align: center;
       }
-      .info-box {
-        margin-top: 10px;
-        padding: 10px 12px;
+
+      .content p {
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 14px;
+        text-align: center;
+      }
+
+      /* CODE BLOCK */
+      .verify-block {
+        margin: 25px auto;
+        background: #f0f2f5;
         border-radius: 10px;
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        font-size: 13px;
-        color: #4b5563;
+        padding: 20px 10px;
+        text-align: center;
+        width: 80%;
       }
-      .footer {
-        padding: 14px 24px 18px;
-        font-size: 11px;
-        color: #6b7280;
-        background: #f9fafb;
-        border-top: 1px solid #e5e7eb;
+
+      .verify-label {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        opacity: 0.6;
       }
-      .footer-title {
+
+      .verify-code {
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: 0.25em;
+        color: #000;
+      }
+
+      /* BUTTON */
+      .btn {
+        display: block;
+        width: 200px;
+        margin: 22px auto 0;
+        padding: 12px 0;
+        background: #e52b2b;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 15px;
         font-weight: 600;
-        margin-bottom: 4px;
-        color: #374151;
+        text-decoration: none;
+        color: #fff !important;
       }
-      .small {
+
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      /* INFO BOX */
+      .gray-section {
+        background: #f9fafc;
+        padding: 25px;
+        margin-top: 10px;
+        border-top: 1px solid #e5e5e5;
+      }
+
+      .gray-section h3 {
+        font-weight: 700;
+        font-size: 15px;
+        margin-bottom: 10px;
+        color: #222;
+      }
+
+      .gray-section ul {
+        padding-left: 16px;
+        margin: 0;
+      }
+
+      .gray-section ul li {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #444;
+      }
+
+      /* FOOTER */
+      .footer {
+        padding: 20px 25px;
+        font-size: 12px;
+        color: #777;
+        background: #ffffff;
+        border-top: 1px solid #e5e5e5;
+        text-align: center;
+      }
+
+      .footer small {
+        display: block;
+        margin-top: 6px;
         font-size: 11px;
-        color: #9ca3af;
+        color: #aaa;
       }
-      @media (max-width: 640px) {
-        .container {
-          border-radius: 0;
-        }
-        .content {
-          padding: 18px;
-        }
-        .code {
-          font-size: 22px;
-          letter-spacing: 0.22em;
-        }
+
+      @media(max-width: 600px) {
+        .container { border-radius: 0; }
+        .verify-code { font-size: 26px; }
       }
     </style>
   </head>
+
   <body>
     <div class="wrapper">
       <div class="container">
 
+        <!-- HEADER -->
         <div class="header">
-          <p class="logo-title">GHV Mustafa Saffet Fen Lisesi</p>
-          <p class="logo-sub">Tarih Kulübü • Resmî E-posta</p>
-          <span class="badge">msfl tarih kulübü</span>
+          <div class="header-logo">Mustafa Saffet Fen Lisesi</div>
+          <div class="header-sub">Tarih Kulübü • Resmî Doğrulama E-postası</div>
         </div>
 
+        <!-- MAIN -->
         <div class="content">
-          <h1>Merhaba ${name || "Sevgili Öğrencimiz"},</h1>
+          <h1>Merhaba ${name || "Sevgili Öğrencimiz"}!</h1>
           <p>
-            Tarih Kulübü web sitemizde şifre değiştirme işlemi başlatıldı.
-            İşlemi tamamlamak için aşağıdaki doğrulama kodunu kullanmanı gerekiyor.
+            Tarih Kulübü web sitemizde bir işlem gerçekleştirdin.<br />
+            Devam edebilmen için e-posta doğrulamasına ihtiyacımız var.
           </p>
 
-          <div class="code-box">
-            <div class="code-label">Doğrulama Kodun</div>
-            <div class="code">${code}</div>
+          <div class="verify-block">
+            <div class="verify-label">Doğrulama Kodun</div>
+            <div class="verify-code">${code}</div>
           </div>
 
-          <div class="info-box">
-            Bu kod <b>5 dakika</b> boyunca geçerlidir. Bu isteği sen yapmadıysan,
-            lütfen şifreni değiştirme ve bir öğretmenine ya da kulüp sorumlusuna haber ver.
-          </div>
+          <a class="btn">Kodu Kullan</a>
 
           <p style="margin-top: 18px;">
-            Tarihi sadece kitaplardan değil, <b>birlikte ürettiğimiz içeriklerden</b> de
-            öğreniyoruz. İyi ki Tarih Kulübü ailesinin bir parçasısın. 💫
+              Kodun <b>5 dakika</b> boyunca geçerlidir. Bu işlemi sen yapmadıysan lütfen 
+              öğretmenine ya da <b>msfltarihkulubu@outlook.com</b> adresine haber ver.
           </p>
         </div>
 
+        <!-- NEXT STEPS SECTION -->
+        <div class="gray-section">
+          <h3>Bundan sonra ne olacak?</h3>
+          <ul>
+            <li>Doğrulama kodunu kullanarak işlemini tamamlayacaksın.</li>
+            <li>Hesabın daha güvenli hale gelecek.</li>
+            <li>Gerekirse bizi her zaman bilgilendirebilirsin.</li>
+          </ul>
+        </div>
+
+        <!-- FOOTER -->
         <div class="footer">
-          <div class="footer-title">GHV Mustafa Saffet Fen Lisesi Tarih Kulübü</div>
-          <div>Bu e-posta otomatik olarak gönderilmiştir, lütfen yanıtlamayınız.</div>
-          <div class="small" style="margin-top: 4px;">
-            © ${new Date().getFullYear()} MSFL Tarih Kulübü — Tüm hakları saklıdır.
-          </div>
+          <strong>GHV Mustafa Saffet Fen Lisesi Tarih Kulübü</strong>
+          <small>Bu e-posta otomatik gönderilmiştir, lütfen yanıtlamayınız.</small>
+          <small>© ${new Date().getFullYear()} MSFL — Tüm hakları saklıdır.</small>
         </div>
 
       </div>
