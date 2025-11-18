@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import upload from "../middlewares/upload.js";
 import cloudinary from "../helpers/cloudinary.js";
 import "dotenv/config";
+import { loginLimiter } from "../middlewares/rateLimiter.js";
 
 const admin = express.Router();
 
