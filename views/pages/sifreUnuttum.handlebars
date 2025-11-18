@@ -7,7 +7,7 @@
     <div class="pw-alert success">✔ {{success}}</div>
   {{/if}}
 
-  {{! HATA }}
+  {{! HATA MESAJI }}
   {{#if error}}
     <div class="pw-alert error">❌ {{error}}</div>
   {{/if}}
@@ -20,7 +20,7 @@
       göndereceğiz.
     </p>
 
-    {{! 1) E-POSTA FORMU }}
+    {{! 📌 1) E-POSTA FORMU (ilk adım) }}
     {{#unless showVerify}}
       {{#unless showNewPass}}
         <form action="/sifre-unuttum/kod" method="POST" class="form">
@@ -38,9 +38,13 @@
       {{/unless}}
     {{/unless}}
 
-    {{! 2) KOD DOĞRULAMA FORMU }}
+    {{! 📌 2) KOD DOĞRULAMA FORMU }}
     {{#if showVerify}}
       <form action="/sifre-unuttum/kod-dogrula" method="POST" class="form">
+
+        {{! Email saklanıyor }}
+        <input type="hidden" name="email" value="{{email}}" />
+
         <input
           type="text"
           name="code"
@@ -48,6 +52,7 @@
           placeholder="Mail'deki 6 haneli kod"
           required
         />
+
         <button class="btn verify">
           <i class="fa-solid fa-shield-halved"></i>
           Kodu Doğrula
@@ -55,9 +60,13 @@
       </form>
     {{/if}}
 
-    {{! 3) YENİ ŞİFRE FORMU }}
+    {{! 📌 3) YENİ ŞİFRE FORMU }}
     {{#if showNewPass}}
       <form action="/sifre-unuttum/yeni-sifre" method="POST" class="form">
+
+        {{! Email burada da saklanıyor }}
+        <input type="hidden" name="email" value="{{email}}" />
+
         <input
           type="password"
           name="password1"

@@ -21,6 +21,7 @@ router.get("/", auth, async (req, res) => {
       user,
       success: req.query.success || null,
       error: req.query.error || null,
+      showVerify: req.query.showVerify || null,
     });
   } catch (err) {
     console.log(err);
@@ -29,7 +30,7 @@ router.get("/", auth, async (req, res) => {
 });
 
 /* ============================================================
-   PROFİL BİLGİLERİ + BİYOGRAFİ GÜNCELLE
+   PROFİL BİLGİLERİ GÜNCELLE
 ============================================================ */
 router.post("/profil", auth, async (req, res) => {
   try {
@@ -52,7 +53,6 @@ router.post("/profil", auth, async (req, res) => {
       }
     }
 
-    // Güncelleme
     user.name = name;
     user.surname = surname;
     user.email = email;
@@ -68,7 +68,7 @@ router.post("/profil", auth, async (req, res) => {
 });
 
 /* ============================================================
-   ÇEREZ AYARLARI (/hesap/cookies)
+   ÇEREZ AYARLARI
 ============================================================ */
 router.post("/cookies", auth, async (req, res) => {
   try {
@@ -87,7 +87,7 @@ router.post("/cookies", auth, async (req, res) => {
 });
 
 /* ============================================================
-   VERİ KULLANIMI (/hesap/data-usage)
+   VERİ KULLANIMI
 ============================================================ */
 router.post("/data-usage", auth, async (req, res) => {
   try {
@@ -130,7 +130,6 @@ router.post(
 
         return res.redirect("/hesap?success=Profil+fotoğrafı+güncellendi");
       } catch (err) {
-        // 🔥 Dosya boyutu hatası
         if (err.message.includes("File size too large")) {
           return res.redirect("/hesap?error=Görsel+10MB'den+küçük+olmalıdır");
         }
@@ -180,16 +179,15 @@ router.post("/kapak-yukle", auth, upload.single("cover"), async (req, res) => {
   }
 });
 
+/* ============================================================
+   SOSYAL MEDYA GÜNCELLE
+============================================================ */
 router.post("/social", auth, async (req, res) => {
   try {
     const { instagram, x, github } = req.body;
 
     await User.findByIdAndUpdate(req.session.userId, {
-      social: {
-        instagram,
-        x,
-        github,
-      },
+      social: { instagram, x, github },
     });
 
     return res.redirect("/hesap?success=Sosyal+medya+güncellendi");
@@ -200,7 +198,7 @@ router.post("/social", auth, async (req, res) => {
 });
 
 /* ============================================================
-   HESAP SİL — Her şeyi temizler
+   HESAP SİL
 ============================================================ */
 router.post("/sil", auth, async (req, res) => {
   try {
@@ -211,48 +209,34 @@ router.post("/sil", auth, async (req, res) => {
       return res.redirect("/hesap?error=Kullanıcı+bulunamadı");
     }
 
-    /* ===============================
-       1) KULLANICI BLOGLARI SİL
-    =============================== */
+    /* 1) Bloglar */
     const blogs = await Post.find({ user_id: userId });
 
     for (const blog of blogs) {
-      // Blog görselleri Cloudinary'den silinsin (varsa)
       if (blog.images && blog.images.length) {
         for (const img of blog.images) {
           const publicId = img.split("/").pop().split(".")[0];
           try {
             await cloudinary.uploader.destroy(publicId);
-          } catch (e) {}
+          } catch (_) {}
         }
       }
     }
 
     await Post.deleteMany({ user_id: userId });
 
-    /* ===============================
-       2) KULLANICI YORUMLARI SİL
-    =============================== */
+    /* 2) Yorumlar */
     await Comment.deleteMany({ user_id: userId });
 
-    /* ===============================
-       3) PROFİL FOTOĞRAFI & KAPAK SİL
-    =============================== */
-    if (user.avatarPublicId) {
+    /* 3) Profil görselleri */
+    if (user.avatarPublicId)
       await cloudinary.uploader.destroy(user.avatarPublicId);
-    }
-    if (user.coverPublicId) {
+    if (user.coverPublicId)
       await cloudinary.uploader.destroy(user.coverPublicId);
-    }
 
-    /* ===============================
-       4) HESABI VERİTABANINDAN SİL
-    =============================== */
+    /* 4) Hesabı sil */
     await User.findByIdAndDelete(userId);
 
-    /* ===============================
-       5) OTURUMU KAPAT
-    =============================== */
     req.session.destroy(() => {
       res.redirect("/?success=Hesap+başarıyla+silindi");
     });
@@ -262,14 +246,9 @@ router.post("/sil", auth, async (req, res) => {
   }
 });
 
-router.get("/sifre-yeni", auth, (req, res) => {
-  if (!req.session.allowPasswordChange) {
-    return res.redirect("/hesap?error=Yetkisiz+işlem");
-  }
-
-  res.render("pages/sifreYeni");
-});
-
+/* ============================================================
+   ŞİFRE DEĞİŞTİRME — KOD GÖNDER (DB)
+============================================================ */
 router.post("/sifre-kod", auth, async (req, res) => {
   try {
     const user = await User.findById(req.session.userId);
@@ -277,31 +256,61 @@ router.post("/sifre-kod", auth, async (req, res) => {
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    req.session.resetCode = code;
-    req.session.save();
+    user.resetCode = code;
+    user.resetCodeExpires = new Date(Date.now() + 1000 * 60 * 10);
+    await user.save();
 
     const html = verificationMailTemplate(`${user.name} ${user.surname}`, code);
-
     const ok = await sendMail(user.email, "Doğrulama Kodunuz", html);
 
     if (!ok) {
       return res.redirect("/hesap?error=Mail+gönderilemedi");
     }
 
-    return res.redirect("/hesap?success=Doğrulama+kodu+gönderildi&showVerify=1");
+    return res.redirect(
+      "/hesap?success=Doğrulama+kodu+gönderildi&showVerify=1"
+    );
   } catch (err) {
     console.error(err);
     return res.redirect("/hesap?error=Beklenmeyen+hata");
   }
 });
 
+/* ============================================================
+   ŞİFRE DEĞİŞTİRME — KOD DOĞRULA (DB)
+============================================================ */
+router.post("/sifre-kod-dogrula-form", auth, async (req, res) => {
+  const { code } = req.body;
+
+  const user = await User.findById(req.session.userId);
+
+  if (!user || !user.resetCode) {
+    return res.redirect("/hesap?error=Kod+talep+edilmedi&showVerify=1");
+  }
+
+  if (user.resetCodeExpires < new Date()) {
+    return res.redirect("/hesap?error=Kodun+süresi+doldu&showVerify=1");
+  }
+
+  if (code.trim() !== user.resetCode) {
+    return res.redirect("/hesap?error=Kod+yanlış&showVerify=1");
+  }
+
+  // Kod doğru → yeni şifre sayfasına yönlendir
+  return res.redirect("/hesap/sifre-yeni");
+});
+
+/* ============================================================
+   ŞİFREYİ GERÇEKTEN DEĞİŞTİR (DB)
+============================================================ */
 router.post("/sifre-yeni", auth, async (req, res) => {
   try {
-    if (!req.session.allowPasswordChange) {
+    const { password1, password2 } = req.body;
+
+    const user = await User.findById(req.session.userId);
+    if (!user || !user.resetCode) {
       return res.redirect("/hesap?error=Yetkisiz+işlem");
     }
-
-    const { password1, password2 } = req.body;
 
     if (!password1 || !password2) {
       return res.redirect("/hesap/sifre-yeni?error=Şifreler+boş+olamaz");
@@ -320,30 +329,11 @@ router.post("/sifre-yeni", auth, async (req, res) => {
       resetCodeExpires: null,
     });
 
-    req.session.allowPasswordChange = false;
-
     return res.redirect("/hesap?success=Şifre+başarıyla+değiştirildi");
   } catch (err) {
     console.log(err);
     return res.redirect("/hesap?error=Şifre+değiştirilemedi");
   }
-});
-
-router.post("/sifre-kod-dogrula-form", auth, async (req, res) => {
-  const code = req.body.code;
-
-  if (!req.session.resetCode) {
-    return res.redirect("/hesap?error=Kod+talep+edilmedi&showVerify=1");
-  }
-
-  if (!code || code.trim() !== req.session.resetCode) {
-    return res.redirect("/hesap?error=Kod+yanlış&showVerify=1");
-  }
-
-  req.session.allowPasswordChange = true;
-  req.session.save();
-
-  return res.redirect("/hesap/sifre-yeni");
 });
 
 export default router;

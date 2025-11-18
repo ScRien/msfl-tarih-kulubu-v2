@@ -40,8 +40,9 @@ const UserSchema = new mongoose.Schema({
   serviceDataUsage: { type: Boolean, default: false },
   personalizedContent: { type: Boolean, default: false },
 
+  /* ŞİFRE SIFIRLAMA ALANLARI */
   resetCode: { type: String, default: null },
-  resetCodeExpires: { type: Number, default: null },
+  resetCodeExpires: { type: Date, default: null },
 });
 
 const User = mongoose.model("User", UserSchema);

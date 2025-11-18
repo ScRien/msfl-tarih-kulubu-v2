@@ -57,27 +57,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===========================================================
-     ŞİFRE SIFIRLAMA — FORM TABANLI
+     ŞİFRE SIFIRLAMA — DB tabanlı UI kontrolü
   ============================================================ */
 
-  const sendCodeForm = document.querySelector(
-    "#password form[action='/hesap/sifre-kod']"
-  );
   const verifyBox = document.getElementById("verifyBox");
   const newPasswordBox = document.getElementById("newPasswordBox");
 
-  // Kod gönderme
-  if (sendCodeForm) {
-    sendCodeForm.addEventListener("submit", () => {
-      verifyBox.style.display = "block";
-      newPasswordBox.style.display = "none";
-    });
+  const urlParams = new URLSearchParams(window.location.search);
+
+  // 1) showVerify=1 → doğrulama kutusu açılır
+  if (urlParams.get("showVerify") == "1" && verifyBox) {
+    verifyBox.style.display = "block";
+    if (newPasswordBox) newPasswordBox.style.display = "none";
+
+    // Şifre kısmına otomatik kaydır
+    document.getElementById("password")?.scrollIntoView({ behavior: "smooth" });
   }
 
-  // Eğer URL'de showVerify=1 varsa otomatik aç
-  if (window.location.search.includes("showVerify=1")) {
-    verifyBox.style.display = "block";
-    newPasswordBox.style.display = "none";
-    document.getElementById("password").scrollIntoView({ behavior: "smooth" });
+  // 2) /hesap/sifre-yeni sayfasına gelmişse yeni şifre kutusu açılır
+  if (window.location.pathname.includes("sifre-yeni") && newPasswordBox) {
+    newPasswordBox.style.display = "block";
   }
 });
