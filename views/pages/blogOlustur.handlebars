@@ -1,87 +1,26 @@
-<section class="blog-add-section">
-  <h1 class="blog-add-title">Blog Oluştur</h1>
+<h2>Blog Oluştur</h2>
 
-  {{#if error}}
-    <div class="account-alert error">❌ {{error}}</div>
-  {{/if}}
+{{#if error}}
+  <p class="error">{{error}}</p>
+{{/if}}
+{{#if success}}
+  <p class="success">{{success}}</p>
+{{/if}}
 
-  {{#if success}}
-    <div class="account-alert success">✅ {{success}}</div>
-  {{/if}}
+<form id="blogForm" method="POST" action="/blog/olustur">
+  <input type="text" name="title" placeholder="Başlık" required />
 
-  <form
-    action="/blog/olustur"
-    method="POST"
-    enctype="multipart/form-data"
-    class="blog-add-form"
-  >
-    <div class="form-top">
+  <textarea name="content" placeholder="İçerik" required></textarea>
 
-      <input
-        type="text"
-        name="title"
-        class="input-field"
-        placeholder="Başlık"
-        required
-      />
+  <!-- Çoklu resim -->
+  <p>Resim Yükle:</p>
+  <input type="file" id="blogImages" multiple accept="image/*" />
 
-      <div class="upload-wrapper">
-        <label for="images" class="upload-label">📁 Görsel Ekle</label>
+  <div id="previewBox"></div>
 
-        <input
-          type="file"
-          name="images"
-          id="blogImages"
-          accept="image/*"
-          multiple
-          data-max="5"
-        />
-        <p class="image-info">En fazla 5 görsel yükleyebilirsiniz.</p>
+  <input type="hidden" id="imageUrls" name="imageUrls" />
 
-        <span id="file-count" class="file-count">Henüz görsel seçilmedi</span>
-      </div>
+  <button type="submit">Blogu Oluştur</button>
+</form>
 
-    </div>
-
-    <!-- ÖNİZLEME KUTULARI -->
-    <div id="preview-container" class="preview-container"></div>
-
-    <textarea
-      name="content"
-      class="textarea-field"
-      rows="10"
-      placeholder="Blog metni..."
-      required
-    ></textarea>
-
-    <div class="warning-box">
-      <strong>Uyarı:</strong>
-      Blog bölümünde yanlış, yanıltıcı veya doğrulanmamış içeriklere yer
-      verilmeyecektir.
-    </div>
-
-    <button type="submit" class="submit-btn">Paylaş</button>
-  </form>
-</section>
-
-<script>
-  const input = document.getElementById("images"); const preview =
-  document.getElementById("preview-container"); const fileCount =
-  document.getElementById("file-count"); let selectedFiles = [];
-  input.addEventListener("change", () => { selectedFiles = [...input.files];
-  updatePreview(); }); function updatePreview() { preview.innerHTML = ""; if
-  (selectedFiles.length === 0) { fileCount.textContent = "Henüz görsel
-  seçilmedi"; return; } fileCount.textContent = selectedFiles.length + " dosya
-  seçildi"; selectedFiles.forEach((file, index) => { const reader = new
-  FileReader(); reader.onload = (e) => { const box =
-  document.createElement("div"); box.className = "preview-item"; const img =
-  document.createElement("img"); img.src = e.target.result; img.className =
-  "preview-img"; const removeBtn = document.createElement("button");
-  removeBtn.className = "remove-btn"; removeBtn.innerHTML = "×";
-  removeBtn.onclick = () => removeImage(index); box.appendChild(img);
-  box.appendChild(removeBtn); preview.appendChild(box); };
-  reader.readAsDataURL(file); }); } function removeImage(index) {
-  selectedFiles.splice(index, 1); const dataTransfer = new DataTransfer();
-  selectedFiles.forEach((f) => dataTransfer.items.add(f)); input.files =
-  dataTransfer.files; updatePreview(); }
-</script>
+<script src="/js/blogUpload.js"></script>

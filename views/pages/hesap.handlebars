@@ -145,10 +145,21 @@
 
         <p class="info">Önerilen boyut: 300×300 px (kare)</p>
 
-        <form action="/hesap/avatar-yukle" method="POST" enctype="multipart/form-data">
-          <input type="file" name="avatar" accept="image/*" class="media-input" required />
-          <button class="btn save">Profil Fotoğrafını Güncelle</button>
+        <form action="/hesap/avatar-yukle" method="POST">
+          <input type="file" id="avatarInput" accept="image/*" />
+
+          <img
+            id="avatarPreview"
+            src="{{user.avatar}}"
+            style="width:120px; border-radius:10px;"
+          />
+
+          <input type="hidden" id="avatarUrl" name="avatarUrl" />
+
+          <button type="submit">Kaydet</button>
         </form>
+
+        <script src="/js/avatarUpload.js"></script>
       </div>
 
       <!-- KAPAK -->
@@ -163,10 +174,21 @@
 
         <p class="info">Önerilen boyut: 1200×280 px</p>
 
-        <form action="/hesap/kapak-yukle" method="POST" enctype="multipart/form-data">
-          <input type="file" name="cover" accept="image/*" class="media-input" required />
-          <button class="btn save">Kapak Fotoğrafını Güncelle</button>
+        <form action="/hesap/kapak-yukle" method="POST">
+          <input type="file" id="coverInput" accept="image/*" />
+
+          <img
+            id="coverPreview"
+            src="{{user.coverPhoto}}"
+            style="width:200px; border-radius:10px;"
+          />
+
+          <input type="hidden" id="coverUrl" name="coverUrl" />
+
+          <button type="submit">Kaydet</button>
         </form>
+
+        <script src="/js/coverUpload.js"></script>
       </div>
     </div>
 

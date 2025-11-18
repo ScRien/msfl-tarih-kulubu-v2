@@ -15,39 +15,28 @@ blogs.get("/olustur", auth, (req, res) => {
   res.render("pages/blogOlustur");
 });
 
-blogs.post("/olustur", auth, upload.array("images", 5), async (req, res) => {
+blogs.post("/olustur", auth, async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, imageUrls } = req.body;
 
     if (!title || !content) {
       return res.redirect("/blog/olustur?error=Başlık+ve+içerik+zorunludur");
     }
 
-    const uploadedImages = [];
-
-    if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
-        const result = await uploadBuffer(file.buffer, "blog_images");
-
-        uploadedImages.push({
-          url: result.secure_url,
-          public_id: result.public_id,
-        });
-      }
-    }
+    const images = imageUrls ? JSON.parse(imageUrls) : [];
 
     await Post.create({
-      user_id: req.session.userId,
-      username: req.session.username,
+      user_id: req.user.id,
+      username: req.user.username,
       title,
       content,
-      images: uploadedImages,
+      images,
     });
 
-    return res.redirect("/blog?success=Blog+başarıyla+oluşturuldu");
+    res.redirect("/blog?success=Blog+başarıyla+oluşturuldu");
   } catch (err) {
     console.error("BLOG ERROR:", err);
-    return res.redirect("/blog/olustur?error=Bir+hata+oluştu");
+    res.redirect("/blog/olustur?error=Bir+hata+oluştu");
   }
 });
 
@@ -76,57 +65,53 @@ blogs.get("/:id/duzenle", auth, async (req, res) => {
 /* ================================
    BLOG DÜZENLE (POST)
 ================================ */
-blogs.post(
-  "/:id/duzenle",
-  auth,
-  upload.array("newImages", 5),
-  async (req, res) => {
-    try {
-      const post = await Post.findById(req.params.id);
-      if (!post) return res.status(404).send("Blog bulunamadı");
+blogs.post("/:id/duzenle", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).send("Blog bulunamadı");
 
-      if (
-        post.user_id.toString() !== req.session.userId &&
-        req.session.role !== "admin"
-      ) {
-        return res.status(403).send("Yetkiniz yok.");
-      }
-
-      post.title = req.body.title;
-      post.content = req.body.content;
-
-      const toDelete = req.body.deleteImages;
-      if (toDelete) {
-        const deleteArray = Array.isArray(toDelete) ? toDelete : [toDelete];
-
-        for (const publicId of deleteArray) {
-          await cloudinary.uploader.destroy(publicId);
-        }
-
-        post.images = post.images.filter(
-          (img) => !deleteArray.includes(img.public_id)
-        );
-      }
-
-      if (req.files && req.files.length > 0) {
-        for (const file of req.files) {
-          const result = await uploadBuffer(file.buffer, "blog_images");
-
-          post.images.push({
-            url: result.secure_url,
-            public_id: result.public_id,
-          });
-        }
-      }
-
-      await post.save();
-      res.redirect(`/blog/${post._id}`);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Blog düzenlenirken hata oluştu");
+    // Yetki kontrol
+    if (post.user_id.toString() !== req.user.id && req.user.role !== "admin") {
+      return res.status(403).send("Yetkiniz yok.");
     }
+
+    post.title = req.body.title;
+    post.content = req.body.content;
+
+    // === 1) SİLİNECEK GÖRSELLER ===
+    const toDelete = req.body.deleteImages;
+    if (toDelete) {
+      const deleteArray = Array.isArray(toDelete) ? toDelete : [toDelete];
+
+      for (const publicId of deleteArray) {
+        await cloudinary.uploader.destroy(publicId);
+      }
+
+      post.images = post.images.filter(
+        (img) => !deleteArray.includes(img.public_id)
+      );
+    }
+
+    // === 2) YENİ EKLENEN GÖRSELLER ===
+    if (req.body.newImagesJson) {
+      const newImages = JSON.parse(req.body.newImagesJson);
+
+      for (const img of newImages) {
+        post.images.push({
+          url: img.url,
+          public_id: img.public_id,
+        });
+      }
+    }
+
+    await post.save();
+
+    res.redirect(`/blog/${post._id}`);
+  } catch (err) {
+    console.error("EDIT ERROR:", err);
+    res.status(500).send("Blog düzenlenirken hata oluştu");
   }
-);
+});
 
 /* ================================
    BLOG SİL

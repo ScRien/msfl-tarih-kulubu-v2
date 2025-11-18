@@ -106,60 +106,31 @@ router.post("/data-usage", auth, async (req, res) => {
 /* ============================================================
    AVATAR UPLOAD
 ============================================================ */
-router.post(
-  "/avatar-yukle",
-  auth,
-  upload.single("avatar"),
-  async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.redirect("/hesap?error=Dosya+seçilmedi");
-      }
-
-      const buffer = req.file.buffer;
-
-      const result = await uploadBuffer(
-        buffer,
-        "avatars",
-        `avatar_${req.user.id}`
-      );
-
-      await User.findByIdAndUpdate(req.user.id, {
-        avatar: result.secure_url,
-        avatarPublicId: result.public_id,
-      });
-
-      return res.redirect("/hesap?success=Profil+fotoğrafı+güncellendi");
-    } catch (err) {
-      console.error("Avatar upload error:", err);
-      return res.redirect("/hesap?error=Avatar+yüklenemedi");
-    }
+router.post("/avatar-yukle", auth, async (req, res) => {
+  if (!req.body.avatarUrl) {
+    return res.redirect("/hesap?error=Görsel+yüklenemedi");
   }
-);
+
+  await User.findByIdAndUpdate(req.user.id, {
+    avatar: req.body.avatarUrl,
+  });
+
+  res.redirect("/hesap?success=Avatar+güncellendi");
+});
 
 /* ============================================================
    COVER UPLOAD
 ============================================================ */
-router.post("/kapak-yukle", auth, upload.single("cover"), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.redirect("/hesap?error=Dosya+seçilmedi");
-    }
-
-    const buffer = req.file.buffer;
-
-    const result = await uploadBuffer(buffer, "covers", `cover_${req.user.id}`);
-
-    await User.findByIdAndUpdate(req.user.id, {
-      coverPhoto: result.secure_url,
-      coverPublicId: result.public_id,
-    });
-
-    return res.redirect("/hesap?success=Kapak+fotoğrafı+güncellendi");
-  } catch (err) {
-    console.error("Cover upload error:", err);
-    return res.redirect("/hesap?error=Kapak+yüklenemedi");
+router.post("/kapak-yukle", auth, async (req, res) => {
+  if (!req.body.coverUrl) {
+    return res.redirect("/hesap?error=Görsel+yüklenemedi");
   }
+
+  await User.findByIdAndUpdate(req.user.id, {
+    coverPhoto: req.body.coverUrl,
+  });
+
+  res.redirect("/hesap?success=Kapak+fotoğrafı+güncellendi");
 });
 
 /* ============================================================

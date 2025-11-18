@@ -1,118 +1,35 @@
-<section class="blog-edit-section">
-  <div class="blog-edit-container">
+<h2>Blog Düzenle</h2>
 
-    <h1 class="edit-title">Blogu Düzenle</h1>
+<form action="/blog/{{post._id}}/duzenle" method="POST">
 
-    <form
-      action="/blog/{{post._id}}/duzenle"
-      method="POST"
-      enctype="multipart/form-data"
-      class="edit-form"
-    >
+  <input type="text" name="title" value="{{post.title}}" required />
 
-      <!-- BAŞLIK -->
-      <label>Başlık</label>
-      <input
-        type="text"
-        name="title"
-        class="edit-input"
-        value="{{post.title}}"
-        required
-      />
+  <textarea name="content" required>{{post.content}}</textarea>
 
-      <!-- İÇERİK -->
-      <label>İçerik</label>
-      <textarea
-        name="content"
-        class="edit-textarea"
-        rows="10"
-        required
-      >{{post.content}}</textarea>
-
-      <!-- MEVCUT GÖRSELLER -->
-      <label>Mevcut Görseller</label>
-      <div class="edit-existing-images">
-
-        {{#if post.images.length}}
-          {{#each post.images}}
-            <div class="existing-img-wrapper">
-
-              <!-- GÖRSEL -->
-              <img src="{{this.url}}" class="existing-img" alt="Blog Görseli" />
-
-              <!-- SİLME CHECKBOX -->
-              <label class="delete-badge">
-                <input
-                  type="checkbox"
-                  name="deleteImages"
-                  value="{{this.public_id}}"
-                />
-                Sil
-              </label>
-
-            </div>
-          {{/each}}
-        {{else}}
-          <p><em>Görsel eklenmemiş.</em></p>
-        {{/if}}
-
-      </div>
-
-      <!-- YENİ GÖRSEL EKLE -->
-      <label>Yeni Görsel Ekle</label>
-
-      <div class="edit-upload-wrapper">
-        <label for="newImages" class="edit-upload-label">
-          📁 Yeni Görsel Seç
+  <!-- Eski Görseller -->
+  <h3>Mevcut Görseller</h3>
+  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    {{#each post.images}}
+      <div style="position:relative;">
+        <img src="{{this.url}}" width="120" />
+        <label>
+          <input type="checkbox" name="deleteImages" value="{{this.public_id}}" />
+          Sil
         </label>
-
-        <input
-          type="file"
-          name="newImages"
-          id="newBlogImages"
-          accept="image/*"
-          multiple
-          data-max="5"
-        />
-        <p class="image-info">En fazla 5 yeni görsel eklenebilir.</p>
-
-        <span id="new-file-count" class="new-file-count">
-          Henüz yeni görsel seçilmedi
-        </span>
       </div>
-
-      <!-- YENİ GÖRSELLER ÖNİZLEME -->
-      <div id="preview-container" class="preview-container"></div>
-
-      <!-- BUTONLAR -->
-      <div class="edit-buttons">
-        <button type="submit" class="save-btn">Kaydet</button>
-        <a href="/blog/{{post._id}}" class="cancel-btn">İptal</a>
-      </div>
-
-    </form>
-
+    {{/each}}
   </div>
-</section>
 
-<script>
-  const input = document.getElementById("newImages"); const preview =
-  document.getElementById("preview-container"); const fileCount =
-  document.getElementById("new-file-count"); let selectedNewFiles = []; if
-  (input) { input.addEventListener("change", () => { selectedNewFiles =
-  [...input.files]; updatePreview(); }); } function updatePreview() {
-  preview.innerHTML = ""; if (!selectedNewFiles.length) { fileCount.textContent
-  = "Henüz yeni görsel seçilmedi"; return; } fileCount.textContent =
-  selectedNewFiles.length + " yeni görsel seçildi";
-  selectedNewFiles.forEach((file, index) => { const reader = new FileReader();
-  reader.onload = (e) => { const box = document.createElement("div");
-  box.className = "preview-item"; const img = document.createElement("img");
-  img.src = e.target.result; img.className = "preview-img"; const removeBtn =
-  document.createElement("button"); removeBtn.className = "remove-btn";
-  removeBtn.innerHTML = "×"; removeBtn.onclick = () => removeNewImage(index);
-  box.appendChild(img); box.appendChild(removeBtn); preview.appendChild(box); };
-  reader.readAsDataURL(file); }); } function removeNewImage(index) {
-  selectedNewFiles.splice(index, 1); const dataTransfer = new DataTransfer();
-  selectedNewFiles.forEach((f) => dataTransfer.items.add(f)); input.files =
-  dataTransfer.files; updatePreview(); }
-</script>
+  <!-- Yeni Görsel Yükleme -->
+  <h3>Yeni Görseller Ekle</h3>
+
+  <input type="file" id="newImages" multiple accept="image/*" />
+
+  <div id="editPreviewBox"></div>
+
+  <input type="hidden" name="newImagesJson" id="newImagesJson">
+
+  <button type="submit">Kaydet</button>
+</form>
+
+<script src="/js/blogEditUpload.js"></script>
