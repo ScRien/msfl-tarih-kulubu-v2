@@ -1,352 +1,416 @@
-<link rel="stylesheet" href="/css/hesap.css" />
+<section class="account-page">
+  <div class="account-container">
 
-<section class="account-wrapper">
-
-  <!-- SOL MENÜ -->
-  <aside class="account-sidebar">
-
-    <a href="/@{{user.username}}" class="public-profile-btn">
-      Profilimi Görüntüle →
-    </a>
-
-    <div class="sidebar-category">Hesap</div>
-    <button class="sidebar-item active" data-target="profile">Profil Bilgileri</button>
-
-    <div class="sidebar-category">Hesap Ayarları</div>
-    <button class="sidebar-item disabled">Tema Ayarları (Yakında)</button>
-    <button class="sidebar-item disabled">Bildirimler (Yakında)</button>
-
-    <div class="sidebar-category">Profil Medyası</div>
-    <button class="sidebar-item" data-target="media">Profil Fotoğrafları</button>
-
-    <div class="sidebar-category">Sosyal</div>
-    <button class="sidebar-item" data-target="social">Sosyal Medya</button>
-
-    <div class="sidebar-category">Gizlilik & Güvenlik</div>
-    <button class="sidebar-item" data-target="password">Şifre Değiştir</button>
-    <button class="sidebar-item" data-target="cookies">Çerez Ayarları</button>
-    <button class="sidebar-item" data-target="data-usage">Veri Kullanımı</button>
-    <button class="sidebar-item" data-target="devices" disabled>Giriş Yapılan Cihazlar (Yakında)</button>
-    <button class="sidebar-item danger" data-target="delete">Hesabı Sil</button>
-    <button class="sidebar-item" data-target="policies">Site Politikaları</button>
-
-    <div class="sidebar-category">Gelişmiş Güvenlik</div>
-    <button class="sidebar-item disabled">2FA Doğrulama (Yakında)</button>
-    <button class="sidebar-item disabled">Oturum Yönetimi (Yakında)</button>
-
-  </aside>
-
-  <!-- SAĞ PANEL -->
-  <main class="account-content">
+    <!-- ===== ÜST MESAJLAR ===== -->
+    {{#if success}}
+      <div class="account-alert success">
+        <i class="fa-solid fa-circle-check"></i>
+        {{success}}
+      </div>
+    {{/if}}
 
     {{#if error}}
-      <div class="account-alert error">❌ {{error}}</div>
+      <div class="account-alert error">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        {{error}}
+      </div>
     {{/if}}
 
-    {{#if success}}
-      <div class="account-alert success">✅ {{success}}</div>
-    {{/if}}
+    <!-- ===== LAYOUT ===== -->
+    <div class="account-layout">
 
-    <!-- PROFİL -->
-    <div class="content-box" id="profile" style="display: block;">
-      <h2 class="title">Profil Bilgileri</h2>
-      <p class="desc">Bilgileriniz güvende. Dilediğiniz zaman güncelleyebilirsiniz.</p>
+      <!-- ===== SOL MENÜ ===== -->
+      <aside class="account-sidebar">
+        <button class="sidebar-item active" data-target="profile">
+          Profil Bilgileri
+        </button>
+        <button class="sidebar-item" data-target="privacy">
+          Çerez ve Gizlilik
+        </button>
+        <button class="sidebar-item" data-target="data">
+          Veri Kullanımı
+        </button>
+        <button class="sidebar-item" data-target="media">
+          Avatar & Kapak
+        </button>
+        <button class="sidebar-item" data-target="password">
+          Şifre Güvenliği
+        </button>
+        <button class="sidebar-item danger-btn" data-target="danger">
+          Hesabı Sil
+        </button>
+      </aside>
 
-      <form action="/hesap/profil" method="POST">
-        
-        <div class="form-group">
-          <label>Kullanıcı Adı</label>
-          <input type="text" value="{{user.username}}" disabled />
-          <span class="info">Kullanıcı adı değiştirilemez.</span>
+      <!-- ===== SAĞ TARAF İÇERİKLER ===== -->
+      <div class="account-content">
+
+        <!-- ========== PROFİL BİLGİLERİ ========== -->
+        <div class="content-box" id="profile" style="display: block;">
+          <h2 class="content-title">Profil Bilgileri</h2>
+
+          <form action="/hesap/profil" method="POST" class="form-block">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Ad</label>
+                <input
+                  type="text"
+                  name="name"
+                  value="{{user.name}}"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Soyad</label>
+                <input
+                  type="text"
+                  name="surname"
+                  value="{{user.surname}}"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Kullanıcı Adı</label>
+                <input
+                  type="text"
+                  value="{{user.username}}"
+                  disabled
+                />
+                <small> Kullanıcı adını değiştirmek için yönetici ile iletişime geç. </small>
+              </div>
+
+              <div class="form-group">
+                <label>E-posta</label>
+                <input
+                  type="email"
+                  name="email"
+                  value="{{user.email}}"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Hakkımda (Bio)</label>
+              <textarea
+                name="bio"
+                rows="3"
+                placeholder="Kendini kısaca tanıt..."
+              >{{user.bio}}</textarea>
+            </div>
+
+            <button type="submit" class="primary-btn">
+              Kaydet
+            </button>
+          </form>
         </div>
 
-        <div class="form-group">
-          <label>Ad</label>
-          <input type="text" name="name" value="{{user.name}}" />
+        <!-- ========== ÇEREZ VE GİZLİLİK ========== -->
+        <div class="content-box" id="privacy" style="display: none;">
+          <h2 class="content-title">Çerez ve Gizlilik Tercihleri</h2>
+
+          <form action="/hesap/cookies" method="POST" class="form-block">
+            <div class="checkbox-row">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="analyticsCookies"
+                  {{#if user.analyticsCookies}}checked{{/if}}
+                />
+                <span>Analitik çerezlere izin veriyorum.</span>
+              </label>
+            </div>
+
+            <div class="checkbox-row">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="personalizationCookies"
+                  {{#if user.personalizationCookies}}checked{{/if}}
+                />
+                <span>İçeriklerin kişiselleştirilmesine izin veriyorum.</span>
+              </label>
+            </div>
+
+            <button type="submit" class="primary-btn">
+              Çerez Ayarlarını Kaydet
+            </button>
+          </form>
         </div>
 
-        <div class="form-group">
-          <label>Soyad</label>
-          <input type="text" name="surname" value="{{user.surname}}" />
+        <!-- ========== VERİ KULLANIMI ========== -->
+        <div class="content-box" id="data" style="display: none;">
+          <h2 class="content-title">Veri Kullanımı ve Tercihler</h2>
+
+          <form action="/hesap/data-usage" method="POST" class="form-block">
+            <div class="checkbox-row">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="serviceDataUsage"
+                  {{#if user.serviceDataUsage}}checked{{/if}}
+                />
+                <span>
+                  Hizmet kalitesini artırmak için verilerimin anonim olarak
+                  kullanılmasına izin veriyorum.
+                </span>
+              </label>
+            </div>
+
+            <div class="checkbox-row">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="personalizedContent"
+                  {{#if user.personalizedContent}}checked{{/if}}
+                />
+                <span>
+                  Bana gösterilen içeriklerin ilgi alanlarıma göre
+                  özelleştirilmesini kabul ediyorum.
+                </span>
+              </label>
+            </div>
+
+            <button type="submit" class="primary-btn">
+              Veri Ayarlarını Kaydet
+            </button>
+          </form>
         </div>
 
-        <div class="form-group">
-          <label>E-posta</label>
-          <input type="email" name="email" value="{{user.email}}" />
-          <span class="info">E-posta doğrulama ileride eklenecek.</span>
-        </div>
+        <!-- ========== AVATAR & KAPAK ========== -->
+        <div class="content-box" id="media" style="display: none;">
+          <h2 class="content-title">Avatar ve Kapak Fotoğrafı</h2>
 
-        <!-- BİYOGRAFİ -->
-        <div class="form-group">
-          <label>Biyografi</label>
-          <textarea 
-            name="bio" 
-            rows="4" 
-            maxlength="200"
-            placeholder="Kendinizi tanıtan kısa bir yazı..."
-          >{{user.bio}}</textarea>
+          <div class="media-grid">
+            <!-- Avatar -->
+            <div class="media-card">
+              <h3>Profil Fotoğrafı</h3>
 
-          <div class="bio-hint">
-            <span>200 karakter sınırı</span>
+              <div class="avatar-box">
+                <img
+                  id="avatarPreview"
+                  class="avatar-img"
+                  src="{{#if user.avatar}}{{user.avatar}}{{else}}/img/profile-placeholder.jpg{{/if}}"
+                  alt="Profil Fotoğrafı"
+                />
+              </div>
+
+              <form id="avatarForm" action="/hesap/avatar-yukle" method="POST">
+                <input type="hidden" name="avatarUrl" id="avatarUrl" />
+
+                <label for="avatarUpload" class="upload-btn">
+                  Dosya Seç
+                </label>
+                <input
+                  type="file"
+                  id="avatarUpload"
+                  class="hidden-input"
+                  accept="image/*"
+                />
+
+                <button type="submit" class="primary-btn small-btn">
+                  Kaydet
+                </button>
+              </form>
+            </div>
+
+            <!-- Kapak -->
+            <div class="media-card">
+              <h3>Kapak Fotoğrafı</h3>
+
+              <div class="cover-box">
+                <img
+                  id="coverPreview"
+                  class="cover-img"
+                  src="{{#if user.coverPhoto}}{{user.coverPhoto}}{{else}}/img/cover-placeholder.jpg{{/if}}"
+                  alt="Kapak Fotoğrafı"
+                />
+              </div>
+
+              <form id="coverForm" action="/hesap/kapak-yukle" method="POST">
+                <input type="hidden" name="coverUrl" id="coverUrl" />
+
+                <label for="coverUpload" class="upload-btn">
+                  Dosya Seç
+                </label>
+                <input
+                  type="file"
+                  id="coverUpload"
+                  class="hidden-input"
+                  accept="image/*"
+                />
+
+                <button type="submit" class="primary-btn small-btn">
+                  Kaydet
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Sosyal Medya -->
+          <div class="social-section">
+            <h3>Sosyal Medya Bağlantıları</h3>
+
+            <form action="/hesap/social" method="POST" class="form-block">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Instagram</label>
+                  <input
+                    type="text"
+                    name="instagram"
+                    value="{{user.social.instagram}}"
+                    placeholder="@kullanici"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>X (Twitter)</label>
+                  <input
+                    type="text"
+                    name="x"
+                    value="{{user.social.x}}"
+                    placeholder="@kullanici"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>GitHub</label>
+                  <input
+                    type="text"
+                    name="github"
+                    value="{{user.social.github}}"
+                    placeholder="kullanici-adi"
+                  />
+                </div>
+              </div>
+
+              <button type="submit" class="primary-btn">
+                Sosyal Medyayı Güncelle
+              </button>
+            </form>
           </div>
         </div>
 
-        <div class="btn-group">
-          <button type="submit" class="btn save">Kaydet</button>
-          <button type="reset" class="btn cancel">İptal</button>
+        <!-- ========== ŞİFRE GÜVENLİĞİ ========== -->
+        <div class="content-box" id="password" style="display: none;">
+          <h2 class="content-title">Şifre Güvenliği</h2>
+
+          <!-- 1. Adım: KOD GÖNDER -->
+          <div class="password-block">
+            <h3>1. Adım — Doğrulama Kodu Gönder</h3>
+            <p>
+              E-posta adresine bir doğrulama kodu gönderilecektir. Bu kodu
+              kullanarak yeni şifre belirleyebilirsin.
+            </p>
+
+            <form
+              action="/hesap/sifre-kod"
+              method="POST"
+              class="form-inline"
+            >
+              <button type="submit" class="primary-btn">
+                Kodu Gönder
+              </button>
+            </form>
+          </div>
+
+          <!-- 2. Adım: KODU GİR -->
+          <div
+            class="password-block"
+            id="verifyBox"
+            style="display: {{#if showVerify}}block{{else}}none{{/if}};"
+          >
+            <h3>2. Adım — Kodu Doğrula</h3>
+            <p>
+              E-postana gelen 6 haneli kodu gir.
+            </p>
+
+            <form
+              action="/hesap/sifre-kod-dogrula-form"
+              method="POST"
+              class="form-inline"
+            >
+              <input
+                type="text"
+                name="code"
+                placeholder="Doğrulama Kodu"
+                required
+              />
+              <button type="submit" class="primary-btn">
+                Kodu Doğrula
+              </button>
+            </form>
+          </div>
+
+          <!-- 3. Adım: YENİ ŞİFRE -->
+          <div
+            class="password-block"
+            id="newPasswordBox"
+            style="display: none;"
+          >
+            <h3>3. Adım — Yeni Şifre Belirle</h3>
+
+            <form
+              action="/hesap/sifre-yeni"
+              method="POST"
+              class="form-block"
+            >
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Yeni Şifre</label>
+                  <input
+                    type="password"
+                    name="password1"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Yeni Şifre (Tekrar)</label>
+                  <input
+                    type="password"
+                    name="password2"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button type="submit" class="primary-btn">
+                Şifreyi Güncelle
+              </button>
+            </form>
+          </div>
         </div>
-      </form>
-    </div>
 
-    <!-- SOSYAL -->
-    <div class="content-box" id="social">
-      <h2 class="title">Sosyal Medya Bağlantıları</h2>
-      <p class="desc">Profilinde görünecek sosyal medya bağlantıları.</p>
+        <!-- ========== HESABI SİL ========== -->
+        <div class="content-box" id="danger" style="display: none;">
+          <h2 class="content-title danger-title">Hesabı Sil</h2>
 
-      <form action="/hesap/social" method="POST">
+          <div class="danger-box">
+            <p>
+              Bu işlem <strong>geri alınamaz</strong>. Hesabınla birlikte
+              oluşturduğun blog yazıları ve yorumların da kalıcı olarak
+              silinecektir.
+            </p>
 
-        <div class="form-group">
-          <label>Instagram</label>
-          <input type="text" name="instagram" value="{{user.social.instagram}}" placeholder="@kullanici" />
+            <form
+              action="/hesap/sil"
+              method="POST"
+              onsubmit="return confirm('Hesabını kalıcı olarak silmek istediğine emin misin?');"
+            >
+              <button type="submit" class="danger-btn-full">
+                Hesabımı Kalıcı Olarak Sil
+              </button>
+            </form>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label>X (Twitter)</label>
-          <input type="text" name="x" value="{{user.social.x}}" placeholder="@kullanici" />
-        </div>
-
-        <div class="form-group">
-          <label>GitHub</label>
-          <input type="text" name="github" value="{{user.social.github}}" placeholder="github.com/kullanici" />
-        </div>
-
-        <div class="btn-group">
-          <button type="submit" class="btn save">Kaydet</button>
-          <button type="reset" class="btn cancel">İptal</button>
-        </div>
-
-      </form>
-    </div>
-
-    <!-- PROFİL MEDYASI -->
-    <div class="content-box" id="media">
-      <h2 class="title">Profil Fotoğrafları</h2>
-      <p class="desc">Profil ve kapak fotoğrafınızı buradan yönetebilirsiniz.</p>
-
-      <!-- AVATAR -->
-      <div class="media-section">
-        <h3 class="media-title">Profil Fotoğrafı</h3>
-
-        <img 
-          class="media-avatar-preview"
-          src="{{user.avatar}}"
-          alt="Avatar"
-        />
-
-        <p class="info">Önerilen boyut: 300×300 px (kare)</p>
-
-        <form action="/hesap/avatar-yukle" method="POST">
-          <input type="file" id="avatarInput" accept="image/*" />
-
-          <img
-            id="avatarPreview"
-            src="{{user.avatar}}"
-            style="width:120px; border-radius:10px;"
-          />
-
-          <input type="hidden" id="avatarUrl" name="avatarUrl" />
-
-          <button type="submit">Kaydet</button>
-        </form>
-
-        <script src="/js/avatarUpload.js"></script>
       </div>
-
-      <!-- KAPAK -->
-      <div class="media-section" style="margin-top:32px;">
-        <h3 class="media-title">Kapak Fotoğrafı</h3>
-
-        <img 
-          class="media-cover-preview"
-          src="{{user.coverPhoto}}"
-          alt="Kapak"
-        />
-
-        <p class="info">Önerilen boyut: 1200×280 px</p>
-
-        <form action="/hesap/kapak-yukle" method="POST">
-          <input type="file" id="coverInput" accept="image/*" />
-
-          <img
-            id="coverPreview"
-            src="{{user.coverPhoto}}"
-            style="width:200px; border-radius:10px;"
-          />
-
-          <input type="hidden" id="coverUrl" name="coverUrl" />
-
-          <button type="submit">Kaydet</button>
-        </form>
-
-        <script src="/js/coverUpload.js"></script>
-      </div>
     </div>
-
-    <!-- ŞİFRE -->
-    <div class="content-box" id="password">
-      <h2 class="title">Şifre Değiştir</h2>
-      <p class="desc">Mail adresine doğrulama kodu gönderilecek.</p>
-
-      <!-- 1) Kod gönder -->
-      <form action="/hesap/sifre-kod" method="POST">
-        <button class="btn save">
-          <i class="fa-solid fa-paper-plane"></i> Mailime Kod Gönder
-        </button>
-      </form>
-
-      <!-- 2) Doğrulama kutusu -->
-      <div id="verifyBox" style="display: none; margin-top:20px;">
-        <h3 class="subtitle">Doğrulama Kodu</h3>
-
-        <form action="/hesap/sifre-kod-dogrula-form" method="POST">
-          <input type="text" name="code" placeholder="6 haneli kod" class="input" required />
-          <button class="btn green">
-            <i class="fa-solid fa-lock"></i> Kodu Doğrula
-          </button>
-        </form>
-      </div>
-
-      <!-- 3) Yeni şifre -->
-      <div id="newPasswordBox" style="display: none; margin-top: 30px;">
-        <h3 class="subtitle">Yeni Şifre Oluştur</h3>
-
-        <form action="/hesap/sifre-yeni" method="POST">
-          <input type="password" name="password1" placeholder="Yeni Şifre" class="input" required />
-          <input type="password" name="password2" placeholder="Yeni Şifre Tekrar" class="input" required />
-
-          <button class="btn save">
-            <i class="fa-solid fa-unlock-keyhole"></i> Şifreyi Güncelle
-          </button>
-        </form>
-      </div>
-
-    </div>
-
-    <!-- ÇEREZLER -->
-    <div class="content-box" id="cookies">
-      <h2 class="title">Çerez Ayarları</h2>
-      <p class="desc">Tarayıcı çerezleri deneyimi iyileştirir.</p>
-
-      <form action="/hesap/cookies" method="POST">
-        <div class="toggle-row">
-          <label>Gerekli Çerezler</label>
-          <input type="checkbox" checked disabled />
-        </div>
-
-        <div class="toggle-row">
-          <label>Analitik Çerezler</label>
-          <label class="switch">
-            <input type="checkbox" name="analyticsCookies"
-              {{#if user.analyticsCookies}}checked{{/if}} />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="toggle-row">
-          <label>Kişiselleştirme Çerezleri</label>
-          <label class="switch">
-            <input type="checkbox" name="personalizationCookies"
-              {{#if user.personalizationCookies}}checked{{/if}} />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="btn-group">
-          <button class="btn save">Kaydet</button>
-          <button class="btn cancel" type="reset">İptal</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- VERİ -->
-    <div class="content-box" id="data-usage">
-      <h2 class="title">Veri Kullanımı</h2>
-
-      <form action="/hesap/data-usage" method="POST">
-        <div class="toggle-row">
-          <label>Hizmet kalitesi için anonim veri</label>
-          <label class="switch">
-            <input type="checkbox" name="serviceDataUsage"
-              {{#if user.serviceDataUsage}}checked{{/if}} />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="toggle-row">
-          <label>Kişiselleştirilmiş içerik</label>
-          <label class="switch">
-            <input type="checkbox" name="personalizedContent"
-              {{#if user.personalizedContent}}checked{{/if}} />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="btn-group">
-          <button class="btn save">Kaydet</button>
-          <button class="btn cancel" type="reset">İptal</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- HESAP SİL -->
-    <div class="content-box" id="delete">
-      <h2 class="title danger">Hesabı Sil</h2>
-      <p class="warn">
-        Bu işlem geri alınamaz. Hesabını silmeden önce tüm verilerini indirmeni öneririz.
-      </p>
-
-      <form action="/hesap/sil" method="POST"
-        onsubmit="return confirm('Hesabınızı ve tüm içeriklerinizi kalıcı olarak silmek istiyor musunuz?')">
-        <button class="danger-btn">Hesabı Kalıcı Olarak Sil</button>
-      </form>
-    </div>
-
-    <!-- POLİTİKALAR -->
-    <div class="content-box" id="policies">
-      <h2 class="title">Site Politikaları</h2>
-      <p class="desc">Gizlilik, veri politikası ve kullanım şartları.</p>
-
-      <div class="policy-card">
-        <h3 class="policy-title">📘 KVKK</h3>
-        <a href="/kvkk" class="policy-link">KVKK Metni →</a>
-      </div>
-
-      <div class="policy-card">
-        <h3 class="policy-title">🔒 Gizlilik</h3>
-        <a href="/gizlilik" class="policy-link">Gizlilik Politikası →</a>
-      </div>
-
-      <div class="policy-card">
-        <h3 class="policy-title">📄 Kullanım Şartları</h3>
-        <a href="/kullanim-sartlari" class="policy-link">Kullanım Şartları →</a>
-      </div>
-
-    </div>
-
-  </main>
+  </div>
 </section>
 
-<script src="/js/hesap.js"></script>
-
-{{!-- 🔥 URL PARAMETRESİNE GÖRE DOĞRULAMA ALANINI OTOMATİK AÇ --}}
-<script>
-  const urlParams = new URLSearchParams(window.location.search);
-
-  if (urlParams.get("showVerify") == "1") {
-    document.getElementById("verifyBox").style.display = "block";
-  }
-
-  if (window.location.pathname.includes("sifre-yeni")) {
-    document.getElementById("newPasswordBox").style.display = "block";
-  }
-</script>
+<!-- ===== SCRIPT ===== -->
+<script src="/js/account.js"></script>
+<script src="/js/avatarCoverUpload.js"></script>

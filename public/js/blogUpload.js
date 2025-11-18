@@ -18,12 +18,16 @@ fileInput.addEventListener("change", async () => {
     formData.append("file", file);
     formData.append("upload_preset", uploadPreset);
 
-    const upload = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-      method: "POST",
-      body: formData,
-    });
+    const upload = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
     const result = await upload.json();
+
     uploadedUrls.push({
       url: result.secure_url,
       public_id: result.public_id,
@@ -31,7 +35,7 @@ fileInput.addEventListener("change", async () => {
   }
 
   previewBox.innerHTML = uploadedUrls
-    .map((img) => `<img src="${img.url}" width="120" />`)
+    .map((img) => `<img src="${img.url}" class="preview-img" />`)
     .join("");
 
   imageUrlsInput.value = JSON.stringify(uploadedUrls);

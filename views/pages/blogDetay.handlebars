@@ -9,6 +9,7 @@
 
       {{!-- BLOG EYLEMLERİ --}}
       {{#if isAuth}}
+        {{!-- Kullanıcı blog sahibiyse --}}
         {{#if (eq post.user_id currentUserId)}}
           <div class="blog-actions">
             <a href="/blog/{{post._id}}/duzenle" class="action-btn edit-btn">Düzenle</a>
@@ -18,6 +19,7 @@
           </div>
         {{/if}}
 
+        {{!-- Admin ise --}}
         {{#if (eq currentRole "admin")}}
           <div class="blog-actions">
             <a href="/blog/{{post._id}}/duzenle" class="action-btn edit-btn">Düzenle</a>

@@ -1,180 +1,154 @@
-/* BLOG EDIT PAGE */
+/* ===== BLOG DÜZENLEME SAYFASI ===== */
+
 .blog-edit-section {
-  padding: 120px 20px 60px;
-  display: flex;
-  justify-content: center;
-}
-
-.blog-edit-container {
-  width: 80%;
-  max-width: 900px;
-  background: white;
-  padding: 40px;
-  border-radius: 25px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
-}
-
-.edit-title {
-  font-size: 32px;
-  margin-bottom: 25px;
-  font-family: glacial, sans-serif;
-  color: #731919;
-}
-
-.edit-form label {
-  font-family: glacial, sans-serif;
-  font-weight: 600;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.edit-input,
-.edit-textarea {
   width: 100%;
-  border-radius: 15px;
-  padding: 12px;
-  border: 1px solid #ccc;
-  margin-bottom: 20px;
-  font-size: 15px;
-  font-family: glacial, sans-serif;
-  resize: none;
-}
-
-.save-btn {
-  display: inline-block;
-  padding: 10px 25px;
-  border-radius: 25px;
-  background: linear-gradient(to right, #4b4b4b, #2d2d2d);
-  color: white;
-  font-size: 15px;
-  border: none;
-  cursor: pointer;
-  transition: 0.3s ease;
-}
-
-.save-btn:hover {
-  transform: scale(1.05);
-  background: linear-gradient(to right, #5f5f5f, #3b3b3b);
-}
-
-.cancel-btn {
-  margin-left: 10px;
-  padding: 10px 25px;
-  border-radius: 25px;
-  font-size: 15px;
-  background: linear-gradient(to right, #999, #666);
-  color: white;
-  text-decoration: none;
-  transition: 0.3s ease;
-}
-
-.cancel-btn:hover {
-  transform: scale(1.05);
-}
-
-/* ============ MEVCUT GÖRSELLER GRID (YATAY) ============ */
-
-.edit-existing-images {
-  margin-top: 10px;
-  margin-bottom: 24px;
+  min-height: 100vh;
+  background: url("/img/blogOlustur_bg.png") center/cover no-repeat;
+  padding: 80px 120px;
+  font-family: "Cardo", serif;
   display: flex;
-  flex-wrap: wrap;              /* Taşarsa alta geçsin */
-  gap: 16px;
+  flex-direction: column;
+  align-items: center;
 }
 
-.existing-img-wrapper {
-  position: relative;
+/* Başlık */
+.blog-edit-title {
+  font-size: 42px;
+  font-weight: bold;
+  background: linear-gradient(to right, #731919, #e52b2b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+/* Kart Form */
+.blog-edit-form {
+  width: 65%;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 22px;
+  padding: 45px 60px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+/* Input */
+.input-field {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 19px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(to bottom, #dfdcda, #858176);
+  color: #000;
+  margin-bottom: 25px;
+  outline: none;
+}
+
+/* Textarea */
+.textarea-field {
+  width: 100%;
+  font-size: 18px;
+  padding: 18px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(to bottom, #dfdcda, #858176);
+  font-family: "Cardo", serif;
+  resize: vertical;
+  outline: none;
+  min-height: 250px;
+  color: #000;
+  margin-bottom: 25px;
+}
+
+/* Mevcut görüntüler başlığı */
+.images-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 25px 0 12px;
+  color: #333;
+}
+
+/* Mevcut Görsel Grid */
+.old-images-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+/* Tek görsel kart */
+.old-img-box {
   width: 150px;
   height: 110px;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-  background: #f3f3f3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-.existing-img {
+/* Görsel */
+.old-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* Sil rozeti */
-.delete-badge {
+/* Silme kutusu */
+.delete-check {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0, 0, 0, 0.7);
+  bottom: 6px;
+  right: 6px;
+  background: rgba(255, 0, 0, 0.75);
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 13px;
   color: #fff;
-  font-size: 11px;
-  padding: 4px 9px;
-  border-radius: 999px;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: glacial, sans-serif;
 }
 
-.delete-badge input {
+/* Yeni görsel yükleme */
+.upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.upload-label {
+  padding: 14px 20px;
+  border-radius: 12px;
+  background: linear-gradient(to bottom, #dfdcda, #858176);
+  font-weight: bold;
+  font-size: 17px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  width: 200px;
+}
+
+.upload-label:hover {
+  background: linear-gradient(to bottom, #d6d3cf, #6f6a61);
+}
+
+.file-input {
   display: none;
 }
 
-/* ============ YENİ GÖRSEL UPLOAD ============ */
-
-.edit-upload-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  margin-bottom: 18px;
-}
-
-.edit-file-input {
-  display: none; /* native input gizli */
-}
-
-.edit-upload-label {
-  padding: 10px 18px;
-  border-radius: 999px;
-  background: linear-gradient(to right, #dfdcda, #858176);
-  color: #000;
-  font-family: glacial, sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.edit-upload-label:hover {
-  background: linear-gradient(to right, #d6d3cf, #6f6a61);
-}
-
-.new-file-count {
-  font-size: 13px;
-  color: #555;
-  font-family: glacial, sans-serif;
-}
-
-/* ============ YENİ GÖRSELLER ÖNİZLEME ============ */
-
+/* Yeni görsel önizleme */
 .preview-container {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-bottom: 24px;
+  margin-bottom: 25px;
 }
 
 .preview-item {
-  width: 130px;
-  height: 100px;
+  width: 150px;
+  height: 110px;
   border-radius: 12px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
-  background: #f3f3f3;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .preview-img {
@@ -187,23 +161,38 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
   border: none;
-  background: rgba(0, 0, 0, 0.65);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
   color: #fff;
-  font-size: 16px;
   cursor: pointer;
-  line-height: 0.8;
-  transition: 0.2s ease;
+  font-size: 18px;
+  transition: background 0.2s ease;
 }
 
 .remove-btn:hover {
-  background: rgba(255, 60, 60, 0.9);
+  background: rgba(255, 50, 50, 0.85);
 }
 
-/* BUTONLAR WRAPPER */
-.edit-buttons {
-  margin-top: 10px;
+/* Kaydet Butonu */
+.save-btn {
+  display: block;
+  margin-left: auto;
+  padding: 15px 45px;
+  border: none;
+  border-radius: 40px;
+  font-size: 20px;
+  font-family: "Cardo", serif;
+  font-weight: bold;
+  background: linear-gradient(to right, #ff3131, #ff914d);
+  color: #fff;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.save-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.25);
 }
