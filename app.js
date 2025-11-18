@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import exphbs from "express-handlebars";
 import "dotenv/config";
+import cookieParser from "cookie-parser";
 
 // Helpers
 import { eq } from "./helpers/eq.js";
