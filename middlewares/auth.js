@@ -1,13 +1,16 @@
+// middlewares/auth.js
 export default function auth(req, res, next) {
-  if (!req.session || !req.session.userId) {
+  // app.js içindeki JWT middleware, token geçerliyse req.user'ı dolduruyor.
+  // Eğer req.user yoksa kullanıcı giriş yapmamış demektir.
+  if (!req.user) {
     return res.redirect("/kullanici/oturumAc?error=Lütfen+giriş+yapın");
   }
 
-  // Oturumdan user nesnesi oluştur
+  // Güvenlik için id / username / role kesin gelsin
   req.user = {
-    id: req.session.userId,
-    username: req.session.username,
-    role: req.session.role,
+    id: req.user.id,
+    username: req.user.username,
+    role: req.user.role,
   };
 
   next();

@@ -1,9 +1,9 @@
+// routes/hesap.js
 import express from "express";
 import auth from "../middlewares/auth.js";
 import User from "../models/User.js";
 import Post from "../models/Post.js";
 import cloudinary from "../helpers/cloudinary.js";
-import upload from "../middlewares/upload.js";
 import Comment from "../models/Comment.js";
 import { sendMail } from "../helpers/mail.js";
 import { verificationMailTemplate } from "../helpers/mailTemplates.js";
@@ -17,7 +17,7 @@ router.get("/", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).lean();
 
-    res.render("pages/hesap", {
+    return res.render("pages/hesap", {
       user,
       success: req.query.success || null,
       error: req.query.error || null,
@@ -25,7 +25,7 @@ router.get("/", auth, async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.render("pages/hesap", { error: "Hesap yüklenemedi" });
+    return res.render("pages/hesap", { error: "Hesap yüklenemedi" });
   }
 });
 
@@ -41,7 +41,7 @@ router.post("/profil", auth, async (req, res) => {
       return res.redirect("/hesap?error=Kullanıcı+bulunamadı");
     }
 
-    if (email !== user.email) {
+    if (email && email !== user.email) {
       const exists = await User.findOne({
         email,
         _id: { $ne: user._id },
@@ -78,10 +78,10 @@ router.post("/cookies", auth, async (req, res) => {
 
     await user.save();
 
-    res.redirect("/hesap?success=Çerez+ayarları+güncellendi");
+    return res.redirect("/hesap?success=Çerez+ayarları+güncellendi");
   } catch (err) {
     console.log(err);
-    res.redirect("/hesap?error=Çerez+ayarları+kaydedilemedi");
+    return res.redirect("/hesap?error=Çerez+ayarları+kaydedilemedi");
   }
 });
 
@@ -96,41 +96,45 @@ router.post("/data-usage", auth, async (req, res) => {
     user.personalizedContent = !!req.body.personalizedContent;
 
     await user.save();
-    res.redirect("/hesap?success=Veri+ayarları+güncellendi");
+    return res.redirect("/hesap?success=Veri+ayarları+güncellendi");
   } catch (err) {
     console.log(err);
-    res.redirect("/hesap?error=Veri+ayarları+kaydedilemedi");
+    return res.redirect("/hesap?error=Veri+ayarları+kaydedilemedi");
   }
 });
 
 /* ============================================================
-   AVATAR UPLOAD
+   AVATAR UPLOAD (CLIENT-SIDE URL)
 ============================================================ */
 router.post("/avatar-yukle", auth, async (req, res) => {
-  if (!req.body.avatarUrl) {
+  const { avatarUrl } = req.body;
+
+  if (!avatarUrl) {
     return res.redirect("/hesap?error=Görsel+yüklenemedi");
   }
 
   await User.findByIdAndUpdate(req.user.id, {
-    avatar: req.body.avatarUrl,
+    avatar: avatarUrl,
   });
 
-  res.redirect("/hesap?success=Avatar+güncellendi");
+  return res.redirect("/hesap?success=Avatar+güncellendi");
 });
 
 /* ============================================================
-   COVER UPLOAD
+   COVER UPLOAD (CLIENT-SIDE URL)
 ============================================================ */
 router.post("/kapak-yukle", auth, async (req, res) => {
-  if (!req.body.coverUrl) {
+  const { coverUrl } = req.body;
+
+  if (!coverUrl) {
     return res.redirect("/hesap?error=Görsel+yüklenemedi");
   }
 
   await User.findByIdAndUpdate(req.user.id, {
-    coverPhoto: req.body.coverUrl,
+    coverPhoto: coverUrl,
   });
 
-  res.redirect("/hesap?success=Kapak+fotoğrafı+güncellendi");
+  return res.redirect("/hesap?success=Kapak+fotoğrafı+güncellendi");
 });
 
 /* ============================================================
@@ -171,7 +175,9 @@ router.post("/sil", auth, async (req, res) => {
           const publicId = img.public_id;
           try {
             await cloudinary.uploader.destroy(publicId);
-          } catch (_) {}
+          } catch (e) {
+            console.log("Cloudinary destroy error:", e);
+          }
         }
       }
     }
@@ -190,7 +196,7 @@ router.post("/sil", auth, async (req, res) => {
     return res.redirect("/?success=Hesap+başarıyla+silindi");
   } catch (err) {
     console.log(err);
-    res.redirect("/hesap?error=Hesap+silinemedi");
+    return res.redirect("/hesap?error=Hesap+silinemedi");
   }
 });
 
