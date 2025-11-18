@@ -41,7 +41,7 @@ const UserSchema = new mongoose.Schema({
   personalizedContent: { type: Boolean, default: false },
 
   /* ŞİFRE SIFIRLAMA ALANLARI */
-  resetCode: { type: String, default: null },
+  resetCode: { type: String, default: null }, // Artık hash'lenmiş token tutuyor
   resetCodeExpires: { type: Date, default: null },
 });
 

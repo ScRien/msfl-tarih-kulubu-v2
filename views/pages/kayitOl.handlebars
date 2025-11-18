@@ -15,7 +15,7 @@
         action="/kullanici/kayitOl"
         method="POST"
       >
-
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
         <div class="form-row">
           <input
             type="text"

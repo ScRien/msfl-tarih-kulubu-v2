@@ -17,6 +17,7 @@
     {{/if}}
 
     <form class="login-form" action="/kullanici/oturumAc" method="POST">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
       <input
         type="text"
         name="username"

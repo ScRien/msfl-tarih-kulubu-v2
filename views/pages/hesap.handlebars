@@ -53,6 +53,7 @@
       <p class="desc">Bilgileriniz güvende. Dilediğiniz zaman güncelleyebilirsiniz.</p>
 
       <form action="/hesap/profil" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
         
         <div class="form-group">
           <label>Kullanıcı Adı</label>
@@ -104,6 +105,7 @@
       <p class="desc">Profilinde görünecek sosyal medya bağlantıları.</p>
 
       <form action="/hesap/social" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
         <div class="form-group">
           <label>Instagram</label>
@@ -147,6 +149,7 @@
         </div>
 
         <form id="avatarForm" action="/hesap/avatar-yukle" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
           <input type="hidden" name="avatarUrl" id="avatarUrl" />
 
           <label for="avatarUpload" class="upload-btn">Yeni Avatar Yükle</label>
@@ -170,6 +173,7 @@
         </div>
 
         <form id="coverForm" action="/hesap/kapak-yukle" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
           <input type="hidden" name="coverUrl" id="coverUrl" />
 
           <label for="coverUpload" class="upload-btn">Yeni Kapak Yükle</label>
@@ -187,6 +191,7 @@
 
       <!-- 1) Kod gönder -->
       <form action="/hesap/sifre-kod" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
         <button class="btn save">
           <i class="fa-solid fa-paper-plane"></i> Mailime Kod Gönder
         </button>
@@ -197,6 +202,7 @@
         <h3 class="subtitle">Doğrulama Kodu</h3>
 
         <form action="/hesap/sifre-kod-dogrula-form" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
           <input type="text" name="code" placeholder="6 haneli kod" class="input" required />
           <button class="btn green">
             <i class="fa-solid fa-lock"></i> Kodu Doğrula
@@ -209,6 +215,7 @@
         <h3 class="subtitle">Yeni Şifre Oluştur</h3>
 
         <form action="/hesap/sifre-yeni" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
           <input type="password" name="password1" placeholder="Yeni Şifre" class="input" required />
           <input type="password" name="password2" placeholder="Yeni Şifre Tekrar" class="input" required />
 
@@ -226,6 +233,7 @@
       <p class="desc">Tarayıcı çerezleri deneyimi iyileştirir.</p>
 
       <form action="/hesap/cookies" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
         <div class="toggle-row">
           <label>Gerekli Çerezler</label>
           <input type="checkbox" checked disabled />
@@ -261,6 +269,7 @@
       <h2 class="title">Veri Kullanımı</h2>
 
       <form action="/hesap/data-usage" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
         <div class="toggle-row">
           <label>Hizmet kalitesi için anonim veri</label>
           <label class="switch">
@@ -295,6 +304,7 @@
 
       <form action="/hesap/sil" method="POST"
         onsubmit="return confirm('Hesabınızı ve tüm içeriklerinizi kalıcı olarak silmek istiyor musunuz?')">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
         <button class="danger-btn">Hesabı Kalıcı Olarak Sil</button>
       </form>
     </div>

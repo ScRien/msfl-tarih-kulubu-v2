@@ -12,6 +12,7 @@
   {{/if}}
 
   <form class="blog-edit-form" action="/blog/{{post._id}}/duzenle" method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
     
     <!-- Başlık -->
     <input

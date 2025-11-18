@@ -28,17 +28,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     newUploadedImages = [];
-    editPreviewBox.innerHTML = "<p style='text-align:center; padding:20px;'>Yükleniyor...</p>";
+    editPreviewBox.innerHTML =
+      "<p style='text-align:center; padding:20px;'>Yükleniyor...</p>";
 
-    const previews = [];
-
-    for (const file of files) {
+    // ✅ PARALEL UPLOAD
+    const uploadPromises = Array.from(files).map(async (file) => {
       try {
         const fd = new FormData();
         fd.append("file", file);
         fd.append("upload_preset", uploadPreset);
 
-        const upload = await fetch(
+        const response = await fetch(
           `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
           {
             method: "POST",
@@ -46,37 +46,62 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         );
 
-        const result = await upload.json();
+        const result = await response.json();
 
         if (result.secure_url && result.public_id) {
-          newUploadedImages.push({
+          return {
             url: result.secure_url,
             public_id: result.public_id,
-          });
-
-          previews.push(`
-            <div class="preview-item">
-              <img src="${result.secure_url}" class="preview-img" alt="Preview" />
-            </div>
-          `);
+          };
         } else {
           console.error("Cloudinary edit upload hatası:", result);
-          alert(`Görsel yüklenemedi: ${file.name}`);
+          throw new Error(`Görsel yüklenemedi: ${file.name}`);
         }
       } catch (err) {
         console.error("Edit upload error:", err);
-        alert(`Bir hata oluştu: ${file.name}`);
+        throw err;
       }
-    }
+    });
 
-    if (newUploadedImages.length === 0) {
+    try {
+      const results = await Promise.allSettled(uploadPromises);
+
+      const successful = results
+        .filter((r) => r.status === "fulfilled")
+        .map((r) => r.value);
+
+      const failed = results.filter((r) => r.status === "rejected").length;
+
+      if (failed > 0) {
+        alert(`${failed} görsel yüklenemedi.`);
+      }
+
+      if (successful.length === 0) {
+        editPreviewBox.innerHTML =
+          "<p style='color:red; text-align:center; padding:20px;'>Görsel yüklenemedi.</p>";
+        newImagesInput.value = "[]";
+        return;
+      }
+
+      newUploadedImages = successful;
+
+      const previews = successful
+        .map(
+          (item) => `
+        <div class="preview-item">
+          <img src="${item.url}" class="preview-img" alt="Preview" />
+        </div>
+      `
+        )
+        .join("");
+
+      editPreviewBox.innerHTML = previews;
+      newImagesInput.value = JSON.stringify(newUploadedImages);
+    } catch (err) {
+      console.error("Edit upload process error:", err);
       editPreviewBox.innerHTML =
-        "<p style='color:red; text-align:center; padding:20px;'>Görsel yüklenemedi. Lütfen tekrar deneyin.</p>";
+        "<p style='color:red; text-align:center; padding:20px;'>Yükleme hatası.</p>";
       newImagesInput.value = "[]";
-      return;
     }
-
-    editPreviewBox.innerHTML = previews.join("");
-    newImagesInput.value = JSON.stringify(newUploadedImages);
   });
 });

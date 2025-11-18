@@ -14,70 +14,58 @@
 
   <div class="pw-box">
 
-    <h2>Şifremi Unuttum</h2>
-    <p class="desc">
-      E-posta adresinizi girin. Hesabınızı doğrulamak için size bir kod
-      göndereceğiz.
-    </p>
+    {{! ============================================ }}
+    {{! 1) EMAIL GÖNDERME FORMU (Varsayılan) }}
+    {{! ============================================ }}
+    {{#unless showNewPass}}
+      <h2>Şifremi Unuttum</h2>
+      <p class="desc">
+        E-posta adresinizi girin. Size güvenli bir şifre sıfırlama linki göndereceğiz.
+      </p>
 
-    {{! 📌 1) E-POSTA FORMU (ilk adım) }}
-    {{#unless showVerify}}
-      {{#unless showNewPass}}
-        <form action="/sifre-unuttum/kod" method="POST" class="form">
-          <input
-            type="email"
-            name="email"
-            placeholder="E-posta adresiniz"
-            required
-          />
-          <button class="btn primary">
-            <i class="fa-solid fa-paper-plane"></i>
-            Kod Gönder
-          </button>
-        </form>
-      {{/unless}}
-    {{/unless}}
-
-    {{! 📌 2) KOD DOĞRULAMA FORMU }}
-    {{#if showVerify}}
-      <form action="/sifre-unuttum/kod-dogrula" method="POST" class="form">
-
-        {{! Email saklanıyor }}
-        <input type="hidden" name="email" value="{{email}}" />
-
+      <form action="/sifre-unuttum/kod" method="POST" class="form">
         <input
-          type="text"
-          name="code"
-          maxlength="6"
-          placeholder="Mail'deki 6 haneli kod"
+          type="email"
+          name="email"
+          placeholder="E-posta adresiniz"
           required
+          autocomplete="email"
         />
-
-        <button class="btn verify">
-          <i class="fa-solid fa-shield-halved"></i>
-          Kodu Doğrula
+        <button class="btn primary">
+          <i class="fa-solid fa-paper-plane"></i>
+          Sıfırlama Linki Gönder
         </button>
       </form>
-    {{/if}}
+    {{/unless}}
 
-    {{! 📌 3) YENİ ŞİFRE FORMU }}
+    {{! ============================================ }}
+    {{! 2) YENİ ŞİFRE FORMU (Token doğrulandıktan sonra) }}
+    {{! ============================================ }}
     {{#if showNewPass}}
-      <form action="/sifre-unuttum/yeni-sifre" method="POST" class="form">
+      <h2>Yeni Şifre Belirle</h2>
+      <p class="desc">
+        Hesabınız için yeni ve güçlü bir şifre oluşturun.
+      </p>
 
-        {{! Email burada da saklanıyor }}
-        <input type="hidden" name="email" value="{{email}}" />
+      <form action="/sifre-unuttum/yeni-sifre" method="POST" class="form">
+        {{! Token'ı hidden field olarak gönder }}
+        <input type="hidden" name="token" value="{{token}}" />
 
         <input
           type="password"
           name="password1"
-          placeholder="Yeni şifre"
+          placeholder="Yeni şifre (min. 8 karakter, büyük/küçük harf, rakam)"
           required
+          minlength="8"
+          autocomplete="new-password"
         />
         <input
           type="password"
           name="password2"
           placeholder="Yeni şifre (tekrar)"
           required
+          minlength="8"
+          autocomplete="new-password"
         />
 
         <button class="btn danger">
@@ -85,6 +73,16 @@
           Şifreyi Güncelle
         </button>
       </form>
+
+      <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; font-size: 14px;">
+        <strong>⚠️ Güvenlik İpucu:</strong>
+        <ul style="margin: 10px 0 0 20px; text-align: left;">
+          <li>En az 8 karakter kullanın</li>
+          <li>Büyük ve küçük harf karıştırın</li>
+          <li>Rakam ve sembol ekleyin</li>
+          <li>Kolay tahmin edilebilir kelimeler kullanmayın</li>
+        </ul>
+      </div>
     {{/if}}
 
     <a href="/kullanici/oturumAc" class="back-link">← Giriş sayfasına dön</a>

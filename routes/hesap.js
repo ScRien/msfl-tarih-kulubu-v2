@@ -164,38 +164,87 @@ router.post("/sil", auth, async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
+      logger.warn("Hesap silme - kullanıcı bulunamadı:", { userId });
       return res.redirect("/hesap?error=Kullanıcı+bulunamadı");
     }
 
+    logger.info("Hesap silme başlatıldı:", {
+      userId,
+      username: user.username,
+      email: user.email,
+    });
+
+    // ✅ 1) Blogları ve görsellerini sil
     const blogs = await Post.find({ user_id: userId });
 
     for (const blog of blogs) {
       if (blog.images && blog.images.length) {
         for (const img of blog.images) {
-          const publicId = img.public_id;
           try {
-            await cloudinary.uploader.destroy(publicId);
+            await cloudinary.uploader.destroy(img.public_id);
+            logger.info("Cloudinary görsel silindi:", {
+              publicId: img.public_id,
+            });
           } catch (e) {
-            console.log("Cloudinary destroy error:", e);
+            logger.error("Cloudinary destroy error:", {
+              publicId: img.public_id,
+              error: e.message,
+            });
           }
         }
       }
     }
 
     await Post.deleteMany({ user_id: userId });
-    await Comment.deleteMany({ user_id: userId });
+    logger.info("Kullanıcı blogları silindi:", { count: blogs.length });
 
-    if (user.avatarPublicId)
-      await cloudinary.uploader.destroy(user.avatarPublicId);
-    if (user.coverPublicId)
-      await cloudinary.uploader.destroy(user.coverPublicId);
+    // ✅ 2) Yorumları sil
+    const commentResult = await Comment.deleteMany({ user_id: userId });
+    logger.info("Kullanıcı yorumları silindi:", {
+      count: commentResult.deletedCount,
+    });
 
+    // ✅ 3) Profil görsellerini sil
+    if (user.avatarPublicId) {
+      try {
+        await cloudinary.uploader.destroy(user.avatarPublicId);
+        logger.info("Avatar silindi:", { publicId: user.avatarPublicId });
+      } catch (e) {
+        logger.error("Avatar silme hatası:", e);
+      }
+    }
+
+    if (user.coverPublicId) {
+      try {
+        await cloudinary.uploader.destroy(user.coverPublicId);
+        logger.info("Kapak fotoğrafı silindi:", {
+          publicId: user.coverPublicId,
+        });
+      } catch (e) {
+        logger.error("Kapak silme hatası:", e);
+      }
+    }
+
+    // ✅ 4) Kullanıcıyı sil
     await User.findByIdAndDelete(userId);
+    logger.info("Kullanıcı hesabı kalıcı olarak silindi:", {
+      userId,
+      username: user.username,
+    });
 
-    res.clearCookie("auth_token");
-    return res.redirect("/?success=Hesap+başarıyla+silindi");
+    // ✅ 5) Cookie'yi temizle
+    res.clearCookie("auth_token", {
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    return res.redirect("/?success=Hesabınız+başarıyla+silindi");
   } catch (err) {
-    console.log(err);
+    logger.error("Hesap silme hatası:", {
+      error: err.message,
+      stack: err.stack,
+      userId: req.user?.id,
+    });
     return res.redirect("/hesap?error=Hesap+silinemedi");
   }
 });

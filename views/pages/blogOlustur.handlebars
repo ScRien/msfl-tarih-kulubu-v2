@@ -11,6 +11,7 @@
     {{/if}}
 
     <form id="blogForm" method="POST" action="/blog/olustur">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
       <div class="form-top">
         <input
           type="text"

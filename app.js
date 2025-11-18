@@ -7,10 +7,16 @@ import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
+import { apiLimiter } from "./middlewares/rateLimiter.js";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
+import { csrfProtection, addCsrfToken } from "./middlewares/csrf.js";
+
 // Helpers
 import { eq } from "./helpers/eq.js";
 import { generateDate } from "./helpers/generateDate.js";
 import handlebarsHelpers from "./helpers/handlebarsHelpers.js";
+import logger from "./helpers/logger.js";
 
 // Routes
 import mainRoute from "./routes/main.js";
@@ -38,8 +44,56 @@ mongoose
   .connect(process.env.MONGO_URL, {
     dbName: "tarihKulubu",
   })
-  .then(() => console.log("MongoDB bağlantısı başarılı."))
-  .catch((err) => console.log("MongoDB bağlantı hatası:", err));
+  .then(() => {
+    logger.info("✅ MongoDB bağlantısı başarılı");
+    console.log("MongoDB bağlantısı başarılı.");
+  })
+  .catch((err) => {
+    logger.error("❌ MongoDB bağlantı hatası:", err);
+    console.log("MongoDB bağlantı hatası:", err);
+  });
+
+// ===============================
+// GÜVENLİK MIDDLEWARE'LERİ
+// ===============================
+
+// Helmet - HTTP header güvenliği
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "https://cdnjs.cloudflare.com",
+          "'unsafe-inline'", // Handlebars inline scriptler için gerekli
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: [
+          "'self'",
+          "https://res.cloudinary.com",
+          "data:",
+          "https://*.cloudinary.com",
+        ],
+        connectSrc: ["'self'", "https://api.cloudinary.com"],
+        fontSrc: ["'self'", "data:"],
+      },
+    },
+  })
+);
+
+// MongoDB Injection Koruması
+app.use(
+  mongoSanitize({
+    replaceWith: "_",
+    onSanitize: ({ req, key }) => {
+      console.warn(`⚠️ MongoDB injection denemesi tespit edildi: ${key}`);
+    },
+  })
+);
+
+// Genel Rate Limiting
+app.use(apiLimiter);
 
 // ===============================
 // BODY & COOKIE PARSER
@@ -119,6 +173,12 @@ const hbs = exphbs.create({
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "views"));
+
+// ===============================
+// CSRF KORUMASI (Routes'tan önce)
+// ===============================
+app.use(csrfProtection);
+app.use(addCsrfToken);
 
 // ===============================
 // ROUTES

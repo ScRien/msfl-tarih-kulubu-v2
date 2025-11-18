@@ -14,8 +14,9 @@ const admin = express.Router();
    ADMIN AUTH MIDDLEWARE
 ============================================================ */
 function adminOnly(req, res, next) {
-  if (req.session.role !== "admin") {
-    return res.redirect("/admin/giris");
+  // Artık req.session yerine req.user kullanıyoruz (JWT'den geliyor)
+  if (!req.user || req.user.role !== "admin") {
+    return res.redirect("/admin/giris?error=Yetkisiz+erişim");
   }
   next();
 }
@@ -42,37 +43,65 @@ admin.get("/giris", (req, res) => {
 /* ============================================================
    LOGIN POST (3 Password)
 ============================================================ */
-admin.post("/giris", (req, res) => {
-  const { password1, password2, password3 } = req.body;
+admin.post("/giris", loginLimiter, async (req, res) => {
+  try {
+    const { adminToken } = req.body;
 
-  const ADMIN_PASS_1 = process.env.ADMIN_PASS_1 || "admin1";
-  const ADMIN_PASS_2 = process.env.ADMIN_PASS_2 || "admin2";
-  const ADMIN_PASS_3 = process.env.ADMIN_PASS_3 || "admin3";
+    const ADMIN_TOKEN = process.env.ADMIN_SECRET_TOKEN;
 
-  const isValid =
-    password1 === ADMIN_PASS_1 &&
-    password2 === ADMIN_PASS_2 &&
-    password3 === ADMIN_PASS_3;
+    if (!ADMIN_TOKEN || adminToken !== ADMIN_TOKEN) {
+      logger.warn("Admin panel yetkisiz giriş denemesi:", {
+        ip: req.ip,
+        userAgent: req.get("user-agent"),
+      });
+      return res.redirect("/admin/giris?error=Geçersiz+admin+token");
+    }
 
-  if (!isValid) {
-    return res.redirect("/admin/giris?error=Şifreler+yanlış");
+    // JWT Token Oluştur
+    const jwt = await import("jsonwebtoken");
+    const JWT_SECRET = process.env.JWT_SECRET || "jwt_super_secret_123";
+
+    const token = jwt.sign(
+      {
+        id: "admin",
+        username: "admin",
+        role: "admin",
+      },
+      JWT_SECRET,
+      { expiresIn: "8h" }
+    );
+
+    // Cookie'ye kaydet
+    res.cookie("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict", // CSRF koruması için strict
+      maxAge: 8 * 60 * 60 * 1000,
+    });
+
+    logger.info("Admin panel başarılı giriş:", {
+      ip: req.ip,
+      userAgent: req.get("user-agent"),
+    });
+
+    return res.redirect("/admin/blog");
+  } catch (err) {
+    logger.error("Admin login error:", err);
+    return res.redirect("/admin/giris?error=Bir+hata+oluştu");
   }
-
-  req.session.role = "admin";
-  req.session.isAdmin = true;
-
-  return res.redirect("/admin/blog");
 });
 
 /* ============================================================
    ADMIN LOGOUT
 ============================================================ */
 admin.get("/cikis", adminOnly, (req, res) => {
-  req.session.destroy(() => {
-    res.redirect("/");
+  res.clearCookie("auth_token", {
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
   });
-});
 
+  return res.redirect("/");
+});
 /* ============================================================
    BLOG PANEL
 ============================================================ */

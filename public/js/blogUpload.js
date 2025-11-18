@@ -30,18 +30,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     uploadedUrls = [];
-    previewBox.innerHTML = "<p style='text-align:center; padding:20px;'>Yükleniyor...</p>";
-    if (fileCount) fileCount.textContent = `Seçili dosya: ${files.length}`;
+    previewBox.innerHTML =
+      "<p style='text-align:center; padding:20px;'>Yükleniyor...</p>";
+    if (fileCount) fileCount.textContent = `Yükleniyor: ${files.length} dosya`;
 
-    const previews = [];
-
-    for (const file of files) {
+    // ✅ PARALEL UPLOAD - Tüm dosyalar aynı anda yüklenir
+    const uploadPromises = Array.from(files).map(async (file) => {
       try {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("upload_preset", uploadPreset);
 
-        const upload = await fetch(
+        const response = await fetch(
           `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
           {
             method: "POST",
@@ -49,37 +49,70 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         );
 
-        const result = await upload.json();
+        const result = await response.json();
 
         if (result.secure_url && result.public_id) {
-          uploadedUrls.push({
+          return {
             url: result.secure_url,
             public_id: result.public_id,
-          });
-
-          previews.push(`
-            <div class="preview-item">
-              <img src="${result.secure_url}" class="preview-img" alt="Preview" />
-            </div>
-          `);
+          };
         } else {
           console.error("Cloudinary upload hatası:", result);
-          alert(`Görsel yüklenemedi: ${file.name}`);
+          throw new Error(`Görsel yüklenemedi: ${file.name}`);
         }
       } catch (err) {
         console.error("Upload error:", err);
-        alert(`Bir hata oluştu: ${file.name}`);
+        throw err;
       }
-    }
+    });
 
-    if (uploadedUrls.length === 0) {
+    try {
+      // ✅ Tüm uploadların bitmesini bekle
+      const results = await Promise.allSettled(uploadPromises);
+
+      // Başarılı olanları filtrele
+      const successful = results
+        .filter((r) => r.status === "fulfilled")
+        .map((r) => r.value);
+
+      const failed = results.filter((r) => r.status === "rejected").length;
+
+      if (failed > 0) {
+        alert(`${failed} görsel yüklenemedi. Lütfen tekrar deneyin.`);
+      }
+
+      if (successful.length === 0) {
+        previewBox.innerHTML =
+          "<p style='color:red; text-align:center; padding:20px;'>Hiçbir görsel yüklenemedi.</p>";
+        imageUrlsInput.value = "[]";
+        if (fileCount) fileCount.textContent = "Seçili dosya yok";
+        return;
+      }
+
+      uploadedUrls = successful;
+
+      // Önizleme oluştur
+      const previews = successful
+        .map(
+          (item) => `
+        <div class="preview-item">
+          <img src="${item.url}" class="preview-img" alt="Preview" />
+        </div>
+      `
+        )
+        .join("");
+
+      previewBox.innerHTML = previews;
+      imageUrlsInput.value = JSON.stringify(uploadedUrls);
+
+      if (fileCount) {
+        fileCount.textContent = `${successful.length} dosya yüklendi`;
+      }
+    } catch (err) {
+      console.error("Upload process error:", err);
       previewBox.innerHTML =
-        "<p style='color:red; text-align:center; padding:20px;'>Görsel yüklenemedi. Lütfen tekrar deneyin.</p>";
+        "<p style='color:red; text-align:center; padding:20px;'>Yükleme sırasında hata oluştu.</p>";
       imageUrlsInput.value = "[]";
-      return;
     }
-
-    previewBox.innerHTML = previews.join("");
-    imageUrlsInput.value = JSON.stringify(uploadedUrls);
   });
 });

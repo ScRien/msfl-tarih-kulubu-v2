@@ -10,12 +10,14 @@
 
     <form class="admin-form" method="POST" action="/admin/giris">
       <div class="input-group">
-        <input type="password" name="password1" placeholder="Şifre1" required />
-        <input type="password" name="password2" placeholder="Şifre2" required />
-        <input type="password" name="password3" placeholder="Şifre3" required />
+        <input type="password" name="adminToken" placeholder="Admin Token" required autocomplete="off" />
       </div>
 
       <button type="submit" class="admin-button">Gir</button>
     </form>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 14px; color: #888;">
+      Token'ı danışman öğretmenlerden edinin
+    </p>
   </div>
 </section>

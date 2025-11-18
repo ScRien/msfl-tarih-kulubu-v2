@@ -4,6 +4,15 @@ import Post from "../models/Post.js";
 import Comment from "../models/Comment.js";
 import auth from "../middlewares/auth.js";
 import cloudinary from "../helpers/cloudinary.js";
+import {
+  blogValidation,
+  commentValidation,
+} from "../middlewares/validators.js";
+import {
+  blogCreateLimiter,
+  commentLimiter,
+} from "../middlewares/rateLimiter.js";
+import logger from "../helpers/logger.js";
 
 const blogs = express.Router();
 
@@ -20,44 +29,49 @@ blogs.get("/olustur", auth, (req, res) => {
 /* ================================
    BLOG OLUŞTUR (POST)
 ================================ */
-blogs.post("/olustur", auth, async (req, res) => {
-  try {
-    const { title, content } = req.body;
-
-    // imageUrls hiçbir zaman undefined olmayacak şekilde al
-    let images = [];
-
+blogs.post(
+  "/olustur",
+  auth,
+  blogCreateLimiter,
+  blogValidation,
+  async (req, res) => {
     try {
-      if (req.body.imageUrls) {
-        const parsed = JSON.parse(req.body.imageUrls);
-        if (Array.isArray(parsed)) {
-          images = parsed.filter(
-            (img) => img.url && img.public_id
-          );
+      const { title, content } = req.body;
+
+      // Validation middleware zaten kontrol etti
+      let images = [];
+
+      try {
+        if (req.body.imageUrls) {
+          const parsed = JSON.parse(req.body.imageUrls);
+          if (Array.isArray(parsed)) {
+            images = parsed.filter((img) => img.url && img.public_id);
+          }
         }
+      } catch (e) {
+        console.log("JSON parse error:", e);
       }
-    } catch (e) {
-      console.log("JSON parse error:", e);
+
+      await Post.create({
+        user_id: req.user.id,
+        username: req.user.username,
+        title,
+        content,
+        images,
+      });
+
+      return res.redirect("/blog?success=Blog+başarıyla+oluşturuldu");
+    } catch (err) {
+      logger.error("Blog oluşturma hatası:", {
+        error: err.message,
+        stack: err.stack,
+        user: req.user?.username,
+        ip: req.ip,
+      });
+      return res.redirect("/blog/olustur?error=Bir+hata+oluştu");
     }
-
-    if (images.length === 0) {
-      console.log("⚠ UYARI: Backend'e boş görsel geldi!");
-    }
-
-    await Post.create({
-      user_id: req.user.id,
-      username: req.user.username,
-      title,
-      content,
-      images,
-    });
-
-    return res.redirect("/blog?success=Blog+başarıyla+oluşturuldu");
-  } catch (err) {
-    console.error("BLOG ERROR:", err);
-    return res.redirect("/blog/olustur?error=Bir+hata+oluştu");
   }
-});
+);
 
 /* ================================
    BLOG DÜZENLE (GET)
@@ -99,25 +113,32 @@ blogs.post("/:id/duzenle", auth, async (req, res) => {
     post.title = req.body.title;
     post.content = req.body.content;
 
-    // Silinecek görseller
+    // ✅ GÜVENLİK: Client'tan gelen public_id'leri VERİTABANINDAKİLERLE KARŞILAŞTIR
     const toDelete = req.body.deleteImages;
     if (toDelete) {
       const deleteArray = Array.isArray(toDelete) ? toDelete : [toDelete];
 
-      for (const publicId of deleteArray) {
+      // ✅ Sadece bu blog'a ait public_id'leri sil
+      const validPublicIds = post.images
+        .map((img) => img.public_id)
+        .filter((id) => deleteArray.includes(id));
+
+      for (const publicId of validPublicIds) {
         try {
           await cloudinary.uploader.destroy(publicId);
+          console.log(`✅ Görsel silindi: ${publicId}`);
         } catch (err) {
-          console.error("Cloudinary destroy error:", err);
+          console.error(`❌ Cloudinary destroy error (${publicId}):`, err);
         }
       }
 
+      // ✅ Sadece silinenleri filtrele
       post.images = post.images.filter(
-        (img) => !deleteArray.includes(img.public_id)
+        (img) => !validPublicIds.includes(img.public_id)
       );
     }
 
-    // Yeni eklenen görseller (JSON)
+    // Yeni görseller
     if (req.body.newImagesJson) {
       try {
         const parsedNew = JSON.parse(req.body.newImagesJson);
@@ -183,27 +204,32 @@ blogs.post("/:id/sil", auth, async (req, res) => {
 /* ================================
    YORUM EKLE
 ================================ */
-blogs.post("/:id/yorum", auth, async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).send("Blog bulunamadı");
+blogs.post(
+  "/:id/yorum",
+  auth,
+  commentLimiter,
+  commentValidation,
+  async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.id);
+      if (!post) return res.status(404).send("Blog bulunamadı");
 
-    const content = (req.body.content || "").trim();
-    if (!content) return res.redirect(`/blog/${post._id}`);
+      const content = req.body.content.trim();
 
-    await Comment.create({
-      post_id: post._id,
-      user_id: req.user.id,
-      username: req.user.username,
-      content,
-    });
+      await Comment.create({
+        post_id: post._id,
+        user_id: req.user.id,
+        username: req.user.username,
+        content,
+      });
 
-    res.redirect(`/blog/${post._id}`);
-  } catch (err) {
-    console.error("YORUM EKLE ERROR:", err);
-    res.status(500).send("Yorum eklenirken hata oluştu");
+      res.redirect(`/blog/${post._id}`);
+    } catch (err) {
+      console.error("YORUM EKLE ERROR:", err);
+      res.status(500).send("Yorum eklenirken hata oluştu");
+    }
   }
-});
+);
 
 /* ================================
    YORUM SİL

@@ -2,6 +2,14 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import {
+  loginLimiter,
+  registerLimiter,
+} from "../middlewares/rateLimiter.js";
+import {
+  registerValidation,
+  loginValidation,
+} from "../middlewares/validators.js";
 
 const userRouter = express.Router();
 
@@ -39,80 +47,57 @@ userRouter.get("/kayitOl", (req, res) => {
 /* ========================================
    KAYIT OL (POST)
 ======================================== */
-userRouter.post("/kayitOl", async (req, res) => {
-  try {
-    let { username, email, password, password2, name, surname } = req.body;
+userRouter.post(
+  "/kayitOl",
+  registerLimiter,
+  registerValidation,
+  async (req, res) => {
+    try {
+      let { username, email, password, name, surname } = req.body;
 
-    username = username?.trim();
-    email = email?.trim().toLowerCase();
-    name = name?.trim();
-    surname = surname?.trim();
+      // Validation middleware zaten kontrol etti, direkt işleme geçebiliriz
+      username = username.trim();
+      email = email.trim().toLowerCase();
+      name = name.trim();
+      surname = surname.trim();
 
-    if (!username || !email || !password || !password2 || !name || !surname) {
-      return res.render("pages/kayitOl", {
-        error: "Lütfen tüm alanları doldurun.",
+      // Email/username benzersizlik kontrolü
+      const exists = await User.findOne({
+        $or: [{ email }, { username }],
+      });
+
+      if (exists) {
+        return res.render("pages/kayitOl", {
+          error: "Bu email veya kullanıcı adı zaten kayıtlı.",
+          username,
+          email,
+          name,
+          surname,
+        });
+      }
+
+      const hashed = await bcrypt.hash(password, 10);
+
+      const user = await User.create({
         username,
         email,
+        password: hashed,
         name,
         surname,
       });
-    }
 
-    if (username.includes(" ")) {
+      // JWT cookie
+      setAuthCookie(res, user);
+
+      return res.redirect("/");
+    } catch (err) {
+      console.error("Kayıt hatası:", err);
       return res.render("pages/kayitOl", {
-        error: "Kullanıcı adı boşluk içeremez.",
-        username,
-        email,
-        name,
-        surname,
+        error: "Beklenmeyen bir hata oluştu.",
       });
     }
-
-    if (password !== password2) {
-      return res.render("pages/kayitOl", {
-        error: "Şifreler eşleşmiyor.",
-        username,
-        email,
-        name,
-        surname,
-      });
-    }
-
-    const exists = await User.findOne({
-      $or: [{ email }, { username }],
-    });
-
-    if (exists) {
-      return res.render("pages/kayitOl", {
-        error: "Bu email veya kullanıcı adı zaten kayıtlı.",
-        username,
-        email,
-        name,
-        surname,
-      });
-    }
-
-    const hashed = await bcrypt.hash(password, 10);
-
-    const user = await User.create({
-      username,
-      email,
-      password: hashed,
-      name,
-      surname,
-    });
-
-    // JWT cookie
-    setAuthCookie(res, user);
-
-    return res.redirect("/");
-  } catch (err) {
-    console.error("Kayıt hatası:", err);
-    return res.render("pages/kayitOl", {
-      error: "Beklenmeyen bir hata oluştu.",
-    });
   }
-});
+);
 
 /* ========================================
    OTURUM AÇ (GET)
@@ -127,43 +112,42 @@ userRouter.get("/oturumAc", (req, res) => {
 /* ========================================
    OTURUM AÇ (POST)
 ======================================== */
-userRouter.post("/oturumAc", async (req, res) => {
-  try {
-    let { username, password } = req.body;
-    username = username?.trim();
+userRouter.post(
+  "/oturumAc",
+  loginLimiter,
+  loginValidation,
+  async (req, res) => {
+    try {
+      let { username, password } = req.body;
+      username = username.trim();
 
-    if (!username || !password) {
+      const user = await User.findOne({ username });
+
+      if (!user) {
+        return res.render("pages/oturumAc", {
+          error: "Kullanıcı adı veya şifre hatalı.",
+        });
+      }
+
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) {
+        return res.render("pages/oturumAc", {
+          error: "Kullanıcı adı veya şifre hatalı.",
+        });
+      }
+
+      // JWT cookie
+      setAuthCookie(res, user);
+
+      return res.redirect("/");
+    } catch (err) {
+      console.error("Giriş hatası:", err);
       return res.render("pages/oturumAc", {
-        error: "Kullanıcı adı ve şifre gerekli.",
+        error: "Bir hata oluştu.",
       });
     }
-
-    const user = await User.findOne({ username });
-
-    if (!user) {
-      return res.render("pages/oturumAc", {
-        error: "Kullanıcı bulunamadı.",
-      });
-    }
-
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.render("pages/oturumAc", {
-        error: "Şifre hatalı.",
-      });
-    }
-
-    // JWT cookie
-    setAuthCookie(res, user);
-
-    return res.redirect("/");
-  } catch (err) {
-    console.error("Giriş hatası:", err);
-    return res.render("pages/oturumAc", {
-      error: "Bir hata oluştu.",
-    });
   }
-});
+);
 
 /* ========================================
    ÇIKIŞ
