@@ -175,7 +175,7 @@ app.use("/profile", profileRoute);
 app.use("/sifre-unuttum", sifreUnuttumRoute);
 app.use("/admin", adminRoute);
 
-app.use("/", publicProfileRoute);
+app.use("/public", publicProfileRoute);
 
 // ===============================
 // 404
