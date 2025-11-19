@@ -1,7 +1,6 @@
-{{!-- views/pages/blogDetay.handlebars --}}
-
 <section class="blog-detail">
-  {{!-- Üst Kapak / Hero Alanı --}}
+
+  <!-- HERO -->
   <div class="blog-detail-hero">
     <img
       class="blog-detail-cover"
@@ -11,90 +10,84 @@
     <div class="blog-detail-overlay"></div>
 
     <div class="blog-detail-title-wrapper">
-      <p class="blog-detail-badge">Tarih Kulübü Blog</p>
+      <p class="blog-detail-badge">MSFL TARİH KULÜBÜ</p>
+
       <h1 class="blog-detail-title">{{post.title}}</h1>
+
       <div class="blog-detail-meta">
-        <span class="blog-detail-author">
-          {{#if post.username}}@{{post.username}}{{else}}Anonim{{/if}}
-        </span>
+        <a href="/u/@{{post.username}}" class="blog-detail-author">
+          @{{post.username}}
+        </a>
         <span class="blog-detail-dot">•</span>
         <span class="blog-detail-date">{{generateDate post.date "DD MMMM YYYY"}}</span>
       </div>
     </div>
   </div>
 
-  {{!-- İçerik --}}
+  <!-- BODY -->
   <div class="blog-detail-body">
+
+    <!-- CONTENT -->
     <article class="blog-detail-article">
+
       <div class="blog-detail-content">
         {{{formatParagraphs post.content}}}
       </div>
 
-      {{!-- Blog görselleri galerisi (kapak dışında diğerleri) --}}
-      {{#if post.images}}
-        {{#if (gt (length post.images) 1)}}
-          <div class="blog-detail-gallery">
-            {{#each post.images}}
-              {{#unless @first}}
-                <img src="{{this}}" alt="Blog görseli" />
-              {{/unless}}
-            {{/each}}
-          </div>
-        {{/if}}
+      {{#if (gt (length post.images) 1)}}
+      <div class="blog-detail-gallery">
+        {{#each post.images}}
+        {{#unless @first}}
+        <img src="{{this}}" alt="Blog görseli" />
+        {{/unless}}
+        {{/each}}
+      </div>
       {{/if}}
+
     </article>
 
-    {{!-- Yorumlar Alanı --}}
+    <!-- COMMENTS -->
     <aside class="blog-detail-comments">
-      <h2>Yorumlar</h2>
+      <h2 class="comments-title">Yorumlar</h2>
 
-      {{!-- Yorum ekleme formu --}}
       {{#if isAuth}}
-        <form
-          method="POST"
-          action="/blog/{{post._id}}/yorum"
-          class="comment-form"
-        >
-          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-          <textarea
-            name="content"
-            rows="3"
-            placeholder="Düşüncelerini bizimle paylaş..."
-            required
-          ></textarea>
-          <button type="submit" class="primary-btn comment-btn">
-            Yorumu Gönder
-          </button>
-        </form>
+      <form method="POST" action="/blog/{{post._id}}/yorum" class="comment-form">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <textarea name="content" placeholder="Düşüncelerini bizimle paylaş..." required></textarea>
+        <button type="submit" class="comment-btn">Gönder</button>
+      </form>
       {{else}}
-        <p class="comment-login-info">
-          Yorum yapmak için
-          <a href="/oturumAc">oturum aç</a>
-          ya da
-          <a href="/kayitOl">kayıt ol.</a>
-        </p>
+      <p class="comment-login-info">
+        Yorum yapmak için
+        <a href="/oturumAc">oturum aç</a>
+        veya
+        <a href="/kayitOl">kayıt ol</a>.
+      </p>
       {{/if}}
 
-      {{!-- Yorum listesi --}}
       {{#if comments.length}}
-        <ul class="comment-list">
-          {{#each comments}}
-            <li class="comment-item">
-              <div class="comment-header">
-                <span class="comment-author">
-                  {{#if this.username}}@{{this.username}}{{else}}Anonim{{/if}}
-                </span>
-                <span class="comment-date">{{generateDate this.date "DD MMMM YYYY"}}</span>
-              </div>
-              <p class="comment-content">
-                {{this.content}}
-              </p>
-            </li>
-          {{/each}}
-        </ul>
+      <ul class="comment-list">
+        {{#each comments}}
+        <li class="comment-item">
+
+          <div class="comment-header">
+            <a href="/u/@{{this.username}}" class="comment-author">
+              @{{this.username}}
+            </a>
+            <span class="comment-date">{{generateDate this.date "DD.MM.YYYY"}}</span>
+          </div>
+
+          <p class="comment-content">
+            {{this.content}}
+          </p>
+
+        </li>
+        {{/each}}
+      </ul>
       {{else}}
-        <p class="no-comments">Bu yazıya henüz yorum yapılmamış.</p>
+      <p class="no-comments">Henüz yorum yok.</p>
       {{/if}}
     </aside>
+
   </div>
 </section>

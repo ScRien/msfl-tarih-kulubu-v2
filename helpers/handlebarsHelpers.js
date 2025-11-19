@@ -53,7 +53,8 @@ Handlebars.registerHelper("safe", (html) => {
 Handlebars.registerHelper("formatParagraphs", (content) => {
   if (!content) return "";
 
-  const cleaned = content.toString().trim();
+  // toString kullanmıyoruz → güvenlik hatası çıkmasın
+  const cleaned = String(content).trim();
 
   const paragraphs = cleaned
     .split(/\r?\n\r?\n/)
