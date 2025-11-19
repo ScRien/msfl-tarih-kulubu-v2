@@ -43,6 +43,8 @@ mongoose
   .then(() => logger.info("MongoDB bağlantısı başarılı"))
   .catch((err) => logger.error("MongoDB bağlantı hatası:", err));
 
+app.set("trust proxy", 1)
+
 // ===============================
 // GÜVENLİK
 // ===============================
