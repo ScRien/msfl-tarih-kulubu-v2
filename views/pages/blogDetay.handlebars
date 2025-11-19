@@ -1,198 +1,149 @@
-{{!-- views/pages/blogDetay.handlebars --}}
-<section class="blog-read-section">
-  <div class="blog-read-container">
+<section class="blog-detail-section">
+  <div class="blog-detail-container">
 
-    <!-- Üst Bilgi -->
-    <div class="blog-header">
-      <div class="header-left">
-        <h2 class="blog-title">{{post.title}}</h2>
-      </div>
+    {{!-- ÜST MESAJLAR --}}
+    {{#if success}}
+      <div class="alert success">{{success}}</div>
+    {{/if}}
 
-      {{!-- BLOG EYLEMLERİ --}}
-      {{#if isAuth}}
-        {{#if isOwner}}
-          <div class="blog-actions">
-            <a href="/blog/{{post._id}}/duzenle" class="action-btn edit-btn">
-              Düzenle
-            </a>
-            <form action="/blog/{{post._id}}/sil" method="POST">
-              <button type="submit" class="action-btn delete-btn">
-                Sil
-              </button>
-            </form>
-          </div>
-        {{/if}}
+    {{#if error}}
+      <div class="alert error">{{error}}</div>
+    {{/if}}
 
-        {{#if isAdmin}}
-          <div class="blog-actions">
-            <a href="/blog/{{post._id}}/duzenle" class="action-btn edit-btn">
-              Düzenle (Admin)
-            </a>
-            <form action="/blog/{{post._id}}/sil" method="POST">
-              <button type="submit" class="action-btn delete-btn">
-                Sil (Admin)
-              </button>
-            </form>
-          </div>
-        {{/if}}
-      {{/if}}
+    {{!-- BLOG BİLGİLERİ --}}
+    <h1 class="blog-title">{{post.title}}</h1>
 
-      <div class="header-right">
-        <p>
-          Oluşturan Kullanıcı:
-          <a href="/@{{post.username}}" class="creator-link">
-            @{{post.username}}
-          </a>
-        </p>
-        <p>
-          Oluşturma Tarihi:
-          <span>{{generateDate post.date "DD/MM/YYYY"}}</span>
-        </p>
-      </div>
+    <div class="blog-meta">
+      <span class="meta-item">
+        <i class="fa-solid fa-user"></i> {{post.username}}
+      </span>
+      <span class="meta-item">
+        <i class="fa-solid fa-calendar"></i> {{post.date}}
+      </span>
     </div>
 
-    <!-- İçerik -->
+    {{!-- BLOG GÖRSELLERİ --}}
+    {{#if post.images.length}}
+      <div class="detail-images">
+        {{#each post.images}}
+          <img src="{{this.url}}" alt="Blog Image" class="detail-img" />
+        {{/each}}
+      </div>
+    {{/if}}
+
+    {{!-- BLOG İÇERİĞİ --}}
     <div class="blog-content">
       {{{post.content}}}
     </div>
 
-    {{!-- === GÖRSELLER === --}}
-    {{#if post.images}}
-      {{#if post.images.length}}
-        <div class="carousel" id="blogCarousel">
+    {{!-- SAHİP / ADMIN İŞLEMLERİ --}}
+    {{#if isAuth}}
+      <div class="owner-actions">
+        {{#if isOwner}}
+          <a href="/blog/{{post._id}}/duzenle" class="btn edit-btn">Düzenle</a>
 
-          <div class="carousel-inner">
-            {{#each post.images}}
-              <div class="carousel-item {{#if @first}}active{{/if}}">
-                <img src="{{this.url}}" alt="Blog Görseli" />
-              </div>
-            {{/each}}
-          </div>
+          <form action="/blog/{{post._id}}/sil" method="POST" class="inline-form">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+            <button type="submit" class="btn delete-btn">Sil</button>
+          </form>
+        {{/if}}
 
-          <div class="carousel-control-prev" onclick="prevSlide()">❮</div>
-          <div class="carousel-control-next" onclick="nextSlide()">❯</div>
+        {{#if isAdmin}}
+          <a href="/blog/{{post._id}}/duzenle" class="btn admin-edit">Admin Düzenle</a>
 
-          <div class="carousel-indicators">
-            {{#each post.images}}
-              <button
-                onclick="goToSlide({{@index}})"
-                class="indicator {{#if @first}}active{{/if}}">
-              </button>
-            {{/each}}
-          </div>
-
-        </div>
-      {{else}}
-        <p class="no-images"><em>Bu bloga görsel eklenmemiş.</em></p>
-      {{/if}}
-    {{else}}
-      <p class="no-images"><em>Bu bloga görsel eklenmemiş.</em></p>
+          <form action="/blog/{{post._id}}/sil" method="POST" class="inline-form">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+            <button type="submit" class="btn admin-delete">Admin Sil</button>
+          </form>
+        {{/if}}
+      </div>
     {{/if}}
 
-    <!-- Yorumlar -->
-    <div class="blog-comments">
-      <div class="comments-header">
-        <h3 class="section-title">Yorumlar</h3>
+    <hr class="divider" />
 
-        {{#if isAuth}}
-          <button class="add-comment-btn" id="open-comment-modal">
-            + Yorum Ekle
-          </button>
-        {{/if}}
-      </div>
+    {{!-- YORUMLAR --}}
+    <h2 class="comments-title">Yorumlar</h2>
 
-      <div class="comment-list">
-        {{#if comments.length}}
-          {{#each comments}}
-            <div class="comment-card">
-              <div class="comment-top">
-                <a href="/@{{username}}"><h4>{{username}}</h4></a>
-
-                {{#if (eq user_id ../currentUserId)}}
-                  <div class="comment-actions">
-
-                    <button
-                      type="button"
-                      class="edit-comment-btn"
-                      data-id="{{_id}}"
-                      data-content="{{content}}"
-                      data-post="{{../post._id}}"
-                    >
-                      Düzenle
-                    </button>
-
-                    <form
-                      action="/blog/{{../post._id}}/yorum/{{_id}}/sil"
-                      method="POST"
-                      onsubmit="return confirm('Yorum silinsin mi?')"
-                    >
-                      <button class="delete-comment-btn">Sil</button>
-                    </form>
-
-                  </div>
-                {{/if}}
-              </div>
-
-              <p class="comment-text" id="comment-text-{{_id}}">{{content}}</p>
-              <span class="comment-date">
-                {{generateDate date "DD/MM/YYYY HH:mm"}}
-              </span>
+    {{#if comments.length}}
+      <div class="comments-list">
+        {{#each comments}}
+          <div class="comment-box">
+            <div class="comment-header">
+              <strong>{{this.username}}</strong>
+              <span class="comment-date">{{this.date}}</span>
             </div>
-          {{/each}}
-        {{else}}
-          <p><em>Henüz yorum yok. İlk yorumu sen yaz!</em></p>
-        {{/if}}
+
+            <p class="comment-text">{{this.content}}</p>
+
+            {{!-- YORUM SAHİBİ / ADMIN --}}
+            {{#if ../isAuth}}
+              {{#if (or (eq ../currentUserId this.user_id) (eq ../currentRole "admin"))}}
+                <div class="comment-actions">
+                  
+                  <form
+                    action="/blog/{{../post._id}}/yorum/{{this._id}}/sil"
+                    method="POST"
+                    class="inline-form"
+                  >
+                    <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                    <button class="comment-del">Sil</button>
+                  </form>
+
+                  <form
+                    action="/blog/{{../post._id}}/yorum/{{this._id}}/duzenle"
+                    method="POST"
+                    class="edit-comment-form"
+                  >
+                    <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                    <input
+                      type="text"
+                      name="content"
+                      class="comment-edit-input"
+                      placeholder="Yeni yorum..."
+                      required
+                    />
+                    <button class="comment-edit-btn">Düzenle</button>
+                  </form>
+
+                </div>
+              {{/if}}
+            {{/if}}
+          </div>
+        {{/each}}
       </div>
+    {{else}}
+      <p class="no-comments">Henüz yorum yapılmamış.</p>
+    {{/if}}
 
-      {{#unless isAuth}}
-        <p class="comment-login-info">
-          Yorum yapmak için
-          <a href="/kullanici/oturumAc">giriş yapın</a>.
-        </p>
-      {{/unless}}
-    </div>
+    <hr class="divider" />
 
-  </div>
+    {{!-- YENİ YORUM FORMU --}}
+    {{#if isAuth}}
+      <h3 class="add-comment-title">Yorum Yaz</h3>
 
-  <!-- Yorum Ekle Modal -->
-  <div class="comment-modal" id="comment-modal">
-    <div class="comment-modal-content">
-      <span class="close-modal" id="close-modal">&times;</span>
-      <h3>Yorum Ekle</h3>
+      <form
+        method="POST"
+        action="/blog/{{post._id}}/yorum"
+        class="add-comment-form"
+      >
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
-      <form id="comment-form" method="POST" action="/blog/{{post._id}}/yorum">
         <textarea
           name="content"
-          rows="4"
+          class="comment-input"
           placeholder="Yorumunuzu yazın..."
           required
         ></textarea>
-        <button type="submit" class="submit-comment-btn">Gönder</button>
+
+        <button type="submit" class="btn comment-btn">
+          Yorum Gönder
+        </button>
       </form>
-    </div>
+    {{else}}
+      <p class="login-to-comment">
+        Yorum yapmak için <a href="/kullanici/oturumAc">giriş yap</a>.
+      </p>
+    {{/if}}
+
   </div>
-
-  <!-- Yorum Düzenle Modal -->
-  <div class="comment-edit-modal" id="comment-edit-modal">
-    <div class="edit-modal-content">
-      <span class="close-edit-modal" id="close-edit-modal">&times;</span>
-      <h3>Yorumu Düzenle</h3>
-
-      <form
-        id="edit-comment-form"
-        method="POST"
-      >
-        <textarea
-          name="content"
-          id="edit-comment-textarea"
-          rows="4"
-          required
-        ></textarea>
-        <button type="submit" class="submit-comment-btn">Kaydet</button>
-      </form>
-    </div>
-  </div>
-
 </section>
-
-<script src="/js/blogDetail.js"></script>
