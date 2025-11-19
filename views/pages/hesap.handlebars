@@ -295,18 +295,34 @@
       </form>
     </div>
 
-    <!-- HESAP SİL -->
-    <div class="content-box" id="delete">
-      <h2 class="title danger">Hesabı Sil</h2>
-      <p class="warn">
-        Bu işlem geri alınamaz. Hesabını silmeden önce tüm verilerini indirmeni öneririz.
-      </p>
+    <!-- ====== HESAP SİLME MODAL ====== -->
+    <div id="deleteModal" class="modal-overlay">
+      <div class="modal-box">
 
-      <form action="/hesap/sil" method="POST"
-        onsubmit="return confirm('Hesabınızı ve tüm içeriklerinizi kalıcı olarak silmek istiyor musunuz?')">
-          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-        <button class="danger-btn">Hesabı Kalıcı Olarak Sil</button>
-      </form>
+        <h2 class="modal-title">Hesabını Silmek Üzeresin</h2>
+        <p class="modal-desc">
+          Bu işlem <b>kalıcıdır</b> ve geri alınamaz.<br>
+          Devam etmek için lütfen aşağıdaki doğrulamaları yap.
+        </p>
+
+        <!-- C DOĞRULAMA -->
+        <label class="modal-label">Onay harfini gir ("C"):</label>
+        <input type="text" id="confirmC" class="modal-input" maxlength="1" placeholder="C" />
+
+        <!-- ŞİFRE -->
+        <label class="modal-label">Şifreniz:</label>
+        <input type="password" id="deletePassword" class="modal-input" placeholder="Şifrenizi girin" />
+
+        <!-- HATA MESAJI -->
+        <p id="modalError" class="modal-error"></p>
+
+        <!-- BUTONLAR -->
+        <div class="modal-buttons">
+          <button class="btn-cancel" onclick="closeDeleteModal()">İptal</button>
+          <button class="delete-account-btn" onclick="openDeleteModal()">Hesabımı Sil</button>
+        </div>
+
+      </div>
     </div>
 
     <!-- POLİTİKALAR -->
@@ -350,3 +366,4 @@
 </script>
 
 <script src="/js/avatarCoverUpload.js"></script>
+<script src="/js/hesap.js"></script>

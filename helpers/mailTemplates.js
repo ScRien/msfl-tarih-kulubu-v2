@@ -218,3 +218,72 @@ export function verificationMailTemplate(name, code) {
   </html>
   `;
 }
+
+export function accountDeletedMailTemplate(username) {
+  return `
+  <!DOCTYPE html>
+  <html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MSFL Tarih Kulübü - Hesap Silindi</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #f5f6fa;
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: white;
+        border-radius: 14px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      }
+      h1 {
+        color: #e52b2b;
+        text-align: center;
+      }
+      p {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #333;
+      }
+      .footer {
+        margin-top: 25px;
+        font-size: 12px;
+        text-align: center;
+        color: #888;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Hesabınız Silindi</h1>
+
+      <p>Merhaba <strong>@${username}</strong>,</p>
+
+      <p>
+        MSFL Tarih Kulübü web sistemindeki hesabınız başarıyla silinmiştir.<br>
+        Bu işlem <strong>kalıcıdır</strong> ve geri alınamaz.
+      </p>
+
+      <p>
+        Eğer bu işlemi siz yapmadıysanız veya herhangi bir destek talep
+        ediyorsanız, kullanıcı adınızı belirterek şu adrese ulaşabilirsiniz:
+        <br><br>
+        <strong>msfltarihkulubu@outlook.com</strong>
+      </p>
+
+      <p class="footer">
+        © ${new Date().getFullYear()} MSFL Tarih Kulübü<br>
+        Bu e-posta otomatik gönderilmiştir, lütfen yanıtlamayınız.
+      </p>
+    </div>
+  </body>
+  </html>
+  `;
+}

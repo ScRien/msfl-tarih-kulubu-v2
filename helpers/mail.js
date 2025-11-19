@@ -22,3 +22,12 @@ export async function sendMail(to, subject, html) {
     return false;
   }
 }
+
+export async function sendDeletedMail(to, username) {
+  await sgMail.send({
+    to,
+    from: "msfltarihkulubu@outlook.com",
+    subject: "MSFL Tarih Kulübü | Hesabınız Silindi",
+    html: deletedMailTemplate(username),
+  });
+}

@@ -79,3 +79,42 @@ document.addEventListener("DOMContentLoaded", () => {
     newPasswordBox.style.display = "block";
   }
 });
+
+function openDeleteModal() {
+  document.getElementById("deleteModal").style.display = "flex";
+}
+
+function closeDeleteModal() {
+  document.getElementById("deleteModal").style.display = "none";
+}
+
+async function confirmDelete() {
+  const c = document.getElementById("confirmC").value.trim().toUpperCase();
+  const password = document.getElementById("deletePassword").value.trim();
+  const errorBox = document.getElementById("modalError");
+
+  // C doğrulaması
+  if (c !== "C") {
+    errorBox.textContent = "Doğrulama harfi yanlış!";
+    return;
+  }
+
+  if (!password) {
+    errorBox.textContent = "Şifreyi girmelisin.";
+    return;
+  }
+
+  // Sunucuya gönder
+  const res = await fetch("/hesap/sil", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+
+  if (res.redirected) {
+    window.location.href = res.url;
+    return;
+  }
+
+  errorBox.textContent = "Bir hata oluştu.";
+}
