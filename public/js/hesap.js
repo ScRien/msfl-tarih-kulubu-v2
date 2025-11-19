@@ -39,7 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (avatarInput && avatarPreview) {
     avatarInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
-      if (file) avatarPreview.src = URL.createObjectURL(file);
+      if (file) {
+        avatarPreview.src = URL.createObjectURL(file);
+      }
     });
   }
 
@@ -52,7 +54,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (coverInput && coverPreview) {
     coverInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
-      if (file) coverPreview.src = URL.createObjectURL(file);
+      if (file) {
+        coverPreview.src = URL.createObjectURL(file);
+      }
     });
   }
 
@@ -63,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const newPasswordBox = document.getElementById("newPasswordBox");
   const urlParams = new URLSearchParams(window.location.search);
 
+  // showVerify=1 ise doğrulama kutusunu aç
   if (urlParams.get("showVerify") === "1" && verifyBox) {
     verifyBox.style.display = "block";
     if (newPasswordBox) newPasswordBox.style.display = "none";
@@ -72,13 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // /hesap/sifre-yeni içindeysek yeni şifre kutusunu aç
   if (window.location.pathname.includes("sifre-yeni") && newPasswordBox) {
     newPasswordBox.style.display = "block";
   }
 });
 
 /* ===========================================================
-   HESAP SİLME MODAL FONKSİYONLARI (CSRF DESTEKLİ)
+   HESAP SİLME MODAL FONKSİYONLARI (FORM SUBMIT)
 =========================================================== */
 function openDeleteModal() {
   const modal = document.getElementById("deleteModal");
@@ -90,42 +96,31 @@ function closeDeleteModal() {
   if (modal) modal.style.display = "none";
 }
 
-async function confirmDelete() {
-  const c = document.getElementById("confirmC").value.trim().toUpperCase();
-  const password = document.getElementById("deletePassword").value.trim();
-  const csrf = document.getElementById("csrfDelete").value.trim();
+function confirmDelete() {
+  const cInput = document.getElementById("confirmC");
+  const pwInput = document.getElementById("deletePassword");
   const errorBox = document.getElementById("modalError");
+  const form = document.getElementById("deleteForm");
+
+  if (!form || !cInput || !pwInput || !errorBox) return;
 
   errorBox.textContent = "";
 
+  const c = cInput.value.trim().toUpperCase();
+  const password = pwInput.value.trim();
+
+  // C doğrulaması
   if (c !== "C") {
     errorBox.textContent = "Onay için C harfini girin.";
     return;
   }
 
+  // Şifre kontrolü
   if (!password) {
     errorBox.textContent = "Şifreyi girmelisin.";
     return;
   }
 
-  try {
-    const res = await fetch("/hesap/sil", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "CSRF-Token": csrf,
-      },
-      body: JSON.stringify({ password }),
-    });
-
-    if (res.redirected) {
-      window.location.href = res.url;
-      return;
-    }
-
-    errorBox.textContent = "Bir hata oluştu.";
-  } catch (err) {
-    console.error("DELETE ERROR:", err);
-    errorBox.textContent = "Sunucu hatası.";
-  }
+  // Her şey tamamsa formu gönder
+  form.submit();
 }

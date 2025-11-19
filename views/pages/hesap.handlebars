@@ -77,6 +77,7 @@
           <span class="info">E-posta doğrulama ileride eklenecek.</span>
         </div>
 
+        <!-- BİYOGRAFİ -->
         <div class="form-group">
           <label>Biyografi</label>
           <textarea 
@@ -108,17 +109,17 @@
 
         <div class="form-group">
           <label>Instagram</label>
-          <input type="text" name="instagram" value="{{user.social.instagram}}" />
+          <input type="text" name="instagram" value="{{user.social.instagram}}" placeholder="@kullanici" />
         </div>
 
         <div class="form-group">
           <label>X (Twitter)</label>
-          <input type="text" name="x" value="{{user.social.x}}" />
+          <input type="text" name="x" value="{{user.social.x}}" placeholder="@kullanici" />
         </div>
 
         <div class="form-group">
           <label>GitHub</label>
-          <input type="text" name="github" value="{{user.social.github}}" />
+          <input type="text" name="github" value="{{user.social.github}}" placeholder="github.com/kullanici" />
         </div>
 
         <div class="btn-group">
@@ -134,11 +135,17 @@
       <h2 class="title">Profil Fotoğrafları</h2>
       <p class="desc">Profil ve kapak fotoğrafınızı buradan yönetebilirsiniz.</p>
 
+      <!-- AVATAR -->
       <div class="profile-section">
         <h3>Profil Fotoğrafı</h3>
 
         <div class="avatar-box">
-          <img src="{{user.avatar}}" id="avatarPreview" class="avatar-img" />
+          <img
+            src="{{user.avatar}}"
+            alt="Avatar"
+            class="avatar-img"
+            id="avatarPreview"
+          />
         </div>
 
         <form id="avatarForm" action="/hesap/avatar-yukle" method="POST">
@@ -152,11 +159,17 @@
         </form>
       </div>
 
+      <!-- KAPAK -->
       <div class="cover-section">
         <h3>Kapak Fotoğrafı</h3>
 
         <div class="cover-box">
-          <img src="{{user.coverPhoto}}" id="coverPreview" class="cover-img" />
+          <img
+            src="{{user.coverPhoto}}"
+            alt="Kapak"
+            class="cover-img"
+            id="coverPreview"
+          />
         </div>
 
         <form id="coverForm" action="/hesap/kapak-yukle" method="POST">
@@ -176,31 +189,39 @@
       <h2 class="title">Şifre Değiştir</h2>
       <p class="desc">Mail adresine doğrulama kodu gönderilecek.</p>
 
+      <!-- 1) Kod gönder -->
       <form action="/hesap/sifre-kod" method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-        <button class="btn save">Mailime Kod Gönder</button>
+        <button class="btn save">
+          <i class="fa-solid fa-paper-plane"></i> Mailime Kod Gönder
+        </button>
       </form>
 
-      <div id="verifyBox" style="display:none;margin-top:20px;">
+      <!-- 2) Doğrulama kutusu -->
+      <div id="verifyBox" style="display: none; margin-top:20px;">
         <h3 class="subtitle">Doğrulama Kodu</h3>
 
         <form action="/hesap/sifre-kod-dogrula-form" method="POST">
           <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-          <input type="text" name="code" class="input" required />
-
-          <button class="btn green">Kodu Doğrula</button>
+          <input type="text" name="code" placeholder="6 haneli kod" class="input" required />
+          <button class="btn green">
+            <i class="fa-solid fa-lock"></i> Kodu Doğrula
+          </button>
         </form>
       </div>
 
-      <div id="newPasswordBox" style="display:none;margin-top:30px;">
+      <!-- 3) Yeni şifre -->
+      <div id="newPasswordBox" style="display: none; margin-top: 30px;">
         <h3 class="subtitle">Yeni Şifre Oluştur</h3>
 
         <form action="/hesap/sifre-yeni" method="POST">
           <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-          <input type="password" name="password1" class="input" required />
-          <input type="password" name="password2" class="input" required />
+          <input type="password" name="password1" placeholder="Yeni Şifre" class="input" required />
+          <input type="password" name="password2" placeholder="Yeni Şifre Tekrar" class="input" required />
 
-          <button class="btn save">Şifreyi Güncelle</button>
+          <button class="btn save">
+            <i class="fa-solid fa-unlock-keyhole"></i> Şifreyi Güncelle
+          </button>
         </form>
       </div>
 
@@ -209,10 +230,10 @@
     <!-- ÇEREZLER -->
     <div class="content-box" id="cookies">
       <h2 class="title">Çerez Ayarları</h2>
+      <p class="desc">Tarayıcı çerezleri deneyimi iyileştirir.</p>
 
       <form action="/hesap/cookies" method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-
         <div class="toggle-row">
           <label>Gerekli Çerezler</label>
           <input type="checkbox" checked disabled />
@@ -221,7 +242,8 @@
         <div class="toggle-row">
           <label>Analitik Çerezler</label>
           <label class="switch">
-            <input type="checkbox" name="analyticsCookies" {{#if user.analyticsCookies}}checked{{/if}} />
+            <input type="checkbox" name="analyticsCookies"
+              {{#if user.analyticsCookies}}checked{{/if}} />
             <span class="slider"></span>
           </label>
         </div>
@@ -229,7 +251,8 @@
         <div class="toggle-row">
           <label>Kişiselleştirme Çerezleri</label>
           <label class="switch">
-            <input type="checkbox" name="personalizationCookies" {{#if user.personalizationCookies}}checked{{/if}} />
+            <input type="checkbox" name="personalizationCookies"
+              {{#if user.personalizationCookies}}checked{{/if}} />
             <span class="slider"></span>
           </label>
         </div>
@@ -247,11 +270,11 @@
 
       <form action="/hesap/data-usage" method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-
         <div class="toggle-row">
           <label>Hizmet kalitesi için anonim veri</label>
           <label class="switch">
-            <input type="checkbox" name="serviceDataUsage" {{#if user.serviceDataUsage}}checked{{/if}} />
+            <input type="checkbox" name="serviceDataUsage"
+              {{#if user.serviceDataUsage}}checked{{/if}} />
             <span class="slider"></span>
           </label>
         </div>
@@ -259,7 +282,8 @@
         <div class="toggle-row">
           <label>Kişiselleştirilmiş içerik</label>
           <label class="switch">
-            <input type="checkbox" name="personalizedContent" {{#if user.personalizedContent}}checked{{/if}} />
+            <input type="checkbox" name="personalizedContent"
+              {{#if user.personalizedContent}}checked{{/if}} />
             <span class="slider"></span>
           </label>
         </div>
@@ -271,12 +295,15 @@
       </form>
     </div>
 
-    <!-- HESAP SİLME -->
+    <!-- ========== HESAP SİLME (SIDEBAR İÇERİĞİ) ========== -->
     <div class="content-box" id="delete">
       <h2 class="title danger">Hesabı Sil</h2>
-      <p class="desc">Hesabınızı kalıcı olarak silmek için aşağıdaki butona tıklayın.</p>
+      <p class="desc">
+        Hesabınızı kalıcı olarak silmek istiyorsanız aşağıdaki butona tıklayın.
+        Bu işlem geri alınamaz.
+      </p>
 
-      <button class="danger-btn" onclick="openDeleteModal()">
+      <button class="danger-btn" type="button" onclick="openDeleteModal()">
         Hesabımı Kalıcı Olarak Sil
       </button>
     </div>
@@ -284,6 +311,7 @@
     <!-- POLİTİKALAR -->
     <div class="content-box" id="policies">
       <h2 class="title">Site Politikaları</h2>
+      <p class="desc">Gizlilik, veri politikası ve kullanım şartları.</p>
 
       <div class="policy-card">
         <h3 class="policy-title">📘 KVKK</h3>
@@ -302,27 +330,47 @@
 
     </div>
 
-    <!-- HESAP SİLME MODAL -->
+    <!-- ========== HESAP SİLME MODALI (OVERLAY) ========== -->
     <div id="deleteModal" class="delete-modal">
       <div class="delete-modal-content">
 
         <h2>Hesabı Sil</h2>
-        <p class="warning-text">Bu işlem geri alınamaz. Emin misiniz?</p>
+        <p class="warning-text">
+          Bu işlem geri alınamaz! Hesabınızı <b>kalıcı olarak</b> silmek istediğinize emin misiniz?
+        </p>
 
-        <input type="hidden" id="csrfDelete" value="{{csrfToken}}" />
+        <!-- Form: CSRF + şifre -->
+        <form id="deleteForm" action="/hesap/sil" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
-        <label class="modal-label">Onay için C harfini girin:</label>
-        <input type="text" id="confirmC" maxlength="1" class="modal-input" />
+          <!-- C doğrulaması -->
+          <label class="modal-label">Onay için <b>C</b> harfini girin:</label>
+          <input
+            type="text"
+            id="confirmC"
+            maxlength="1"
+            class="modal-input"
+            placeholder="C"
+          />
 
-        <label class="modal-label">Şifrenizi girin:</label>
-        <input type="password" id="deletePassword" class="modal-input" />
+          <!-- Şifre -->
+          <label class="modal-label">Şifrenizi girin:</label>
+          <input
+            type="password"
+            id="deletePassword"
+            name="password"
+            class="modal-input"
+            placeholder="Şifreniz"
+          />
 
-        <p id="modalError" class="modal-error"></p>
+          <p id="modalError" class="modal-error"></p>
 
-        <div class="modal-buttons">
-          <button class="cancel-btn" onclick="closeDeleteModal()">Vazgeç</button>
-          <button class="delete-btn" onclick="confirmDelete()">Hesabı Sil</button>
-        </div>
+          <!-- Butonlar -->
+          <div class="modal-buttons">
+            <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Vazgeç</button>
+            <button type="button" class="delete-btn" onclick="confirmDelete()">Hesabı Sil</button>
+          </div>
+        </form>
 
       </div>
     </div>

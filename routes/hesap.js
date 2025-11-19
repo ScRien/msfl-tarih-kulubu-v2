@@ -165,19 +165,19 @@ router.post("/sil", auth, async (req, res) => {
     const userId = req.user._id;
     const { password } = req.body;
 
+    if (!password) {
+      return res.redirect("/hesap?error=Şifre+girilmedi");
+    }
+
     const user = await User.findById(userId);
     if (!user) {
-      return res.render("pages/hesap", {
-        error: "Hesap bulunamadı.",
-      });
+      return res.redirect("/hesap?error=Hesap+bulunamadı");
     }
 
     // ➤ Şifre kontrolü
     const validPass = await bcrypt.compare(password, user.password);
     if (!validPass) {
-      return res.render("pages/hesap", {
-        error: "Şifre yanlış.",
-      });
+      return res.redirect("/hesap?error=Şifre+yanlış");
     }
 
     // ➤ Kullanıcı verilerini toplama
@@ -189,7 +189,7 @@ router.post("/sil", auth, async (req, res) => {
       userId: user._id,
       username: user.username,
       email: user.email,
-      ipHistory: [], // şu anlık boş kalsın dedin
+      ipHistory: [],       // şimdilik boş
       loginHistory: [],
       deviceInfo: [],
       userData: {
@@ -206,22 +206,28 @@ router.post("/sil", auth, async (req, res) => {
     // ➤ Kullanıcıyı sil
     await User.findByIdAndDelete(userId);
 
-    // ➤ E-posta gönder
+    // ➤ E-posta gönder (basit HTML)
+    const html = `
+      <p>Merhaba ${user.username},</p>
+      <p>MSFL Tarih Kulübü hesabınız isteğiniz üzerine <b>kalıcı olarak</b> silinmiştir.</p>
+      <p>Bu işlem geri alınamaz. Eğer bu işlemi siz yapmadıysanız veya destek talep etmek isterseniz, lütfen kullanıcı adınızı belirterek bize e-posta gönderin.</p>
+      <p>Sevgiler,<br>MSFL Tarih Kulübü Ekibi</p>
+    `;
+
     await sendMail(
       user.email,
       "Hesabınız Silindi - MSFL Tarih Kulübü",
-      accountDeletedMailTemplate(user.username)
+      html
     );
 
     // ➤ Cookie temizle
     res.clearCookie("token");
 
-    return res.redirect("/?success=Hesabiniz+silindi");
+    // Ana sayfaya success mesajıyla dön
+    return res.redirect("/?success=Hesabınız+kalıcı+olarak+silindi");
   } catch (err) {
     console.error("HESAP SİLME HATASI:", err);
-    return res.render("pages/hesap", {
-      error: "Bir hata oluştu. Lütfen tekrar deneyin.",
-    });
+    return res.redirect("/hesap?error=Bir+hata+oluştu.+Lütfen+tekrar+deneyin");
   }
 });
 
