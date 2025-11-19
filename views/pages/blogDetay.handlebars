@@ -1,5 +1,22 @@
 <section class="blog-detail">
 
+  {{#if isAuth}}
+  {{#if (eq currentUser post.username)}}
+  <div class="blog-detail-actions">
+    <a href="/blog/duzenle/{{post._id}}" class="edit-btn">
+      <i class="fa-solid fa-pen"></i> Düzenle
+    </a>
+
+    <form action="/blog/sil/{{post._id}}" method="POST" class="delete-form">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+      <button class="delete-btn">
+        <i class="fa-solid fa-trash"></i> Sil
+      </button>
+    </form>
+  </div>
+  {{/if}}
+{{/if}}
+
   <!-- HERO -->
   <div class="blog-detail-hero">
     <img

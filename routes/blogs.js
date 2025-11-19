@@ -82,90 +82,91 @@ blogs.post(
 /* ============================================================
    BLOG DÜZENLE (GET)
 ============================================================ */
-blogs.get("/:id/duzenle", auth, async (req, res) => {
+blogs.get("/duzenle/:id", auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id).lean();
-    if (!post) return res.status(404).render("pages/404");
 
-    const isOwner = post.user_id.toString() === req.user.id;
-    const isAdmin = req.user.role === "admin";
+    if (!post) {
+      return res.render("pages/blogDuzenle", {
+        error: "Blog bulunamadı."
+      });
+    }
 
-    if (!isOwner && !isAdmin)
-      return res.status(403).send("Yetkiniz yok.");
+    // Post sahibi değilse erişemez
+    if (post.user_id.toString() !== req.user.id) {
+      return res.redirect("/blog?error=Bu+blogu+düzenleme+yetkin+yok");
+    }
 
-    res.render("pages/blogDuzenle", { post });
+    return res.render("pages/blogDuzenle", {
+      post,
+      csrfToken: req.csrfToken()
+    });
+
   } catch (err) {
-    logger.error("BLOG EDIT GET ERROR:", err);
-    res.status(500).send("Hata oluştu");
+    console.error("BLOG DÜZENLE GET HATASI:", err);
+    return res.render("pages/blogDuzenle", {
+      error: "Bir hata oluştu."
+    });
   }
 });
 
 /* ============================================================
    BLOG DÜZENLE (POST)
 ============================================================ */
-blogs.post("/:id/duzenle", auth, async (req, res) => {
+blogs.post("/duzenle/:id", auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).render("pages/404");
+    const postId = req.params.id;
+    const userId = req.user.id;
 
-    const isOwner = post.user_id.toString() === req.user.id;
-    const isAdmin = req.user.role === "admin";
-
-    if (!isOwner && !isAdmin)
-      return res.status(403).send("Yetkiniz yok.");
-
-    // VALIDASYON UYGULA
-    if (!req.body.title || req.body.title.trim().length < 5)
-      return res.redirect(`/blog/${post._id}/duzenle?error=Başlık+çok+kısa`);
-
-    if (!req.body.content || req.body.content.trim().length < 50)
-      return res.redirect(`/blog/${post._id}/duzenle?error=İçerik+çok+kısa`);
-
-    post.title = req.body.title.trim();
-    post.content = req.body.content.trim();
-
-    /* --- ESKİ GÖRSELLERİ SİLME --- */
-    const toDelete = req.body.deleteImages;
-    if (toDelete) {
-      const array = Array.isArray(toDelete) ? toDelete : [toDelete];
-
-      const validPublicIds = post.images
-        .map((img) => img.public_id)
-        .filter((id) => array.includes(id));
-
-      for (const id of validPublicIds) {
-        try {
-          await cloudinary.uploader.destroy(id);
-        } catch (err) {
-          logger.error("Cloudinary delete error:", err);
-        }
-      }
-
-      post.images = post.images.filter(
-        (img) => !validPublicIds.includes(img.public_id)
-      );
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.render("pages/blogDuzenle", {
+        error: "Blog bulunamadı."
+      });
     }
 
-    /* --- YENİ GÖRSELLER --- */
-    if (req.body.newImagesJson) {
-      try {
-        const newImgs = JSON.parse(req.body.newImagesJson);
-        if (Array.isArray(newImgs)) {
-          const filtered = newImgs.filter(
-            (img) => img.url && img.public_id
-          );
-          post.images.push(...filtered);
-        }
-      } catch (err) {
-        logger.error("newImagesJson parse error:", err);
-      }
+    if (post.user_id.toString() !== userId) {
+      return res.redirect("/blog?error=Yetkin+yok");
     }
+
+    const { title, content } = req.body;
+
+    /* ------------------------
+        1) Mevcut görselleri sil
+    ------------------------- */
+    let deleteList = req.body.deleteImages || [];
+    if (!Array.isArray(deleteList)) deleteList = [deleteList];
+
+    // Silinmeyecek görseller
+    let newImages = post.images.filter(img => !deleteList.includes(img));
+
+    /* ------------------------
+        2) Yeni yüklenen Cloudinary görselleri
+    ------------------------- */
+    let uploadedImages = [];
+    if (req.body.uploadedImages) {
+      uploadedImages = JSON.parse(req.body.uploadedImages);
+    }
+
+    // Final görsel listesi:
+    const finalImages = [...newImages, ...uploadedImages];
+
+    /* ------------------------
+        3) Güncelleme
+    ------------------------- */
+    post.title = title;
+    post.content = content;
+    post.images = finalImages;
 
     await post.save();
-    res.redirect(`/blog/${post._id}`);
-  } catch (error) {
-    logger.error("BLOG EDIT POST ERROR:", error);
-    res.status(500).send("Blog düzenlenirken hata oluştu");
+
+    return res.redirect(`/blog/${postId}?success=Blog+güncellendi`);
+
+  } catch (err) {
+    console.error("BLOG DÜZENLE POST HATASI:", err);
+    return res.render("pages/blogDuzenle", {
+      error: "Bir hata oluştu.",
+    });
   }
 });
 
