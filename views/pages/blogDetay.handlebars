@@ -18,7 +18,7 @@
           {{#if post.username}}@{{post.username}}{{else}}Anonim{{/if}}
         </span>
         <span class="blog-detail-dot">•</span>
-        <span class="blog-detail-date">{{generateDate post.date}}</span>
+        <span class="blog-detail-date">{{generateDate post.date "DD MMMM YYYY"}}</span>
       </div>
     </div>
   </div>
@@ -84,7 +84,7 @@
                 <span class="comment-author">
                   {{#if this.username}}@{{this.username}}{{else}}Anonim{{/if}}
                 </span>
-                <span class="comment-date">{{generateDate this.date}}</span>
+                <span class="comment-date">{{generateDate this.date "DD MMMM YYYY"}}</span>
               </div>
               <p class="comment-content">
                 {{this.content}}
