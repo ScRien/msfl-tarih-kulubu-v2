@@ -1,3 +1,5 @@
+// public/js/hesap.js
+
 document.addEventListener("DOMContentLoaded", () => {
   /* ===========================================================
      SOL MENÜ GEÇİŞLERİ
@@ -29,10 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===========================================================
-     MEDIA PREVIEW — AVATAR
+     AVATAR PREVIEW
   ============================================================ */
-  const avatarInput = document.getElementById("avatar-input");
-  const avatarPreview = document.getElementById("avatar-preview");
+  const avatarInput = document.getElementById("avatarUpload");
+  const avatarPreview = document.getElementById("avatarPreview");
 
   if (avatarInput && avatarPreview) {
     avatarInput.addEventListener("change", (e) => {
@@ -42,10 +44,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===========================================================
-     MEDIA PREVIEW — COVER
+     COVER PREVIEW
   ============================================================ */
-  const coverInput = document.getElementById("cover-input");
-  const coverPreview = document.getElementById("cover-preview");
+  const coverInput = document.getElementById("coverUpload");
+  const coverPreview = document.getElementById("coverPreview");
 
   if (coverInput && coverPreview) {
     coverInput.addEventListener("change", (e) => {
@@ -55,13 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===========================================================
-     ŞİFRE SIFIRLAMA — DB tabanlı UI kontrolü
+     ŞİFRE SIFIRLAMA — UI KONTROLÜ
   ============================================================ */
   const verifyBox = document.getElementById("verifyBox");
   const newPasswordBox = document.getElementById("newPasswordBox");
   const urlParams = new URLSearchParams(window.location.search);
 
-  if (urlParams.get("showVerify") == "1" && verifyBox) {
+  if (urlParams.get("showVerify") === "1" && verifyBox) {
     verifyBox.style.display = "block";
     if (newPasswordBox) newPasswordBox.style.display = "none";
 
@@ -93,12 +95,10 @@ async function confirmDelete() {
   const password = document.getElementById("deletePassword").value.trim();
   const errorBox = document.getElementById("modalError");
 
-  // Önce hata kutusunu sıfırla
   errorBox.textContent = "";
 
-  // C doğrulaması
   if (c !== "C") {
-    errorBox.textContent = "Doğrulama harfi yanlış!";
+    errorBox.textContent = "Onay için C harfini girin.";
     return;
   }
 
@@ -114,13 +114,11 @@ async function confirmDelete() {
       body: JSON.stringify({ password }),
     });
 
-    // Sunucu redirect ediyorsa → oraya git
     if (res.redirected) {
       window.location.href = res.url;
       return;
     }
 
-    // Redirect yoksa hata vardır
     errorBox.textContent = "Bir hata oluştu.";
   } catch (err) {
     console.error("DELETE ERROR:", err);

@@ -295,7 +295,42 @@
       </form>
     </div>
 
-    <!-- ========== HESAP SİLME MODALI ========== -->
+    <!-- ========== HESAP SİLME (SIDEBAR İÇERİĞİ) ========== -->
+    <div class="content-box" id="delete">
+      <h2 class="title danger">Hesabı Sil</h2>
+      <p class="desc">
+        Hesabınızı kalıcı olarak silmek istiyorsanız aşağıdaki butona tıklayın.
+        Bu işlem geri alınamaz.
+      </p>
+
+      <button class="danger-btn" onclick="openDeleteModal()">
+        Hesabımı Kalıcı Olarak Sil
+      </button>
+    </div>
+
+    <!-- POLİTİKALAR -->
+    <div class="content-box" id="policies">
+      <h2 class="title">Site Politikaları</h2>
+      <p class="desc">Gizlilik, veri politikası ve kullanım şartları.</p>
+
+      <div class="policy-card">
+        <h3 class="policy-title">📘 KVKK</h3>
+        <a href="/legal/kvkk" class="policy-link">KVKK Metni →</a>
+      </div>
+
+      <div class="policy-card">
+        <h3 class="policy-title">🔒 Gizlilik</h3>
+        <a href="/legal/gizlilik" class="policy-link">Gizlilik Politikası →</a>
+      </div>
+
+      <div class="policy-card">
+        <h3 class="policy-title">📄 Kullanım Şartları</h3>
+        <a href="/legal/kullanim-sartlari" class="policy-link">Kullanım Şartları →</a>
+      </div>
+
+    </div>
+
+    <!-- ========== HESAP SİLME MODALI (OVERLAY) ========== -->
     <div id="deleteModal" class="delete-modal">
       <div class="delete-modal-content">
 
@@ -325,7 +360,7 @@
 
         <p id="modalError" class="modal-error"></p>
 
-        <!-- Buttons -->
+        <!-- Butonlar -->
         <div class="modal-buttons">
           <button class="cancel-btn" onclick="closeDeleteModal()">Vazgeç</button>
           <button class="delete-btn" onclick="confirmDelete()">Hesabı Sil</button>
@@ -334,32 +369,8 @@
       </div>
     </div>
 
-    <!-- POLİTİKALAR -->
-    <div class="content-box" id="policies">
-      <h2 class="title">Site Politikaları</h2>
-      <p class="desc">Gizlilik, veri politikası ve kullanım şartları.</p>
-
-      <div class="policy-card">
-        <h3 class="policy-title">📘 KVKK</h3>
-        <a href="/legal/kvkk" class="policy-link">KVKK Metni →</a>
-      </div>
-
-      <div class="policy-card">
-        <h3 class="policy-title">🔒 Gizlilik</h3>
-        <a href="/legal/gizlilik" class="policy-link">Gizlilik Politikası →</a>
-      </div>
-
-      <div class="policy-card">
-        <h3 class="policy-title">📄 Kullanım Şartları</h3>
-        <a href="/legal/kullanim-sartlari" class="policy-link">Kullanım Şartları →</a>
-      </div>
-
-    </div>
-
   </main>
 </section>
-
-<script src="/js/hesap.js"></script>
 
 {{!-- 🔥 URL PARAMETRESİNE GÖRE DOĞRULAMA ALANINI OTOMATİK AÇ --}}
 <script>
