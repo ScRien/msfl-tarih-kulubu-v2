@@ -605,3 +605,31 @@ input:checked + .slider:before {
 .save-btn:hover {
   opacity: 0.9;
 }
+
+/* ===========================
+   DANGER BUTTON
+=========================== */
+.danger-btn {
+  width: 100%;
+  background: #d62828;
+  color: #fff;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.danger-btn:hover {
+  background: #b52222;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(214, 40, 40, 0.4);
+}
+
+.danger-btn:active {
+  transform: scale(0.97);
+}

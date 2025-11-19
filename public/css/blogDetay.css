@@ -12,11 +12,13 @@
    HERO
 =========================== */
 
-.blog-detail-cover {
+.blog-detail-hero {
+  position: relative;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(0.55);
+  height: 420px;
+  overflow: hidden;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .blog-detail-overlay {
@@ -24,8 +26,8 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.1),
-    rgba(0, 0, 0, 0.8)
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.9)
   );
 }
 
@@ -81,8 +83,102 @@
   opacity: 0.6;
 }
 
-.blog-detail-date {
-  opacity: 0.9;
+/* ===========================
+   CAROUSEL WRAPPER
+=========================== */
+
+.blog-carousel-container {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #000;
+  margin-bottom: 0 !important;
+}
+
+.blog-carousel {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s ease;
+}
+
+.blog-slide {
+  min-width: 100%;
+  height: 420px;
+}
+
+.blog-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===========================
+   CAROUSEL ARROWS
+=========================== */
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: #222;
+  transition: 0.25s ease;
+  z-index: 15;
+}
+
+.carousel-arrow:hover {
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-arrow.left {
+  left: 12px;
+}
+.carousel-arrow.right {
+  right: 12px;
+}
+
+/* ===========================
+   DOTS
+=========================== */
+
+.carousel-dots {
+  position: absolute;
+  bottom: 14px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  z-index: 15;
+}
+
+.carousel-dot {
+  width: 11px;
+  height: 11px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.carousel-dot.active {
+  background: #fff;
+  transform: scale(1.3);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
 /* ===========================
@@ -91,16 +187,15 @@
 
 .blog-detail-body {
   width: min(1100px, 100%);
-  margin: 38px auto 60px;
+  margin: 38px auto 0px;
   padding-inline: 20px;
-
   display: grid;
-  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 2.3fr) minmax(0, 1fr);
   gap: 32px;
 }
 
 /* ===========================
-   ARTICLE
+   CONTENT
 =========================== */
 
 .blog-detail-article {
@@ -114,26 +209,8 @@
 .blog-detail-content p {
   margin: 12px 0;
   font-size: 1rem;
-  line-height: 1.7;
-}
-
-/* ===========================
-   GALLERY
-=========================== */
-
-.blog-detail-gallery {
-  margin-top: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 14px;
-}
-
-.blog-detail-gallery img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 12px;
-  border: 1px solid rgba(201, 167, 82, 0.25);
+  line-height: 1.75;
+  word-break: break-word;
 }
 
 /* ===========================
@@ -144,7 +221,7 @@
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(201, 167, 82, 0.2);
   border-radius: 18px;
-  padding: 20px 22px;
+  padding: 22px;
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
   height: fit-content;
 }
@@ -164,7 +241,6 @@
   border-radius: 12px;
   padding: 10px;
   border: 1px solid rgba(201, 167, 82, 0.25);
-  font-size: 0.95rem;
 }
 
 .comment-btn {
@@ -178,237 +254,17 @@
   cursor: pointer;
 }
 
-/* Yorum Listesi */
+/* Yorumlar */
 .comment-list {
   margin-top: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.comment-item {
-  background: rgba(0, 0, 0, 0.35);
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(201, 167, 82, 0.2);
-}
-
-.comment-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  font-size: 0.85rem;
-}
-
-.comment-author {
-  color: #c9a752;
-  text-decoration: none;
-}
-
-.comment-content {
-  font-size: 0.95rem;
-  line-height: 1.55;
-}
-
-/* ===========================
-   RESPONSIVE
-=========================== */
-
-@media (max-width: 900px) {
-  .blog-detail-body {
-    grid-template-columns: 1fr;
-  }
-
-  .blog-detail-hero {
-    height: 230px;
-  }
-
-  .blog-detail-title {
-    font-size: 1.8rem;
-  }
-}
-
-.blog-detail-content,
-.blog-detail-article,
-.blog-detail-body,
-.blog-detail {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-}
-
-.blog-detail-content p,
-.blog-detail-content span,
-.blog-detail-content div {
-  word-break: break-word;
-  max-width: 100%;
-}
-
-.blog-detail-gallery img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-radius: 12px;
-}
-
-.comment-content {
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  word-break: break-word;
-}
-
-.blog-detail-title {
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
-
-.blog-detail-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.delete-form {
-  margin: 0;
-}
-
-/* ================================
-   BLOG DETAY — DÜZENLE/SİL BAR
-================================ */
-
-.blog-detail-actions {
-  width: 100%;
-  background: #0e0e11;
-  padding: 14px 26px;
-  display: flex;
   gap: 14px;
-  align-items: center;
-  border-bottom: 1px solid #272727;
-}
-
-.action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: 0.2s;
-}
-
-/* Düzenle */
-.action-btn.edit {
-  background: #ffd86b;
-  color: #000;
-}
-.action-btn.edit:hover {
-  background: #f5c85a;
-}
-
-/* Sil */
-.action-btn.delete {
-  background: #ff4b4b;
-  color: #fff;
-  border: none;
-}
-.action-btn.delete:hover {
-  background: #e84141;
-}
-
-.blog-carousel-container {
-  position: relative;
-  width: 100%;
-  height: 420px;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #000;
-}
-
-.blog-carousel {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.5s ease-in-out;
-}
-
-.blog-slide {
-  min-width: 100%;
-  height: 100%;
-}
-
-.blog-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Ok butonları */
-.carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0,0,0,0.45);
-  border: none;
-  color: white;
-  font-size: 32px;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: .2s;
-  z-index: 10;
-}
-
-.carousel-btn:hover {
-  background: rgba(0,0,0,0.75);
-}
-
-.prev { left: 15px; }
-.next { right: 15px; }
-
-/* Dots */
-.carousel-dots {
-  position: absolute;
-  bottom: 15px;
-  width: 100%;
-  text-align: center;
-}
-
-.carousel-dots .dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin: 0 4px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.5);
-  cursor: pointer;
-}
-
-.carousel-dots .dot.active {
-  background: white;
-}
-
-.blog-carousel-wrapper {
-  width: 100%;
-  height: 420px;     /* 🔥 ZORUNLU — yoksa slider çöker */
-  position: relative;
-  overflow: hidden;
-}
-
-.blog-detail-hero {
-  position: relative;
-  height: 420px;   /* Slider ile aynı yükseklik */
-  width: 100%;
-  overflow: hidden;
-  margin-bottom: 40px;
 }
 
 .comment-item {
   background: rgba(0, 0, 0, 0.35);
-  padding: 16px 18px;
+  padding: 15px 17px;
   border-radius: 12px;
   border: 1px solid rgba(201, 167, 82, 0.2);
 }
@@ -428,20 +284,20 @@
   color: #c9a752;
   font-weight: 600;
   text-decoration: none;
-  margin-bottom: 3px;
 }
 
 .comment-date {
-  font-size: 0.85rem;
   opacity: 0.7;
+  font-size: 0.8rem;
 }
 
 .comment-content {
-  margin-top: 10px;
+  margin-top: 8px;
   line-height: 1.6;
+  white-space: pre-wrap;
 }
 
-/* Düzenle - Sil butonları */
+/* Düzenle / Sil */
 .comment-actions {
   display: flex;
   gap: 8px;
@@ -454,23 +310,180 @@
   border-radius: 6px;
   cursor: pointer;
   border: none;
-  text-decoration: none;
-  color: white;
 }
 
 .comment-edit-btn {
   background: #ffd86b;
   color: #000;
 }
-
 .comment-edit-btn:hover {
   background: #ffcf4a;
 }
 
 .comment-delete-btn {
   background: #ff4b4b;
+  color: #fff;
 }
-
 .comment-delete-btn:hover {
   background: #e84141;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media (max-width: 900px) {
+  .blog-detail-body {
+    grid-template-columns: 1fr;
+  }
+
+  .blog-detail-hero {
+    height: 260px;
+  }
+
+  .blog-slide {
+    height: 260px;
+  }
+
+  .blog-slide img {
+    height: 260px;
+  }
+
+  .blog-detail-title {
+    font-size: 1.8rem;
+  }
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: #222;
+  transition: 0.25s ease;
+  z-index: 15;
+}
+
+.carousel-arrow.left {
+  left: 12px;
+}
+.carousel-arrow.right {
+  right: 12px;
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 14px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  z-index: 15;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.carousel-dot.active {
+  background: white;
+  transform: scale(1.25);
+}
+
+/* ==============================
+   BLOG DETAY — ÜST AKSİYON BAR
+============================== */
+
+.blog-detail-actions {
+  width: 100%;
+  background: #0d0d0f;
+  padding: 14px 26px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(201, 167, 82, 0.25);
+  position: relative;
+  z-index: 30; /* sliderın altında kalmasın */
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+/* Düzenle */
+.action-btn.edit {
+  background: #ffd86b;
+  color: #000;
+}
+.action-btn.edit:hover {
+  background: #ffcf4a;
+}
+
+/* Sil */
+.action-btn.delete {
+  background: #ff4b4b;
+  color: #fff;
+  border: none;
+}
+.action-btn.delete:hover {
+  background: #e84141;
+}
+
+.blog-detail {
+  padding-top: 0;
+}
+
+.blog-detail-actions {
+  margin-top: 0;
+  border-radius: 0;
+}
+
+.comment-login-info {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(201, 167, 82, 0.25);
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #e6e2d5;
+  line-height: 1.55;
+  text-align: center;
+  margin: 10px 0px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Linkler */
+.comment-login-info a {
+  color: #c9a752;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.comment-login-info a:hover {
+  color: #e7d197;
+  text-shadow: 0 0 6px rgba(201, 167, 82, 0.55);
 }

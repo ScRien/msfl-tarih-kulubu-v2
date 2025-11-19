@@ -105,3 +105,40 @@
     border-radius: 12px;
   }
 }
+
+/* ===========================
+   POLICY CARDS
+=========================== */
+#policies .policy-card {
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  padding: 18px 20px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  transition: 0.25s ease;
+}
+
+#policies .policy-card:hover {
+  border-color: #bfbfbf;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+.policy-title {
+  margin: 0 0 6px 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.policy-link {
+  color: #2b75ff;
+  font-weight: 500;
+  font-size: 15px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.policy-link:hover {
+  color: #1a4bb8;
+  text-decoration: underline;
+}

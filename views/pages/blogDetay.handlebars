@@ -29,9 +29,20 @@
   {{/if}}
 
   {{! HERO }}
+{{!-- HERO --}}
   <div class="blog-detail-hero">
 
     <div class="blog-carousel-wrapper">
+
+      <!-- 🔥 OKLAR (EKLENEN) -->
+      <button id="prevBtn" class="carousel-arrow left">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <button id="nextBtn" class="carousel-arrow right">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+
       <div class="blog-carousel-container">
         <div class="blog-carousel" id="blogCarousel">
           {{#each post.images}}
@@ -41,6 +52,14 @@
           {{/each}}
         </div>
       </div>
+
+      <!-- 🔥 DOTS (EKLENEN) -->
+      <div class="carousel-dots" id="carouselDots">
+        {{#each post.images}}
+          <div class="carousel-dot"></div>
+        {{/each}}
+      </div>
+
     </div>
 
     <div class="blog-detail-overlay"></div>
