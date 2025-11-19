@@ -5,10 +5,9 @@ import User from "../models/User.js";
 import Post from "../models/Post.js";
 import cloudinary from "../helpers/cloudinary.js";
 import Comment from "../models/Comment.js";
-import { sendMail } from "../helpers/mail.js";
+import { sendMail, sendDeletedMail } from "../helpers/mail.js";
 import { verificationMailTemplate } from "../helpers/mailTemplates.js";
 import Backup from "../models/Backup.js";
-import { sendDeletedMail } from "../mail/sendMail.js";
 import bcrypt from "bcrypt";
 
 const router = express.Router();
