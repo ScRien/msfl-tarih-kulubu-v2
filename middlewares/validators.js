@@ -1,19 +1,32 @@
 import { body, validationResult } from "express-validator";
 
+/* ============================================================
+   GENEL ERROR HANDLER
+============================================================ */
 export const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     const messages = errors.array().map((e) => e.msg);
 
-    return res.render(req.validationErrorView, {
-      error: messages.join(", "),
-      ...req.validationErrorData,
-    });
+    // Eğer middleware çağırmadan önce view belirlediysek oraya dön
+    if (req.validationErrorView) {
+      return res.render(req.validationErrorView, {
+        error: messages.join(", "),
+        ...req.validationErrorData,
+      });
+    }
+
+    // Eğer belirlenmemişse 400 döner
+    return res.status(400).send(messages.join(", "));
   }
+
   next();
 };
 
-// REGISTER
+/* ============================================================
+   REGISTER VALIDATION
+============================================================ */
 export const registerValidation = [
   body("username")
     .trim()
@@ -39,7 +52,10 @@ export const registerValidation = [
     return true;
   }),
 
-  body("name").trim().isLength({ min: 2 }).withMessage("İsim geçersiz"),
+  body("name")
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage("İsim geçersiz"),
 
   body("surname")
     .trim()
@@ -49,7 +65,9 @@ export const registerValidation = [
   handleValidationErrors,
 ];
 
-// LOGIN
+/* ============================================================
+   LOGIN VALIDATION
+============================================================ */
 export const loginValidation = [
   body("username").trim().notEmpty().withMessage("Kullanıcı adı gerekli"),
   body("password")
@@ -58,13 +76,20 @@ export const loginValidation = [
   handleValidationErrors,
 ];
 
-// EMAIL
+/* ============================================================
+   EMAIL VALIDATION
+============================================================ */
 export const emailValidation = [
-  body("email").isEmail().withMessage("Geçersiz email"),
+  body("email")
+    .trim()
+    .isEmail()
+    .withMessage("Geçersiz email"),
   handleValidationErrors,
 ];
 
-// PASSWORD CHANGE
+/* ============================================================
+   PASSWORD CHANGE VALIDATION
+============================================================ */
 export const passwordChangeValidation = [
   body("password1")
     .isLength({ min: 8 })
@@ -81,7 +106,9 @@ export const passwordChangeValidation = [
   handleValidationErrors,
 ];
 
-// BLOG VALIDATION
+/* ============================================================
+   BLOG VALIDATION
+============================================================ */
 export const blogValidation = [
   body("title")
     .trim()
@@ -92,6 +119,18 @@ export const blogValidation = [
     .trim()
     .isLength({ min: 50, max: 10000 })
     .withMessage("İçerik 50-10000 karakter arasında olmalıdır"),
+
+  handleValidationErrors,
+];
+
+/* ============================================================
+   COMMENT VALIDATION
+============================================================ */
+export const commentValidation = [
+  body("content")
+    .trim()
+    .isLength({ min: 3, max: 500 })
+    .withMessage("Yorum 3-500 karakter arasında olmalıdır"),
 
   handleValidationErrors,
 ];
