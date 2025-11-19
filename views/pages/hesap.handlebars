@@ -295,31 +295,40 @@
       </form>
     </div>
 
-    <!-- ====== HESAP SİLME MODAL ====== -->
-    <div id="deleteModal" class="modal-overlay">
-      <div class="modal-box">
+    <!-- ========== HESAP SİLME MODALI ========== -->
+    <div id="deleteModal" class="delete-modal">
+      <div class="delete-modal-content">
 
-        <h2 class="modal-title">Hesabını Silmek Üzeresin</h2>
-        <p class="modal-desc">
-          Bu işlem <b>kalıcıdır</b> ve geri alınamaz.<br>
-          Devam etmek için lütfen aşağıdaki doğrulamaları yap.
+        <h2>Hesabı Sil</h2>
+        <p class="warning-text">
+          Bu işlem geri alınamaz! Hesabınızı <b>kalıcı olarak</b> silmek istediğinize emin misiniz?
         </p>
 
-        <!-- C DOĞRULAMA -->
-        <label class="modal-label">Onay harfini gir ("C"):</label>
-        <input type="text" id="confirmC" class="modal-input" maxlength="1" placeholder="C" />
+        <!-- C doğrulaması -->
+        <label class="modal-label">Onay için <b>C</b> harfini girin:</label>
+        <input
+          type="text"
+          id="confirmC"
+          maxlength="1"
+          class="modal-input"
+          placeholder="C"
+        />
 
-        <!-- ŞİFRE -->
-        <label class="modal-label">Şifreniz:</label>
-        <input type="password" id="deletePassword" class="modal-input" placeholder="Şifrenizi girin" />
+        <!-- Şifre -->
+        <label class="modal-label">Şifrenizi girin:</label>
+        <input
+          type="password"
+          id="deletePassword"
+          class="modal-input"
+          placeholder="Şifreniz"
+        />
 
-        <!-- HATA MESAJI -->
         <p id="modalError" class="modal-error"></p>
 
-        <!-- BUTONLAR -->
+        <!-- Buttons -->
         <div class="modal-buttons">
-          <button class="btn-cancel" onclick="closeDeleteModal()">İptal</button>
-          <button class="delete-account-btn" onclick="openDeleteModal()">Hesabımı Sil</button>
+          <button class="cancel-btn" onclick="closeDeleteModal()">Vazgeç</button>
+          <button class="delete-btn" onclick="confirmDelete()">Hesabı Sil</button>
         </div>
 
       </div>

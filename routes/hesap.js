@@ -9,7 +9,6 @@ import { sendMail } from "../helpers/mail.js";
 import { verificationMailTemplate } from "../helpers/mailTemplates.js";
 import Backup from "../models/Backup.js";
 import { sendDeletedMail } from "../mail/sendMail.js";
-import auth from "../middlewares/auth.js";
 import bcrypt from "bcrypt";
 
 const router = express.Router();

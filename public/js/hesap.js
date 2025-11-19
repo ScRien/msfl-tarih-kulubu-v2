@@ -37,8 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (avatarInput && avatarPreview) {
     avatarInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
-      if (!file) return;
-      avatarPreview.src = URL.createObjectURL(file);
+      if (file) avatarPreview.src = URL.createObjectURL(file);
     });
   }
 
@@ -51,47 +50,51 @@ document.addEventListener("DOMContentLoaded", () => {
   if (coverInput && coverPreview) {
     coverInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
-      if (!file) return;
-      coverPreview.src = URL.createObjectURL(file);
+      if (file) coverPreview.src = URL.createObjectURL(file);
     });
   }
 
   /* ===========================================================
      ŞİFRE SIFIRLAMA — DB tabanlı UI kontrolü
   ============================================================ */
-
   const verifyBox = document.getElementById("verifyBox");
   const newPasswordBox = document.getElementById("newPasswordBox");
-
   const urlParams = new URLSearchParams(window.location.search);
 
-  // 1) showVerify=1 → doğrulama kutusu açılır
   if (urlParams.get("showVerify") == "1" && verifyBox) {
     verifyBox.style.display = "block";
     if (newPasswordBox) newPasswordBox.style.display = "none";
 
-    // Şifre kısmına otomatik kaydır
-    document.getElementById("password")?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("password")?.scrollIntoView({
+      behavior: "smooth",
+    });
   }
 
-  // 2) /hesap/sifre-yeni sayfasına gelmişse yeni şifre kutusu açılır
   if (window.location.pathname.includes("sifre-yeni") && newPasswordBox) {
     newPasswordBox.style.display = "block";
   }
 });
 
+/* ===========================================================
+   HESAP SİLME MODAL FONKSİYONLARI
+=========================================================== */
 function openDeleteModal() {
-  document.getElementById("deleteModal").style.display = "flex";
+  const modal = document.getElementById("deleteModal");
+  if (modal) modal.style.display = "flex";
 }
 
 function closeDeleteModal() {
-  document.getElementById("deleteModal").style.display = "none";
+  const modal = document.getElementById("deleteModal");
+  if (modal) modal.style.display = "none";
 }
 
 async function confirmDelete() {
   const c = document.getElementById("confirmC").value.trim().toUpperCase();
   const password = document.getElementById("deletePassword").value.trim();
   const errorBox = document.getElementById("modalError");
+
+  // Önce hata kutusunu sıfırla
+  errorBox.textContent = "";
 
   // C doğrulaması
   if (c !== "C") {
@@ -104,17 +107,23 @@ async function confirmDelete() {
     return;
   }
 
-  // Sunucuya gönder
-  const res = await fetch("/hesap/sil", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ password }),
-  });
+  try {
+    const res = await fetch("/hesap/sil", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
 
-  if (res.redirected) {
-    window.location.href = res.url;
-    return;
+    // Sunucu redirect ediyorsa → oraya git
+    if (res.redirected) {
+      window.location.href = res.url;
+      return;
+    }
+
+    // Redirect yoksa hata vardır
+    errorBox.textContent = "Bir hata oluştu.";
+  } catch (err) {
+    console.error("DELETE ERROR:", err);
+    errorBox.textContent = "Sunucu hatası.";
   }
-
-  errorBox.textContent = "Bir hata oluştu.";
 }
