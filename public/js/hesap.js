@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.classList.add("active");
 
         const target = btn.dataset.target;
-
         contentBoxes.forEach((box) => (box.style.display = "none"));
 
         const open = document.getElementById(target);
@@ -24,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
+    // Varsayılan olarak "Profil" açılsın
     const first = document.querySelector(
       '.sidebar-item[data-target="profile"]'
     );
@@ -39,9 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (avatarInput && avatarPreview) {
     avatarInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
-      if (file) {
-        avatarPreview.src = URL.createObjectURL(file);
-      }
+      if (file) avatarPreview.src = URL.createObjectURL(file);
     });
   }
 
@@ -54,46 +52,43 @@ document.addEventListener("DOMContentLoaded", () => {
   if (coverInput && coverPreview) {
     coverInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
-      if (file) {
-        coverPreview.src = URL.createObjectURL(file);
-      }
+      if (file) coverPreview.src = URL.createObjectURL(file);
     });
   }
 
   /* ===========================================================
-     ŞİFRE SIFIRLAMA — UI KONTROLÜ
+     ŞİFRE SIFIRLAMA — UI KONTROL
   ============================================================ */
   const verifyBox = document.getElementById("verifyBox");
   const newPasswordBox = document.getElementById("newPasswordBox");
   const urlParams = new URLSearchParams(window.location.search);
 
-  // showVerify=1 ise doğrulama kutusunu aç
+  // showVerify=1 → doğrulama kodu kutusu aç
   if (urlParams.get("showVerify") === "1" && verifyBox) {
+    document.querySelector('.sidebar-item[data-target="password"]')?.click();
+
     verifyBox.style.display = "block";
     if (newPasswordBox) newPasswordBox.style.display = "none";
-
-    document.getElementById("password")?.scrollIntoView({
-      behavior: "smooth",
-    });
   }
 
-  // /hesap/sifre-yeni içindeysek yeni şifre kutusunu aç
+  // /hesap/sifre-yeni → Yeni şifre kutusunu aç + tabı aktive et
   if (window.location.pathname.includes("sifre-yeni") && newPasswordBox) {
+    document.querySelector('.sidebar-item[data-target="password"]')?.click();
+
     newPasswordBox.style.display = "block";
+    if (verifyBox) verifyBox.style.display = "none";
   }
 });
 
 /* ===========================================================
-   HESAP SİLME MODAL FONKSİYONLARI (FORM SUBMIT)
+   HESAP SİLME MODAL (FORM SUBMIT)
 =========================================================== */
 function openDeleteModal() {
-  const modal = document.getElementById("deleteModal");
-  if (modal) modal.style.display = "flex";
+  document.getElementById("deleteModal").style.display = "flex";
 }
 
 function closeDeleteModal() {
-  const modal = document.getElementById("deleteModal");
-  if (modal) modal.style.display = "none";
+  document.getElementById("deleteModal").style.display = "none";
 }
 
 function confirmDelete() {
@@ -109,18 +104,16 @@ function confirmDelete() {
   const c = cInput.value.trim().toUpperCase();
   const password = pwInput.value.trim();
 
-  // C doğrulaması
   if (c !== "C") {
     errorBox.textContent = "Onay için C harfini girin.";
     return;
   }
 
-  // Şifre kontrolü
   if (!password) {
     errorBox.textContent = "Şifreyi girmelisin.";
     return;
   }
 
-  // Her şey tamamsa formu gönder
+  // Formu gönder
   form.submit();
 }

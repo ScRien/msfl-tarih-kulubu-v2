@@ -441,3 +441,90 @@ input:checked + .slider:before {
     padding: 22px 18px;
   }
 }
+
+/* ================================
+     ŞİFRE DEĞİŞTİR — TASARIM
+================================ */
+
+#password .subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #731919;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+#password form {
+  margin-bottom: 18px;
+}
+
+#password .input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  border-radius: 10px;
+  font-size: 15px;
+  margin-bottom: 10px;
+  transition: 0.2s;
+}
+
+#password .input:focus {
+  border-color: #b33a3a;
+  background: #fff;
+  outline: none;
+}
+
+#password button.btn {
+  margin-top: 6px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+#verifyBox,
+#newPasswordBox {
+  background: #fdfdfd;
+  border: 1px solid #e4e4e4;
+  padding: 20px 22px;
+  border-radius: 14px;
+  margin-top: 25px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Doğrulama / Yeni şifre alanı butonu */
+#password .btn.green {
+  background: linear-gradient(to right, #28a745, #59d36c);
+  color: white;
+}
+
+#password .btn.green:hover {
+  opacity: 0.9;
+}
+
+#password .btn.save {
+  background: linear-gradient(to right, #ff7a7a, #ff9f80);
+  color: white;
+}
+
+#password .btn.save:hover {
+  opacity: 0.9;
+}
+
+/* RESPONSIVE düzenlemeler */
+@media (max-width: 600px) {
+  #verifyBox,
+  #newPasswordBox {
+    padding: 16px;
+  }
+
+  #password .subtitle {
+    font-size: 16px;
+  }
+
+  #password .input {
+    padding: 10px;
+  }
+}
