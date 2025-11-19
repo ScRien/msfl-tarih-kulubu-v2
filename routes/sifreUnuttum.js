@@ -1,35 +1,39 @@
 import express from "express";
 import User from "../models/User.js";
 import { sendMail } from "../helpers/mail.js";
-import { verificationMailTemplate } from "../helpers/mailTemplates.js";
-import { passwordResetLimiter } from "../middlewares/rateLimiter.js";
+import crypto from "crypto";
+import logger from "../helpers/logger.js";
 import {
   emailValidation,
   passwordChangeValidation,
 } from "../middlewares/validators.js";
-import crypto from "crypto";
-import logger from "../helpers/logger.js";
+import { passwordResetLimiter } from "../middlewares/rateLimiter.js";
 
-const sifreUnuttumRouter = express.Router();
+const router = express.Router();
 
 /* ============================================================
-   1) SAYFA GET
+   1) Şifre Unuttum Sayfası
 ============================================================ */
-sifreUnuttumRouter.get("/", (req, res) => {
+router.get("/", (req, res) => {
   res.render("pages/sifreUnuttum", {
     error: req.query.error || null,
     success: req.query.success || null,
-    showVerify: req.query.showVerify || null,
     showNewPass: req.query.showNewPass || null,
     token: req.query.token || null,
   });
 });
 
 /* ============================================================
-   2) MAİL → GÜVENLİ TOKEN GÖNDER
+   2) E-posta Gönderme — Token Üretme
 ============================================================ */
-sifreUnuttumRouter.post(
+router.post(
   "/kod",
+  // VALIDATION VIEW
+  (req, res, next) => {
+    req.validationErrorView = "pages/sifreUnuttum";
+    req.validationErrorData = {}; // email alanı zaten çok basit
+    next();
+  },
   passwordResetLimiter,
   emailValidation,
   async (req, res) => {
@@ -37,121 +41,102 @@ sifreUnuttumRouter.post(
       const { email } = req.body;
 
       const user = await User.findOne({ email });
+
+      // Email yoksa bile SUCCESS göster → güvenlik
       if (!user) {
-        // ✅ GÜVENLİK: Email yoksa da başarılı mesaj göster (email enumeration önleme)
-        logger.warn("Şifre sıfırlama - Mevcut olmayan email:", { email });
+        logger.warn("Şifre sıfırlama — olmayan email:", { email });
         return res.redirect(
-          "/sifre-unuttum?success=Eğer+email+kayıtlıysa+kod+gönderildi"
+          "/sifre-unuttum?success=Eğer+email+kayıtlıysa+sıfırlama+linki+gönderildi"
         );
       }
 
-      // ✅ Kriptografik olarak güvenli token oluştur
+      // Güvenli token oluştur
       const resetToken = crypto.randomBytes(32).toString("hex");
 
-      // ✅ Token'ı hash'leyerek DB'ye kaydet (rainbow table saldırılarına karşı)
       const hashedToken = crypto
         .createHash("sha256")
         .update(resetToken)
         .digest("hex");
 
+      // DB'ye kaydet
       user.resetCode = hashedToken;
-      user.resetCodeExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 saat
+      user.resetCodeExpires = Date.now() + 60 * 60 * 1000; // 1 saat
       await user.save();
 
-      // ✅ 6 haneli kod yerine URL'de token kullan
-      const resetUrl = `${req.protocol}://${req.get(
+      // Link oluştur
+      const resetLink = `${req.protocol}://${req.get(
         "host"
       )}/sifre-unuttum?token=${resetToken}&showNewPass=1`;
 
       const html = `
-      <!DOCTYPE html>
-      <html lang="tr">
-      <head>
-        <meta charset="UTF-8" />
-        <title>Şifre Sıfırlama</title>
-      </head>
-      <body style="font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5;">
-        <div style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px;">
-          <h2 style="color: #731919;">Şifre Sıfırlama Talebi</h2>
-          <p>Merhaba ${user.name} ${user.surname},</p>
-          <p>Şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:</p>
-          <a href="${resetUrl}" style="display: inline-block; margin: 20px 0; padding: 12px 30px; background: #e52b2b; color: white; text-decoration: none; border-radius: 5px;">
-            Şifremi Sıfırla
-          </a>
-          <p style="color: #666; font-size: 14px;">Bu link <strong>1 saat</strong> geçerlidir.</p>
-          <p style="color: #666; font-size: 14px;">Bu işlemi siz yapmadıysanız, lütfen bu maili dikkate almayın.</p>
-          <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
-          <p style="color: #999; font-size: 12px;">MSFL Tarih Kulübü</p>
-        </div>
-      </body>
-      </html>
+        <h2>Şifre Sıfırlama Talebi</h2>
+        <p>Hesabınız için şifre sıfırlama bağlantısı:</p>
+        <a href="${resetLink}">Şifremi Sıfırla</a>
+        <p>Bu link 1 saat geçerlidir.</p>
       `;
 
-      const ok = await sendMail(email, "Şifre Sıfırlama Talebi", html);
+      const ok = await sendMail(email, "Şifre Sıfırlama", html);
 
       if (!ok) {
-        logger.error("Şifre sıfırlama maili gönderilemedi:", { email });
+        logger.error("Mail gönderilemedi:", { email });
         return res.redirect("/sifre-unuttum?error=Mail+gönderilemedi");
       }
 
-      logger.info("Şifre sıfırlama maili gönderildi:", {
-        email,
-        ip: req.ip,
-      });
+      logger.info("Sıfırlama maili gönderildi", { email });
 
       return res.redirect(
-        "/sifre-unuttum?success=Şifre+sıfırlama+linki+mailinize+gönderildi"
+        "/sifre-unuttum?success=Eğer+email+kayıtlıysa+link+gönderildi"
       );
     } catch (err) {
-      logger.error("Şifre sıfırlama kod gönderme hatası:", err);
+      logger.error("Şifre sıfırlama hata:", err);
       return res.redirect("/sifre-unuttum?error=Bir+hata+oluştu");
     }
   }
 );
 
 /* ============================================================
-   3) TOKEN DOĞRULAMA (Otomatik - URL'den)
+   3) Token Doğrulama — (URL ile)
 ============================================================ */
-sifreUnuttumRouter.get("/dogrula/:token", async (req, res) => {
+router.get("/dogrula/:token", async (req, res) => {
   try {
     const { token } = req.params;
 
-    // Token'ı hash'le
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
+    const hashed = crypto.createHash("sha256").update(token).digest("hex");
 
-    // DB'de ara
     const user = await User.findOne({
-      resetCode: hashedToken,
+      resetCode: hashed,
       resetCodeExpires: { $gt: Date.now() },
     });
 
     if (!user) {
-      logger.warn("Geçersiz/süresi dolmuş şifre sıfırlama token'ı:", {
-        token: hashedToken.substring(0, 10),
-      });
       return res.redirect(
         "/sifre-unuttum?error=Geçersiz+veya+süresi+dolmuş+link"
       );
     }
 
-    // Token geçerli, yeni şifre sayfasına yönlendir
     return res.redirect(
-      `/sifre-unuttum?showNewPass=1&token=${token}&success=Link+doğrulandı`
+      `/sifre-unuttum?success=Link+doğrulandı&showNewPass=1&token=${token}`
     );
   } catch (err) {
-    logger.error("Token doğrulama hatası:", err);
+    logger.error("Token verify error:", err);
     return res.redirect("/sifre-unuttum?error=Bir+hata+oluştu");
   }
 });
 
 /* ============================================================
-   4) YENİ ŞİFRE KAYDET
+   4) Yeni Şifre Kaydet
 ============================================================ */
-sifreUnuttumRouter.post(
+router.post(
   "/yeni-sifre",
+  // VALIDATION VIEW
+  (req, res, next) => {
+    req.validationErrorView = "pages/sifreUnuttum";
+    req.validationErrorData = {
+      showNewPass: true,
+      token: req.body.token,
+    };
+    next();
+  },
   passwordChangeValidation,
   async (req, res) => {
     try {
@@ -161,51 +146,39 @@ sifreUnuttumRouter.post(
         return res.redirect("/sifre-unuttum?error=Geçersiz+işlem");
       }
 
-      // Token'ı hash'le
       const hashedToken = crypto
         .createHash("sha256")
         .update(token)
         .digest("hex");
 
-      // Kullanıcıyı bul
       const user = await User.findOne({
         resetCode: hashedToken,
         resetCodeExpires: { $gt: Date.now() },
       });
 
       if (!user) {
-        logger.warn("Şifre sıfırlama - geçersiz token:", {
-          token: hashedToken.substring(0, 10),
-        });
         return res.redirect(
-          "/sifre-unuttum?error=Geçersiz+veya+süresi+dolmuş+link&showNewPass=1&token=" +
-            token
+          `/sifre-unuttum?error=Geçersiz+veya+süresi+dolmuş+link&showNewPass=1&token=${token}`
         );
       }
 
-      // Yeni şifreyi hash'le
-      const bcrypt = await import("bcrypt");
-      const hashed = await bcrypt.hash(password1, 12); // 12 round = daha güvenli
+      const hashedPw = await (await import("bcrypt")).hash(password1, 12);
 
-      // Şifreyi güncelle ve token'ı temizle
-      user.password = hashed;
+      user.password = hashedPw;
       user.resetCode = null;
       user.resetCodeExpires = null;
       await user.save();
 
-      logger.info("Şifre başarıyla sıfırlandı:", {
-        userId: user._id,
-        email: user.email,
-      });
+      logger.info("Şifre sıfırlandı", { userId: user._id });
 
       return res.redirect(
         "/kullanici/oturumAc?success=Şifreniz+başarıyla+güncellendi"
       );
     } catch (err) {
-      logger.error("Yeni şifre kaydetme hatası:", err);
+      logger.error("Yeni şifre hata:", err);
       return res.redirect("/sifre-unuttum?error=Şifre+güncellenemedi");
     }
   }
 );
 
-export default sifreUnuttumRouter;
+export default router;

@@ -10,10 +10,8 @@ import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import helmet from "helmet";
-// import mongoSanitize from "express-mongo-sanitize";
 
 import { csrfProtection, addCsrfToken } from "./middlewares/csrf.js";
-// import sanitizeBody from "./middlewares/sanitize.js";
 
 // Helpers
 import { eq } from "./helpers/eq.js";
@@ -32,9 +30,6 @@ import publicProfileRoute from "./routes/publicProfile.js";
 import sifreUnuttumRoute from "./routes/sifreUnuttum.js";
 import adminRoute from "./routes/admin.js";
 
-// ===============================
-// PATH FIX
-// ===============================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -44,23 +39,15 @@ const app = express();
 // MONGODB
 // ===============================
 mongoose
-  .connect(process.env.MONGO_URL, {
-    dbName: "tarihKulubu",
-  })
-  .then(() => {
-    logger.info("MongoDB bağlantısı başarılı");
-    console.log("MongoDB bağlantısı başarılı.");
-  })
-  .catch((err) => {
-    logger.error("MongoDB bağlantı hatası:", err);
-    console.log("MongoDB bağlantı hatası:", err);
-  });
+  .connect(process.env.MONGO_URL, { dbName: "tarihKulubu" })
+  .then(() => logger.info("MongoDB bağlantısı başarılı"))
+  .catch((err) => logger.error("MongoDB bağlantı hatası:", err));
+
+app.set("trust proxy", 1)
 
 // ===============================
-// GÜVENLİK MIDDLEWARE'LERİ
+// GÜVENLİK
 // ===============================
-
-// Helmet (CSP kapalı - CSRF ile tam uyumlu)
 app.use(
   helmet({
     contentSecurityPolicy: false,
@@ -69,26 +56,15 @@ app.use(
   })
 );
 
-// MongoDB Sanitize (CSRF token'ı koru)
-// app.use(
-//   mongoSanitize({
-//     allow: ["_csrf"],
-//     sanitizeQuery: false,
-//     replaceWith: "_",
-//   })
-// );
-
-// app.use(sanitizeBody);
-
 // ===============================
-// BODY & COOKIE PARSER
+// BODY & COOKIE
 // ===============================
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
 // ===============================
-// JWT TABANLI AUTH
+// JWT AUTH
 // ===============================
 const JWT_SECRET = process.env.JWT_SECRET || "jwt_super_secret_123";
 
@@ -98,8 +74,6 @@ app.use((req, res, next) => {
   if (!token) {
     req.user = null;
     res.locals.isAuth = false;
-    res.locals.currentUser = null;
-    res.locals.currentUserRole = null;
     return next();
   }
 
@@ -115,22 +89,17 @@ app.use((req, res, next) => {
     res.locals.isAuth = true;
     res.locals.currentUser = decoded.username;
     res.locals.currentUserRole = decoded.role;
-  } catch (err) {
-    res.clearCookie("auth_token", {
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    });
+  } catch {
+    res.clearCookie("auth_token");
     req.user = null;
     res.locals.isAuth = false;
-    res.locals.currentUser = null;
-    res.locals.currentUserRole = null;
   }
 
   next();
 });
 
 // ===============================
-// STATIC DOSYALAR
+// STATIC
 // ===============================
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/img", express.static(path.join(__dirname, "public/img")));
@@ -141,24 +110,26 @@ app.use("/fonts", express.static(path.join(__dirname, "public/fonts")));
 // ===============================
 // HANDLEBARS
 // ===============================
-const hbs = exphbs.create({
-  defaultLayout: "main",
-  layoutsDir: path.join(__dirname, "views/layouts"),
-  partialsDir: path.join(__dirname, "views/partials"),
-  extname: ".handlebars",
-  helpers: {
-    eq,
-    generateDate,
-    ...handlebarsHelpers,
-  },
-});
+app.engine(
+  "handlebars",
+  exphbs.create({
+    defaultLayout: "main",
+    layoutsDir: path.join(__dirname, "views/layouts"),
+    partialsDir: path.join(__dirname, "views/partials"),
+    extname: ".handlebars",
+    helpers: {
+      eq,
+      generateDate,
+      ...handlebarsHelpers,
+    },
+  }).engine
+);
 
-app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "views"));
 
 // ===============================
-// CSRF KORUMASI
+// CSRF
 // ===============================
 app.use(csrfProtection);
 app.use(addCsrfToken);
@@ -174,8 +145,7 @@ app.use("/hesap", hesapRoute);
 app.use("/profile", profileRoute);
 app.use("/sifre-unuttum", sifreUnuttumRoute);
 app.use("/admin", adminRoute);
-
-app.use("/", publicProfileRoute);
+app.use("/u", publicProfileRoute);
 
 // ===============================
 // 404
@@ -185,14 +155,14 @@ app.use((req, res) => {
 });
 
 // ===============================
-// LOCAL SERVER
+// LOCAL
 // ===============================
 const PORT = process.env.PORT || 3000;
+
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`Sunucu çalışıyor: http://localhost:${PORT}`);
   });
 }
 
-// Vercel Export
 export default app;

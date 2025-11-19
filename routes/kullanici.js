@@ -2,10 +2,12 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+
 import {
   loginLimiter,
   registerLimiter,
 } from "../middlewares/rateLimiter.js";
+
 import {
   registerValidation,
   loginValidation,
@@ -16,6 +18,9 @@ const userRouter = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "jwt_super_secret_123";
 const isProd = process.env.NODE_ENV === "production";
 
+// ================================
+// JWT COOKIE
+// ================================
 function setAuthCookie(res, user) {
   const token = jwt.sign(
     {
@@ -31,39 +36,40 @@ function setAuthCookie(res, user) {
     httpOnly: true,
     secure: isProd,
     sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 gün
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 }
 
-/* ========================================
-   KAYIT OL (GET)
-======================================== */
+/* ================================
+   KAYIT OL GET
+================================ */
 userRouter.get("/kayitOl", (req, res) => {
-  res.render("pages/kayitOl", {
-    error: null,
-  });
+  res.render("pages/kayitOl", { error: null });
 });
 
-/* ========================================
-   KAYIT OL (POST)
-======================================== */
+/* ================================
+   KAYIT OL POST (Tam Düzeltilmiş)
+================================ */
 userRouter.post(
   "/kayitOl",
-  registerLimiter,
-  registerValidation,
+  registerLimiter, // 1) önce rate limit
+  (req, res, next) => {
+    req.validationErrorView = "pages/kayitOl";
+    req.validationErrorData = req.body;
+    next();
+  },
+  registerValidation, // 2) sonra validation
   async (req, res) => {
     try {
-      let { username, email, password, name, surname } = req.body;
+      let username = req.body.username.trim();
+      let email = req.body.email.trim().toLowerCase();
+      let name = req.body.name.trim();
+      let surname = req.body.surname.trim();
+      const password = req.body.password;
 
-      // Validation middleware zaten kontrol etti, direkt işleme geçebiliriz
-      username = username.trim();
-      email = email.trim().toLowerCase();
-      name = name.trim();
-      surname = surname.trim();
-
-      // Email/username benzersizlik kontrolü
+      // Benzersizlik
       const exists = await User.findOne({
-        $or: [{ email }, { username }],
+        $or: [{ username }, { email }],
       });
 
       if (exists) {
@@ -86,9 +92,7 @@ userRouter.post(
         surname,
       });
 
-      // JWT cookie
       setAuthCookie(res, user);
-
       return res.redirect("/");
     } catch (err) {
       console.error("Kayıt hatası:", err);
@@ -99,9 +103,9 @@ userRouter.post(
   }
 );
 
-/* ========================================
-   OTURUM AÇ (GET)
-======================================== */
+/* ================================
+   OTURUM AÇ GET
+================================ */
 userRouter.get("/oturumAc", (req, res) => {
   res.render("pages/oturumAc", {
     error: req.query.error || null,
@@ -109,39 +113,39 @@ userRouter.get("/oturumAc", (req, res) => {
   });
 });
 
-/* ========================================
-   OTURUM AÇ (POST)
-======================================== */
+/* ================================
+   OTURUM AÇ POST
+================================ */
 userRouter.post(
   "/oturumAc",
   loginLimiter,
+  (req, res, next) => {
+    req.validationErrorView = "pages/oturumAc";
+    req.validationErrorData = {};
+    next();
+  },
   loginValidation,
   async (req, res) => {
     try {
-      let { username, password } = req.body;
-      username = username.trim();
+      const username = req.body.username.trim();
+      const password = req.body.password;
 
       const user = await User.findOne({ username });
-
-      if (!user) {
+      if (!user)
         return res.render("pages/oturumAc", {
           error: "Kullanıcı adı veya şifre hatalı.",
         });
-      }
 
-      const match = await bcrypt.compare(password, user.password);
-      if (!match) {
+      const ok = await bcrypt.compare(password, user.password);
+      if (!ok)
         return res.render("pages/oturumAc", {
           error: "Kullanıcı adı veya şifre hatalı.",
         });
-      }
 
-      // JWT cookie
       setAuthCookie(res, user);
-
       return res.redirect("/");
     } catch (err) {
-      console.error("Giriş hatası:", err);
+      console.error(err);
       return res.render("pages/oturumAc", {
         error: "Bir hata oluştu.",
       });
@@ -149,15 +153,14 @@ userRouter.post(
   }
 );
 
-/* ========================================
+/* ================================
    ÇIKIŞ
-======================================== */
+================================ */
 userRouter.get("/cikis", (req, res) => {
   res.clearCookie("auth_token", {
     sameSite: "lax",
     secure: isProd,
   });
-
   return res.redirect("/");
 });
 

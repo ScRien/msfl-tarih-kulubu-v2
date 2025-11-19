@@ -1,70 +1,74 @@
-{{!-- views/pages/blogDuzenle.handlebars --}}
-<link rel="stylesheet" href="/css/blogDuzenle.css" />
-
 <section class="blog-edit-section">
-  <h1 class="blog-edit-title">Blogu Düzenle</h1>
+  <div class="blog-edit-container">
 
-  {{#if error}}
-    <div class="blog-edit-alert error">{{error}}</div>
-  {{/if}}
-  {{#if success}}
-    <div class="blog-edit-alert success">{{success}}</div>
-  {{/if}}
+    <h1 class="blog-edit-title">Blogu Düzenle</h1>
 
-  <form class="blog-edit-form" action="/blog/{{post._id}}/duzenle" method="POST">
-    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-    
-    <!-- Başlık -->
-    <input
-      type="text"
-      class="input-field"
-      name="title"
-      value="{{post.title}}"
-      placeholder="Blog başlığı"
-      required
-    />
-
-    <!-- İçerik -->
-    <textarea
-      class="textarea-field"
-      name="content"
-      rows="8"
-      placeholder="Blog içeriği..."
-      required
-    >{{post.content}}</textarea>
-
-    <!-- Mevcut Görseller -->
-    {{#if post.images}}
-    <h3 class="images-title">Mevcut Görseller</h3>
-    <div class="old-images-grid">
-      {{#each post.images}}
-        <div class="old-img-box">
-          <img src="{{this.url}}" class="old-img" alt="Blog görseli" />
-          <label class="delete-check">
-            <input type="checkbox" name="deleteImages" value="{{this.public_id}}" /> Sil
-          </label>
-        </div>
-      {{/each}}
-    </div>
+    {{#if error}}
+      <div class="blog-add-alert error">{{error}}</div>
     {{/if}}
 
-    <!-- Yeni Görsel Yükleme -->
-    <h3 class="images-title">Yeni Görseller Ekle</h3>
+    <form id="editBlogForm" method="POST">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+      <input type="hidden" id="deleteImages" name="deleteImages" />
+      <input type="hidden" id="newImagesJson" name="newImagesJson" />
 
-    <div class="upload-wrapper">
-      <label for="newImages" class="upload-label">Yeni Görsel Yükle (max 5)</label>
-      <input type="file" id="newImages" name="newImages" class="file-input" multiple accept="image/*" />
-    </div>
+      <div class="form-row">
+        <input
+          type="text"
+          name="title"
+          class="input-field"
+          value="{{post.title}}"
+          required
+        />
+      </div>
 
-    <!-- Önizleme -->
-    <div id="editPreviewBox" class="preview-container"></div>
+      <div class="form-row">
+        <textarea
+          name="content"
+          class="textarea-field"
+          required
+        >{{post.content}}</textarea>
+      </div>
 
-    <!-- JSON Veri -->
-    <input type="hidden" id="newImagesJson" name="newImagesJson" value="[]" />
+      <h3 class="current-images-title">Mevcut Görseller</h3>
 
-    <button type="submit" class="save-btn">Değişiklikleri Kaydet</button>
+      <div class="current-images">
+        {{#each post.images}}
+          <div class="img-box">
+            <img src="{{this.url}}" alt="Blog image" />
 
-  </form>
+            <label class="delete-check">
+              <input
+                type="checkbox"
+                value="{{this.public_id}}"
+                class="deleteImageCheck"
+              />
+              Sil
+            </label>
+          </div>
+        {{/each}}
+      </div>
+
+      <h3>Yeni Görsel Ekle</h3>
+
+      <div class="upload-wrapper">
+        <label for="newBlogImages" class="upload-label">
+          Yeni Görsel Yükle
+        </label>
+
+        <input
+          type="file"
+          id="newBlogImages"
+          class="file-input"
+          accept="image/*"
+          multiple
+        />
+      </div>
+
+      <button type="submit" class="blog-submit-button">
+        Güncelle
+      </button>
+    </form>
+
+  </div>
 </section>
-
-<script src="/js/blogEditUpload.js"></script>

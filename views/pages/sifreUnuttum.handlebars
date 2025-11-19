@@ -24,6 +24,7 @@
       </p>
 
       <form action="/sifre-unuttum/kod" method="POST" class="form">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
         <input
           type="email"
           name="email"
@@ -50,6 +51,7 @@
       <form action="/sifre-unuttum/yeni-sifre" method="POST" class="form">
         {{! Token'ı hidden field olarak gönder }}
         <input type="hidden" name="token" value="{{token}}" />
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
         <input
           type="password"
