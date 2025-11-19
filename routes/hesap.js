@@ -6,7 +6,7 @@ import Post from "../models/Post.js";
 import cloudinary from "../helpers/cloudinary.js";
 import Comment from "../models/Comment.js";
 import { sendMail, sendDeletedMail } from "../helpers/mail.js";
-import { verificationMailTemplate } from "../helpers/mailTemplates.js";
+import { accountDeletedMailTemplate, verificationMailTemplate } from "../helpers/mailTemplates.js";
 import Backup from "../models/Backup.js";
 import bcrypt from "bcrypt";
 
@@ -206,15 +206,9 @@ router.post("/sil", auth, async (req, res) => {
     // ➤ Kullanıcıyı sil
     await User.findByIdAndDelete(userId);
 
-    // ➤ E-posta gönder (basit HTML)
-    const html = `
-      <p>Merhaba ${user.username},</p>
-      <p>MSFL Tarih Kulübü hesabınız isteğiniz üzerine <b>kalıcı olarak</b> silinmiştir.</p>
-      <p>Bu işlem geri alınamaz. Eğer bu işlemi siz yapmadıysanız veya destek talep etmek isterseniz, lütfen kullanıcı adınızı belirterek bize e-posta gönderin.</p>
-      <p>Sevgiler,<br>MSFL Tarih Kulübü Ekibi</p>
-    `;
+    // ➤ E-posta gönder (accountDeletedMail)
 
-    await sendMail(user.email, "Hesabınız Silindi - MSFL Tarih Kulübü", html);
+    await sendMail(user.email, "Hesabınız Silindi - MSFL Tarih Kulübü", accountDeletedMailTemplate(user.username));
 
     // ➤ Cookie temizle
     res.clearCookie("auth_token", {

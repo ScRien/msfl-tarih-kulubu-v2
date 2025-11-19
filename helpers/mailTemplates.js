@@ -231,31 +231,40 @@ export function accountDeletedMailTemplate(username) {
       body {
         margin: 0;
         padding: 0;
-        background: #f5f6fa;
-        font-family: Arial, sans-serif;
+        background: #f2f3f7;
+        font-family: 'Segoe UI', Arial, sans-serif;
       }
       .container {
-        max-width: 600px;
+        max-width: 620px;
         margin: 40px auto;
-        background: white;
-        border-radius: 14px;
-        padding: 30px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
       }
       h1 {
-        color: #e52b2b;
+        color: #d62828;
         text-align: center;
+        margin-bottom: 24px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
       }
       p {
         font-size: 15px;
-        line-height: 1.6;
+        line-height: 1.65;
         color: #333;
+        margin: 14px 0;
+      }
+      strong {
+        color: #000;
       }
       .footer {
-        margin-top: 25px;
+        margin-top: 30px;
         font-size: 12px;
         text-align: center;
-        color: #888;
+        color: #777;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
       }
     </style>
   </head>
@@ -267,21 +276,21 @@ export function accountDeletedMailTemplate(username) {
       <p>Merhaba <strong>@${username}</strong>,</p>
 
       <p>
-        MSFL Tarih Kulübü web sistemindeki hesabınız başarıyla silinmiştir.<br>
+        MSFL Tarih Kulübü web sistemindeki hesabınız isteğiniz üzerine başarıyla silindi.
         Bu işlem <strong>kalıcıdır</strong> ve geri alınamaz.
       </p>
 
       <p>
-        Eğer bu işlemi siz yapmadıysanız veya herhangi bir destek talep
-        ediyorsanız, kullanıcı adınızı belirterek şu adrese ulaşabilirsiniz:
+        Eğer bu işlemi siz gerçekleştirmediyseniz veya destek talep etmek isterseniz,
+        kullanıcı adınızı belirterek şu adrese e-posta gönderebilirsiniz:
         <br><br>
         <strong>msfltarihkulubu@outlook.com</strong>
       </p>
 
-      <p class="footer">
+      <div class="footer">
         © ${new Date().getFullYear()} MSFL Tarih Kulübü<br>
         Bu e-posta otomatik gönderilmiştir, lütfen yanıtlamayınız.
-      </p>
+      </div>
     </div>
   </body>
   </html>
