@@ -189,7 +189,7 @@ router.post("/sil", auth, async (req, res) => {
       userId: user._id,
       username: user.username,
       email: user.email,
-      ipHistory: [],       // şimdilik boş
+      ipHistory: [], // şimdilik boş
       loginHistory: [],
       deviceInfo: [],
       userData: {
@@ -214,14 +214,14 @@ router.post("/sil", auth, async (req, res) => {
       <p>Sevgiler,<br>MSFL Tarih Kulübü Ekibi</p>
     `;
 
-    await sendMail(
-      user.email,
-      "Hesabınız Silindi - MSFL Tarih Kulübü",
-      html
-    );
+    await sendMail(user.email, "Hesabınız Silindi - MSFL Tarih Kulübü", html);
 
     // ➤ Cookie temizle
-    res.clearCookie("token");
+    res.clearCookie("auth_token", {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+    });
 
     // Ana sayfaya success mesajıyla dön
     return res.redirect("/?success=Hesabınız+kalıcı+olarak+silindi");
