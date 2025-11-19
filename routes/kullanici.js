@@ -54,8 +54,8 @@ userRouter.post(
     req.validationErrorData = req.body;
     next();
   },
-  registerLimiter,
   registerValidation,
+  registerLimiter,
   async (req, res) => {
     try {
       let { username, email, password, name, surname } = req.body;
@@ -112,8 +112,8 @@ userRouter.post(
     req.validationErrorData = {};
     next();
   },
-  loginLimiter,
   loginValidation,
+  loginLimiter,
   async (req, res) => {
     try {
       const { username, password } = req.body;
