@@ -68,9 +68,8 @@ app.use(cookieParser());
 // ===============================
 const JWT_SECRET = process.env.JWT_SECRET || "jwt_super_secret_123";
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   const token = req.cookies?.auth_token;
-
   if (!token) {
     req.user = null;
     res.locals.isAuth = false;
@@ -80,16 +79,21 @@ app.use((req, res, next) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    req.user = {
-      id: decoded.id,
-      username: decoded.username,
-      role: decoded.role,
-    };
+    const user = await User.findById(decoded.id).lean();
+    if (!user) {
+      res.clearCookie("auth_token");
+      req.user = null;
+      res.locals.isAuth = false;
+      return next();
+    }
+
+    req.user = user; // Tam kullanıcı nesnesi
 
     res.locals.isAuth = true;
-    res.locals.currentUser = decoded.username;
-    res.locals.currentUserRole = decoded.role;
-  } catch {
+    res.locals.currentUser = user.username;
+    res.locals.currentUserRole = user.role;
+
+  } catch (err) {
     res.clearCookie("auth_token");
     req.user = null;
     res.locals.isAuth = false;
