@@ -39,10 +39,7 @@ export const registerValidation = [
     return true;
   }),
 
-  body("name")
-    .trim()
-    .isLength({ min: 2 })
-    .withMessage("İsim geçersiz"),
+  body("name").trim().isLength({ min: 2 }).withMessage("İsim geçersiz"),
 
   body("surname")
     .trim()
@@ -80,6 +77,21 @@ export const passwordChangeValidation = [
       throw new Error("Şifreler eşleşmiyor");
     return true;
   }),
+
+  handleValidationErrors,
+];
+
+// BLOG VALIDATION
+export const blogValidation = [
+  body("title")
+    .trim()
+    .isLength({ min: 5, max: 200 })
+    .withMessage("Başlık 5-200 karakter olmalıdır"),
+
+  body("content")
+    .trim()
+    .isLength({ min: 50, max: 10000 })
+    .withMessage("İçerik 50-10000 karakter arasında olmalıdır"),
 
   handleValidationErrors,
 ];
