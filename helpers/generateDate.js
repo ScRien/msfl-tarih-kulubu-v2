@@ -1,8 +1,9 @@
 import moment from "moment";
-import "moment/locale/tr.js";
 
-moment.locale("tr");
-
-export const generateDate = (date, format) => {
-  return moment(date).format(format);
+export const generateDate = (date, format = "DD.MM.YYYY HH:mm") => {
+  try {
+    return moment(date).format(format);
+  } catch (err) {
+    return ""; // en azından sayfa patlamaz
+  }
 };
