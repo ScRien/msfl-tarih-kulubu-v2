@@ -29,6 +29,7 @@ import profileRoute from "./routes/profile.js";
 import publicProfileRoute from "./routes/publicProfile.js";
 import sifreUnuttumRoute from "./routes/sifreUnuttum.js";
 import adminRoute from "./routes/admin.js";
+import toString from "./helpers/toString.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -122,6 +123,7 @@ app.engine(
     helpers: {
       eq,
       generateDate,
+      toString,
       ...handlebarsHelpers,
     },
   }).engine
