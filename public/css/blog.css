@@ -105,10 +105,15 @@
 .blog-text {
   padding: 0 18px;
   font-size: 14px;
-  line-height: 1.45;
+  line-height: 1.5;
   color: #444;
   margin-bottom: 18px;
-  flex-grow: 1;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* TEK SATIR */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Devam butonu */
