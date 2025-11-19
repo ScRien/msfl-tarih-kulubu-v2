@@ -1,149 +1,100 @@
-<section class="blog-detail-section">
-  <div class="blog-detail-container">
+{{!-- views/pages/blogDetay.handlebars --}}
 
-    {{!-- ÜST MESAJLAR --}}
-    {{#if success}}
-      <div class="alert success">{{success}}</div>
-    {{/if}}
+<section class="blog-detail">
+  {{!-- Üst Kapak / Hero Alanı --}}
+  <div class="blog-detail-hero">
+    <img
+      class="blog-detail-cover"
+      src="{{#if post.images.[0]}}{{post.images.[0]}}{{else}}/img/default-blog.jpg{{/if}}"
+      alt="{{post.title}}"
+    />
+    <div class="blog-detail-overlay"></div>
 
-    {{#if error}}
-      <div class="alert error">{{error}}</div>
-    {{/if}}
-
-    {{!-- BLOG BİLGİLERİ --}}
-    <h1 class="blog-title">{{post.title}}</h1>
-
-    <div class="blog-meta">
-      <span class="meta-item">
-        <i class="fa-solid fa-user"></i> {{post.username}}
-      </span>
-      <span class="meta-item">
-        <i class="fa-solid fa-calendar"></i> {{post.date}}
-      </span>
-    </div>
-
-    {{!-- BLOG GÖRSELLERİ --}}
-    {{#if post.images.length}}
-      <div class="detail-images">
-        {{#each post.images}}
-          <img src="{{this.url}}" alt="Blog Image" class="detail-img" />
-        {{/each}}
+    <div class="blog-detail-title-wrapper">
+      <p class="blog-detail-badge">Tarih Kulübü Blog</p>
+      <h1 class="blog-detail-title">{{post.title}}</h1>
+      <div class="blog-detail-meta">
+        <span class="blog-detail-author">
+          {{#if post.username}}@{{post.username}}{{else}}Anonim{{/if}}
+        </span>
+        <span class="blog-detail-dot">•</span>
+        <span class="blog-detail-date">{{generateDate post.date}}</span>
       </div>
-    {{/if}}
-
-    {{!-- BLOG İÇERİĞİ --}}
-    <div class="blog-content">
-      {{{post.content}}}
     </div>
+  </div>
 
-    {{!-- SAHİP / ADMIN İŞLEMLERİ --}}
-    {{#if isAuth}}
-      <div class="owner-actions">
-        {{#if isOwner}}
-          <a href="/blog/{{post._id}}/duzenle" class="btn edit-btn">Düzenle</a>
-
-          <form action="/blog/{{post._id}}/sil" method="POST" class="inline-form">
-            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-            <button type="submit" class="btn delete-btn">Sil</button>
-          </form>
-        {{/if}}
-
-        {{#if isAdmin}}
-          <a href="/blog/{{post._id}}/duzenle" class="btn admin-edit">Admin Düzenle</a>
-
-          <form action="/blog/{{post._id}}/sil" method="POST" class="inline-form">
-            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-            <button type="submit" class="btn admin-delete">Admin Sil</button>
-          </form>
-        {{/if}}
+  {{!-- İçerik --}}
+  <div class="blog-detail-body">
+    <article class="blog-detail-article">
+      <div class="blog-detail-content">
+        {{{formatParagraphs post.content}}}
       </div>
-    {{/if}}
 
-    <hr class="divider" />
-
-    {{!-- YORUMLAR --}}
-    <h2 class="comments-title">Yorumlar</h2>
-
-    {{#if comments.length}}
-      <div class="comments-list">
-        {{#each comments}}
-          <div class="comment-box">
-            <div class="comment-header">
-              <strong>{{this.username}}</strong>
-              <span class="comment-date">{{this.date}}</span>
-            </div>
-
-            <p class="comment-text">{{this.content}}</p>
-
-            {{!-- YORUM SAHİBİ / ADMIN --}}
-            {{#if ../isAuth}}
-              {{#if (or (eq ../currentUserId this.user_id) (eq ../currentRole "admin"))}}
-                <div class="comment-actions">
-                  
-                  <form
-                    action="/blog/{{../post._id}}/yorum/{{this._id}}/sil"
-                    method="POST"
-                    class="inline-form"
-                  >
-                    <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
-                    <button class="comment-del">Sil</button>
-                  </form>
-
-                  <form
-                    action="/blog/{{../post._id}}/yorum/{{this._id}}/duzenle"
-                    method="POST"
-                    class="edit-comment-form"
-                  >
-                    <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
-                    <input
-                      type="text"
-                      name="content"
-                      class="comment-edit-input"
-                      placeholder="Yeni yorum..."
-                      required
-                    />
-                    <button class="comment-edit-btn">Düzenle</button>
-                  </form>
-
-                </div>
-              {{/if}}
-            {{/if}}
+      {{!-- Blog görselleri galerisi (kapak dışında diğerleri) --}}
+      {{#if post.images}}
+        {{#if (gt (length post.images) 1)}}
+          <div class="blog-detail-gallery">
+            {{#each post.images}}
+              {{#unless @first}}
+                <img src="{{this}}" alt="Blog görseli" />
+              {{/unless}}
+            {{/each}}
           </div>
-        {{/each}}
-      </div>
-    {{else}}
-      <p class="no-comments">Henüz yorum yapılmamış.</p>
-    {{/if}}
+        {{/if}}
+      {{/if}}
+    </article>
 
-    <hr class="divider" />
+    {{!-- Yorumlar Alanı --}}
+    <aside class="blog-detail-comments">
+      <h2>Yorumlar</h2>
 
-    {{!-- YENİ YORUM FORMU --}}
-    {{#if isAuth}}
-      <h3 class="add-comment-title">Yorum Yaz</h3>
+      {{!-- Yorum ekleme formu --}}
+      {{#if isAuth}}
+        <form
+          method="POST"
+          action="/blog/{{post._id}}/yorum"
+          class="comment-form"
+        >
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+          <textarea
+            name="content"
+            rows="3"
+            placeholder="Düşüncelerini bizimle paylaş..."
+            required
+          ></textarea>
+          <button type="submit" class="primary-btn comment-btn">
+            Yorumu Gönder
+          </button>
+        </form>
+      {{else}}
+        <p class="comment-login-info">
+          Yorum yapmak için
+          <a href="/oturumAc">oturum aç</a>
+          ya da
+          <a href="/kayitOl">kayıt ol.</a>
+        </p>
+      {{/if}}
 
-      <form
-        method="POST"
-        action="/blog/{{post._id}}/yorum"
-        class="add-comment-form"
-      >
-        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-
-        <textarea
-          name="content"
-          class="comment-input"
-          placeholder="Yorumunuzu yazın..."
-          required
-        ></textarea>
-
-        <button type="submit" class="btn comment-btn">
-          Yorum Gönder
-        </button>
-      </form>
-    {{else}}
-      <p class="login-to-comment">
-        Yorum yapmak için <a href="/kullanici/oturumAc">giriş yap</a>.
-      </p>
-    {{/if}}
-
+      {{!-- Yorum listesi --}}
+      {{#if comments.length}}
+        <ul class="comment-list">
+          {{#each comments}}
+            <li class="comment-item">
+              <div class="comment-header">
+                <span class="comment-author">
+                  {{#if this.username}}@{{this.username}}{{else}}Anonim{{/if}}
+                </span>
+                <span class="comment-date">{{generateDate this.date}}</span>
+              </div>
+              <p class="comment-content">
+                {{this.content}}
+              </p>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="no-comments">Bu yazıya henüz yorum yapılmamış.</p>
+      {{/if}}
+    </aside>
   </div>
 </section>
