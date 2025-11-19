@@ -106,20 +106,24 @@ router.post("/data-usage", auth, async (req, res) => {
 ============================================================ */
 router.post("/avatar-yukle", auth, async (req, res) => {
   try {
-    const { avatar, avatarPublicId } = req.body;
+    const { avatarUrl, avatarPublicId } = req.body; // 👈 isimler form ile aynı
 
-    if (!avatar) return res.redirect("/hesap?error=Avatar+yüklenemedi");
+    if (!avatarUrl) {
+      return res.redirect("/hesap?error=Avatar+yüklenemedi");
+    }
 
     const user = await User.findById(req.user.id);
 
-    // eski avatar cloudinary'den sil
+    // eski avatarı Cloudinary'den sil
     if (user.avatarPublicId) {
       try {
         await cloudinary.uploader.destroy(user.avatarPublicId);
-      } catch {}
+      } catch (e) {
+        console.log("Eski avatar silinemedi:", e.message);
+      }
     }
 
-    user.avatar = avatar;
+    user.avatar = avatarUrl; // 👈 url buraya
     user.avatarPublicId = avatarPublicId || null;
 
     await user.save();
@@ -135,19 +139,23 @@ router.post("/avatar-yukle", auth, async (req, res) => {
 ============================================================ */
 router.post("/kapak-yukle", auth, async (req, res) => {
   try {
-    const { coverPhoto, coverPublicId } = req.body;
+    const { coverUrl, coverPublicId } = req.body; // 👈 form isimleri
 
-    if (!coverPhoto) return res.redirect("/hesap?error=Kapak+yüklenemedi");
+    if (!coverUrl) {
+      return res.redirect("/hesap?error=Kapak+yüklenemedi");
+    }
 
     const user = await User.findById(req.user.id);
 
     if (user.coverPublicId) {
       try {
         await cloudinary.uploader.destroy(user.coverPublicId);
-      } catch {}
+      } catch (e) {
+        console.log("Eski kapak silinemedi:", e.message);
+      }
     }
 
-    user.coverPhoto = coverPhoto;
+    user.coverPhoto = coverUrl; // 👈 user modeldeki alan
     user.coverPublicId = coverPublicId || null;
 
     await user.save();
