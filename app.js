@@ -174,8 +174,7 @@ app.use("/hesap", hesapRoute);
 app.use("/profile", profileRoute);
 app.use("/sifre-unuttum", sifreUnuttumRoute);
 app.use("/admin", adminRoute);
-
-app.use("/public", publicProfileRoute);
+app.use("/u", publicProfileRoute);
 
 // ===============================
 // 404
