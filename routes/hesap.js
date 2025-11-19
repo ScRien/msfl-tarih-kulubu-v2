@@ -283,39 +283,75 @@ router.post("/sifre-kod-dogrula-form", auth, async (req, res) => {
   return res.redirect("/hesap/sifre-yeni");
 });
 
+// ======================================
+//  ŞİFRE YENİLEME SAYFASI (GÖRÜNEN EKRAN)
+//  GET /hesap/sifre-yeni
+// ======================================
+router.get("/sifre-yeni", auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findById(userId).lean();
+    if (!user) {
+      return res.redirect("/hesap?error=Kullanici+bulunamadi");
+    }
+
+    return res.render("pages/hesap", {
+      user,
+      showNewPasswordBox: true,
+    });
+  } catch (err) {
+    console.error("ŞİFRE YENİLEME GET HATASI:", err);
+    return res.redirect("/hesap?error=Bir+hata+olustu");
+  }
+});
+
 /* ============================================================
    ŞİFREYİ GERÇEKTEN DEĞİŞTİR
 ============================================================ */
 router.post("/sifre-yeni", auth, async (req, res) => {
   try {
+    const userId = req.user.id; // app.js içindeki JWT ile uyumlu
     const { password1, password2 } = req.body;
 
-    const user = await User.findById(req.user.id);
-    if (!user || !user.resetCode) {
-      return res.redirect("/hesap?error=Yetkisiz+işlem");
-    }
-
     if (!password1 || !password2) {
-      return res.redirect("/hesap/sifre-yeni?error=Şifreler+boş+olamaz");
+      return res.render("pages/hesap", {
+        error: "Lütfen yeni şifreyi iki kere de girin.",
+        user: req.userData, // aşağıda anlatacağım
+      });
     }
 
     if (password1 !== password2) {
-      return res.redirect("/hesap/sifre-yeni?error=Şifreler+eşleşmiyor");
+      return res.render("pages/hesap", {
+        error: "Yeni şifreler birbiriyle eşleşmiyor.",
+        user: req.userData,
+      });
     }
 
-    const bcrypt = await import("bcrypt");
+    if (password1.length < 6) {
+      return res.render("pages/hesap", {
+        error: "Şifre en az 6 karakter olmalı.",
+        user: req.userData,
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.render("pages/hesap", {
+        error: "Kullanıcı bulunamadı.",
+      });
+    }
+
     const hashed = await bcrypt.hash(password1, 10);
-
     user.password = hashed;
-    user.resetCode = null;
-    user.resetCodeExpires = null;
-
     await user.save();
 
-    return res.redirect("/hesap?success=Şifre+başarıyla+değiştirildi");
+    return res.redirect("/hesap?success=Sifre+basariyla+guncellendi");
   } catch (err) {
-    console.log(err);
-    return res.redirect("/hesap?error=Şifre+değiştirilemedi");
+    console.error("ŞİFRE YENİLEME HATASI (hesap.js):", err);
+    return res.render("pages/hesap", {
+      error: "Bir hata oluştu, lütfen tekrar deneyin.",
+    });
   }
 });
 
