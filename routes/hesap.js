@@ -162,7 +162,7 @@ router.post("/social", auth, async (req, res) => {
 ============================================================ */
 router.post("/sil", auth, async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const { password } = req.body;
 
     if (!password) {
