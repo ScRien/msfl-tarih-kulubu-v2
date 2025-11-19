@@ -1,7 +1,7 @@
 import { body, validationResult } from "express-validator";
 
 /* ============================================================
-   GENEL ERROR HANDLER
+   GENEL ERROR HANDLER (Final Stabil Versiyon)
 ============================================================ */
 export const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
@@ -9,16 +9,16 @@ export const handleValidationErrors = (req, res, next) => {
   if (!errors.isEmpty()) {
     const messages = errors.array().map((e) => e.msg);
 
-    // Eğer middleware çağırmadan önce view belirlediysek oraya dön
+    // View tanımlıysa oraya geri dön
     if (req.validationErrorView) {
       return res.render(req.validationErrorView, {
         error: messages.join(", "),
-        ...req.validationErrorData,
+        ...(req.validationErrorData || {}),
       });
     }
 
-    // Eğer belirlenmemişse 400 döner
-    return res.status(400).send(messages.join(", "));
+    // Tanımlı değilse standart 400 döndür
+    return res.status(400).json({ error: messages.join(", ") });
   }
 
   next();
@@ -30,6 +30,7 @@ export const handleValidationErrors = (req, res, next) => {
 export const registerValidation = [
   body("username")
     .trim()
+    .escape()
     .isLength({ min: 3, max: 24 })
     .withMessage("Kullanıcı adı 3-24 karakter olmalıdır")
     .matches(/^[a-zA-Z0-9_]+$/)
@@ -47,19 +48,20 @@ export const registerValidation = [
     .matches(/^(?=.*[A-Z])(?=.*\d)/)
     .withMessage("Şifre bir büyük harf ve bir rakam içermelidir"),
 
-  body("password2").custom((v, { req }) => {
-    if (v !== req.body.password) throw new Error("Şifreler eşleşmiyor");
-    return true;
-  }),
+  body("password2")
+    .custom((v, { req }) => {
+      if (v !== req.body.password) throw new Error("Şifreler eşleşmiyor");
+      return true;
+    }),
 
   body("name")
     .trim()
-    .isLength({ min: 2 })
+    .isLength({ min: 2, max: 50 })
     .withMessage("İsim geçersiz"),
 
   body("surname")
     .trim()
-    .isLength({ min: 2 })
+    .isLength({ min: 2, max: 50 })
     .withMessage("Soyisim geçersiz"),
 
   handleValidationErrors,
@@ -69,10 +71,15 @@ export const registerValidation = [
    LOGIN VALIDATION
 ============================================================ */
 export const loginValidation = [
-  body("username").trim().notEmpty().withMessage("Kullanıcı adı gerekli"),
+  body("username")
+    .trim()
+    .notEmpty()
+    .withMessage("Kullanıcı adı gerekli"),
+
   body("password")
     .isLength({ min: 8 })
     .withMessage("Şifre en az 8 karakter olmalı"),
+
   handleValidationErrors,
 ];
 
@@ -84,6 +91,7 @@ export const emailValidation = [
     .trim()
     .isEmail()
     .withMessage("Geçersiz email"),
+
   handleValidationErrors,
 ];
 
@@ -97,11 +105,12 @@ export const passwordChangeValidation = [
     .matches(/^(?=.*[A-Z])(?=.*\d)/)
     .withMessage("Şifre büyük harf ve rakam içermeli"),
 
-  body("password2").custom((v, { req }) => {
-    if (v !== req.body.password1)
-      throw new Error("Şifreler eşleşmiyor");
-    return true;
-  }),
+  body("password2")
+    .custom((v, { req }) => {
+      if (v !== req.body.password1)
+        throw new Error("Şifreler eşleşmiyor");
+      return true;
+    }),
 
   handleValidationErrors,
 ];
