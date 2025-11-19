@@ -13,7 +13,7 @@ import helmet from "helmet";
 // import mongoSanitize from "express-mongo-sanitize";
 
 import { csrfProtection, addCsrfToken } from "./middlewares/csrf.js";
-import sanitizeBody from "./middlewares/sanitize.js";
+// import sanitizeBody from "./middlewares/sanitize.js";
 
 // Helpers
 import { eq } from "./helpers/eq.js";
@@ -78,7 +78,7 @@ app.use(
 //   })
 // );
 
-app.use(sanitizeBody);
+// app.use(sanitizeBody);
 
 // ===============================
 // BODY & COOKIE PARSER
@@ -172,9 +172,10 @@ app.use("/kullanici", kullaniciRoute);
 app.use("/legal", legalRoute);
 app.use("/hesap", hesapRoute);
 app.use("/profile", profileRoute);
-app.use("/", publicProfileRoute);
 app.use("/sifre-unuttum", sifreUnuttumRoute);
 app.use("/admin", adminRoute);
+
+app.use("/", publicProfileRoute);
 
 // ===============================
 // 404
