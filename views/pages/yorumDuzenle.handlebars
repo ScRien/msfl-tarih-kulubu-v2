@@ -1,0 +1,13 @@
+<section class="comment-edit-page">
+  <h1>Yorumu Düzenle</h1>
+
+  <form method="POST" action="/blog/{{postId}}/yorum/{{comment._id}}/duzenle">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+    <textarea name="content" required>{{comment.content}}</textarea>
+
+    <button type="submit">Kaydet</button>
+  </form>
+
+  <a href="/blog/{{postId}}" class="back-btn">Geri Dön</a>
+</section>

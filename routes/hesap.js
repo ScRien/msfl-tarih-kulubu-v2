@@ -5,17 +5,15 @@ import User from "../models/User.js";
 import Post from "../models/Post.js";
 import cloudinary from "../helpers/cloudinary.js";
 import Comment from "../models/Comment.js";
-import { sendMail, sendDeletedMail } from "../helpers/mail.js";
-import { accountDeletedMailTemplate, verificationMailTemplate } from "../helpers/mailTemplates.js";
+import { sendMail } from "../helpers/mail.js";
+import {
+  accountDeletedMailTemplate,
+  verificationMailTemplate,
+} from "../helpers/mailTemplates.js";
 import Backup from "../models/Backup.js";
 import bcrypt from "bcrypt";
 
 const router = express.Router();
-
-router.use((req, res, next) => {
-  req.isProd = req.app.locals.isProd;
-  next();
-});
 
 /* ============================================================
    HESAP SAYFASI (GET)
@@ -29,6 +27,7 @@ router.get("/", auth, async (req, res) => {
       success: req.query.success || null,
       error: req.query.error || null,
       showVerify: req.query.showVerify || null,
+      showNewPasswordBox: req.query.showNewPasswordBox || false,
     });
   } catch (err) {
     console.log(err);
@@ -42,11 +41,9 @@ router.get("/", auth, async (req, res) => {
 router.post("/profil", auth, async (req, res) => {
   try {
     const { name, surname, email, bio } = req.body;
-
     const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.redirect("/hesap?error=Kullanıcı+bulunamadı");
-    }
+
+    if (!user) return res.redirect("/hesap?error=Kullanıcı+bulunamadı");
 
     if (email && email !== user.email) {
       const exists = await User.findOne({
@@ -63,7 +60,6 @@ router.post("/profil", auth, async (req, res) => {
     user.surname = surname;
     user.email = email;
     user.bio = bio?.trim() || "";
-
     await user.save();
 
     return res.redirect("/hesap?success=Profil+bilgileri+güncellendi");
@@ -79,15 +75,11 @@ router.post("/profil", auth, async (req, res) => {
 router.post("/cookies", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-
     user.analyticsCookies = !!req.body.analyticsCookies;
     user.personalizationCookies = !!req.body.personalizationCookies;
-
     await user.save();
-
     return res.redirect("/hesap?success=Çerez+ayarları+güncellendi");
-  } catch (err) {
-    console.log(err);
+  } catch {
     return res.redirect("/hesap?error=Çerez+ayarları+kaydedilemedi");
   }
 });
@@ -104,48 +96,70 @@ router.post("/data-usage", auth, async (req, res) => {
 
     await user.save();
     return res.redirect("/hesap?success=Veri+ayarları+güncellendi");
-  } catch (err) {
-    console.log(err);
+  } catch {
     return res.redirect("/hesap?error=Veri+ayarları+kaydedilemedi");
   }
 });
 
 /* ============================================================
-   AVATAR UPLOAD (CLIENT-SIDE URL)
+   🔥 AVATAR YÜKLEME (Cloudinary public_id dahil)
 ============================================================ */
 router.post("/avatar-yukle", auth, async (req, res) => {
-  const { avatarUrl } = req.body;
+  try {
+    const { avatar, avatarPublicId } = req.body;
 
-  if (!avatarUrl) {
-    return res.redirect("/hesap?error=Görsel+yüklenemedi");
+    if (!avatar) return res.redirect("/hesap?error=Avatar+yüklenemedi");
+
+    const user = await User.findById(req.user.id);
+
+    // eski avatar cloudinary'den sil
+    if (user.avatarPublicId) {
+      try {
+        await cloudinary.uploader.destroy(user.avatarPublicId);
+      } catch {}
+    }
+
+    user.avatar = avatar;
+    user.avatarPublicId = avatarPublicId || null;
+
+    await user.save();
+    return res.redirect("/hesap?success=Avatar+güncellendi");
+  } catch (err) {
+    console.error(err);
+    return res.redirect("/hesap?error=Avatar+güncellenemedi");
   }
-
-  await User.findByIdAndUpdate(req.user.id, {
-    avatar: avatarUrl,
-  });
-
-  return res.redirect("/hesap?success=Avatar+güncellendi");
 });
 
 /* ============================================================
-   COVER UPLOAD (CLIENT-SIDE URL)
+   🔥 KAPAK FOTO YÜKLEME (Cloudinary public_id dahil)
 ============================================================ */
 router.post("/kapak-yukle", auth, async (req, res) => {
-  const { coverUrl } = req.body;
+  try {
+    const { coverPhoto, coverPublicId } = req.body;
 
-  if (!coverUrl) {
-    return res.redirect("/hesap?error=Görsel+yüklenemedi");
+    if (!coverPhoto) return res.redirect("/hesap?error=Kapak+yüklenemedi");
+
+    const user = await User.findById(req.user.id);
+
+    if (user.coverPublicId) {
+      try {
+        await cloudinary.uploader.destroy(user.coverPublicId);
+      } catch {}
+    }
+
+    user.coverPhoto = coverPhoto;
+    user.coverPublicId = coverPublicId || null;
+
+    await user.save();
+    return res.redirect("/hesap?success=Kapak+fotoğrafı+güncellendi");
+  } catch (err) {
+    console.error(err);
+    return res.redirect("/hesap?error=Kapak+fotoğrafı+güncellenemedi");
   }
-
-  await User.findByIdAndUpdate(req.user.id, {
-    coverPhoto: coverUrl,
-  });
-
-  return res.redirect("/hesap?success=Kapak+fotoğrafı+güncellendi");
 });
 
 /* ============================================================
-   SOSYAL MEDYA GÜNCELLE
+   SOSYAL MEDYA
 ============================================================ */
 router.post("/social", auth, async (req, res) => {
   try {
@@ -156,202 +170,130 @@ router.post("/social", auth, async (req, res) => {
     });
 
     return res.redirect("/hesap?success=Sosyal+medya+güncellendi");
-  } catch (err) {
-    console.log(err);
+  } catch {
     return res.redirect("/hesap?error=Güncellenemedi");
   }
 });
 
 /* ============================================================
-   HESAP SİL
+   HESAP SİLME
 ============================================================ */
 router.post("/sil", auth, async (req, res) => {
   try {
-    const userId = req.user.id;
     const { password } = req.body;
+    const user = await User.findById(req.user.id);
 
-    if (!password) {
-      return res.redirect("/hesap?error=Şifre+girilmedi");
-    }
+    if (!password) return res.redirect("/hesap?error=Şifre+girilmedi");
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.redirect("/hesap?error=Şifre+yanlış");
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.redirect("/hesap?error=Hesap+bulunamadı");
-    }
+    const posts = await Post.find({ user_id: user._id }).lean();
+    const comments = await Comment.find({ user_id: user._id }).lean();
 
-    // ➤ Şifre kontrolü
-    const validPass = await bcrypt.compare(password, user.password);
-    if (!validPass) {
-      return res.redirect("/hesap?error=Şifre+yanlış");
-    }
-
-    // ➤ Kullanıcı verilerini toplama
-    const posts = await Post.find({ user_id: userId }).lean();
-    const comments = await Comment.find({ user_id: userId }).lean();
-
-    // ➤ Backup oluşturma
     await Backup.create({
       userId: user._id,
       username: user.username,
       email: user.email,
-      ipHistory: [], // şimdilik boş
-      loginHistory: [],
-      deviceInfo: [],
-      userData: {
-        profile: user.toObject(),
-        posts,
-        comments,
-      },
+      userData: { profile: user.toObject(), posts, comments },
     });
 
-    // ➤ Post ve yorumları sil
-    await Post.deleteMany({ user_id: userId });
-    await Comment.deleteMany({ user_id: userId });
+    await Post.deleteMany({ user_id: user._id });
+    await Comment.deleteMany({ user_id: user._id });
+    await User.findByIdAndDelete(user._id);
 
-    // ➤ Kullanıcıyı sil
-    await User.findByIdAndDelete(userId);
+    await sendMail(
+      user.email,
+      "Hesabınız Silindi",
+      accountDeletedMailTemplate(user.username)
+    );
 
-    // ➤ E-posta gönder (accountDeletedMail)
+    res.clearCookie("auth_token");
 
-    await sendMail(user.email, "Hesabınız Silindi - MSFL Tarih Kulübü", accountDeletedMailTemplate(user.username));
-
-    // ➤ Cookie temizle
-    res.clearCookie("auth_token", {
-      httpOnly: true,
-      secure: req.isProd,
-      sameSite: "lax",
-    });
-
-    // Ana sayfaya success mesajıyla dön
-    return res.redirect("/?success=Hesabınız+kalıcı+olarak+silindi");
+    return res.redirect("/?success=Hesabınız+silindi");
   } catch (err) {
-    console.error("HESAP SİLME HATASI:", err);
-    return res.redirect("/hesap?error=Bir+hata+oluştu.+Lütfen+tekrar+deneyin");
+    console.error(err);
+    return res.redirect("/hesap?error=Silinemedi");
   }
 });
 
 /* ============================================================
-   ŞİFRE DEĞİŞTİRME — KOD GÖNDER
+   ŞİFRE KODU GÖNDER
 ============================================================ */
 router.post("/sifre-kod", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-    if (!user) return res.redirect("/hesap?error=Kullanıcı+bulunamadı");
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-
     user.resetCode = code;
-    user.resetCodeExpires = new Date(Date.now() + 1000 * 60 * 10);
+    user.resetCodeExpires = new Date(Date.now() + 10 * 60000);
     await user.save();
 
     const html = verificationMailTemplate(`${user.name} ${user.surname}`, code);
-    const ok = await sendMail(user.email, "Doğrulama Kodunuz", html);
+    await sendMail(user.email, "Doğrulama Kodunuz", html);
 
-    if (!ok) {
-      return res.redirect("/hesap?error=Mail+gönderilemedi");
-    }
-
-    return res.redirect(
-      "/hesap?success=Doğrulama+kodu+gönderildi&showVerify=1"
-    );
-  } catch (err) {
-    console.error(err);
-    return res.redirect("/hesap?error=Beklenmeyen+hata");
+    return res.redirect("/hesap?success=Kod+gönderildi&showVerify=1");
+  } catch {
+    return res.redirect("/hesap?error=Kod+gönderilemedi");
   }
 });
 
 /* ============================================================
-   ŞİFRE DEĞİŞTİRME — KOD DOĞRULA
+   KOD DOĞRULAMA
 ============================================================ */
 router.post("/sifre-kod-dogrula-form", auth, async (req, res) => {
   const { code } = req.body;
-
   const user = await User.findById(req.user.id);
 
-  if (!user || !user.resetCode) {
+  if (!user || !user.resetCode)
     return res.redirect("/hesap?error=Kod+talep+edilmedi&showVerify=1");
-  }
 
-  if (user.resetCodeExpires < new Date()) {
-    return res.redirect("/hesap?error=Kodun+süresi+doldu&showVerify=1");
-  }
+  if (user.resetCodeExpires < new Date())
+    return res.redirect("/hesap?error=Süre+doldu&showVerify=1");
 
-  if (code.trim() !== user.resetCode) {
+  if (code.trim() !== user.resetCode)
     return res.redirect("/hesap?error=Kod+yanlış&showVerify=1");
-  }
 
   return res.redirect("/hesap/sifre-yeni");
 });
 
-// ======================================
-//  ŞİFRE YENİLEME SAYFASI (GÖRÜNEN EKRAN)
-//  GET /hesap/sifre-yeni
-// ======================================
+/* ============================================================
+   YENİ ŞİFRE OLUŞTURMA SAYFASI (GET)
+============================================================ */
 router.get("/sifre-yeni", auth, async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    const user = await User.findById(userId).lean();
-    if (!user) {
-      return res.redirect("/hesap?error=Kullanici+bulunamadi");
-    }
-
-    return res.render("pages/hesap", {
-      user,
-      showNewPasswordBox: true,
-    });
-  } catch (err) {
-    console.error("ŞİFRE YENİLEME GET HATASI:", err);
-    return res.redirect("/hesap?error=Bir+hata+olustu");
-  }
+  const user = await User.findById(req.user.id).lean();
+  return res.render("pages/hesap", {
+    user,
+    showNewPasswordBox: true,
+  });
 });
 
 /* ============================================================
-   ŞİFREYİ GERÇEKTEN DEĞİŞTİR
+   YENİ ŞİFRE KAYDET
 ============================================================ */
 router.post("/sifre-yeni", auth, async (req, res) => {
   try {
-    const userId = req.user.id; // app.js içindeki JWT ile uyumlu
     const { password1, password2 } = req.body;
+    const user = await User.findById(req.user.id);
 
-    if (!password1 || !password2) {
-      return res.render("pages/hesap", {
-        error: "Lütfen yeni şifreyi iki kere de girin.",
-        user: req.userData, // aşağıda anlatacağım
-      });
-    }
+    if (!password1 || !password2)
+      return res.redirect("/hesap?error=Şifre+boş+olamaz&showNewPasswordBox=1");
 
-    if (password1 !== password2) {
-      return res.render("pages/hesap", {
-        error: "Yeni şifreler birbiriyle eşleşmiyor.",
-        user: req.userData,
-      });
-    }
+    if (password1 !== password2)
+      return res.redirect(
+        "/hesap?error=Şifreler+eşleşmiyor&showNewPasswordBox=1"
+      );
 
-    if (password1.length < 6) {
-      return res.render("pages/hesap", {
-        error: "Şifre en az 6 karakter olmalı.",
-        user: req.userData,
-      });
-    }
+    if (password1.length < 6)
+      return res.redirect(
+        "/hesap?error=Şifre+en+az+6+karakter+olmalı&showNewPasswordBox=1"
+      );
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.render("pages/hesap", {
-        error: "Kullanıcı bulunamadı.",
-      });
-    }
-
-    const hashed = await bcrypt.hash(password1, 10);
-    user.password = hashed;
+    user.password = await bcrypt.hash(password1, 10);
     await user.save();
 
-    return res.redirect("/hesap?success=Sifre+basariyla+guncellendi");
-  } catch (err) {
-    console.error("ŞİFRE YENİLEME HATASI (hesap.js):", err);
-    return res.render("pages/hesap", {
-      error: "Bir hata oluştu, lütfen tekrar deneyin.",
-    });
+    return res.redirect("/hesap?success=Şifre+güncellendi");
+  } catch {
+    return res.redirect("/hesap?error=Bir+hata+oluştu&showNewPasswordBox=1");
   }
 });
 

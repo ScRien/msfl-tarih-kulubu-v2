@@ -1,110 +1,150 @@
 <section class="blog-detail">
 
+  {{! =========================================
+        DÜZENLE / SİL BUTONLARI (SADE - ŞIK)
+    ========================================== }}
   {{#if isAuth}}
-  {{#if (eq currentUser post.username)}}
-  <div class="blog-detail-actions">
-    <a href="/blog/duzenle/{{post._id}}" class="edit-btn">
-      <i class="fa-solid fa-pen"></i> Düzenle
-    </a>
+    {{#if (eq currentUsername post.username)}}
+      <div class="blog-detail-actions">
 
-    <form action="/blog/sil/{{post._id}}" method="POST" class="delete-form">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-      <button class="delete-btn">
-        <i class="fa-solid fa-trash"></i> Sil
-      </button>
-    </form>
-  </div>
+        <a href="/blog/duzenle/{{post._id}}" class="action-btn edit">
+          <i class="fa-solid fa-pen"></i>
+          Düzenle
+        </a>
+
+        <form
+          action="/blog/{{post._id}}/sil"
+          method="POST"
+          onsubmit="return confirm('Silmek istediğine emin misin?');"
+        >
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+          <button class="action-btn delete">
+            <i class="fa-solid fa-trash"></i>
+            Sil
+          </button>
+        </form>
+
+      </div>
+    {{/if}}
   {{/if}}
-{{/if}}
 
-  <!-- HERO -->
+  {{! HERO }}
   <div class="blog-detail-hero">
-    <img
-      class="blog-detail-cover"
-      src="{{#if post.images.[0]}}{{post.images.[0]}}{{else}}/img/default-blog.jpg{{/if}}"
-      alt="{{post.title}}"
-    />
+
+    <div class="blog-carousel-wrapper">
+      <div class="blog-carousel-container">
+        <div class="blog-carousel" id="blogCarousel">
+          {{#each post.images}}
+            <div class="blog-slide">
+              <img src="{{this.url}}" alt="Blog Görseli" />
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+
     <div class="blog-detail-overlay"></div>
 
     <div class="blog-detail-title-wrapper">
       <p class="blog-detail-badge">MSFL TARİH KULÜBÜ</p>
-
       <h1 class="blog-detail-title">{{post.title}}</h1>
-
       <div class="blog-detail-meta">
         <a href="/u/@{{post.username}}" class="blog-detail-author">
           @{{post.username}}
         </a>
         <span class="blog-detail-dot">•</span>
-        <span class="blog-detail-date">{{generateDate post.date "DD MMMM YYYY"}}</span>
+        <span class="blog-detail-date">
+          {{generateDate post.date "DD MMMM YYYY"}}
+        </span>
       </div>
     </div>
+
   </div>
 
-  <!-- BODY -->
+  {{! BODY }}
   <div class="blog-detail-body">
 
-    <!-- CONTENT -->
+    {{! CONTENT }}
     <article class="blog-detail-article">
 
       <div class="blog-detail-content">
         {{{formatParagraphs post.content}}}
       </div>
 
-      {{#if (gt (length post.images) 1)}}
-      <div class="blog-detail-gallery">
-        {{#each post.images}}
-        {{#unless @first}}
-        <img src="{{this}}" alt="Blog görseli" />
-        {{/unless}}
-        {{/each}}
-      </div>
-      {{/if}}
-
     </article>
 
-    <!-- COMMENTS -->
+    {{! COMMENTS }}
     <aside class="blog-detail-comments">
       <h2 class="comments-title">Yorumlar</h2>
 
       {{#if isAuth}}
-      <form method="POST" action="/blog/{{post._id}}/yorum" class="comment-form">
-        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-        <textarea name="content" placeholder="Düşüncelerini bizimle paylaş..." required></textarea>
-        <button type="submit" class="comment-btn">Gönder</button>
-      </form>
+        <form
+          method="POST"
+          action="/blog/{{post._id}}/yorum"
+          class="comment-form"
+        >
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+          <textarea
+            name="content"
+            placeholder="Düşüncelerini bizimle paylaş..."
+            required
+          ></textarea>
+          <button type="submit" class="comment-btn">Gönder</button>
+        </form>
       {{else}}
-      <p class="comment-login-info">
-        Yorum yapmak için
-        <a href="/oturumAc">oturum aç</a>
-        veya
-        <a href="/kayitOl">kayıt ol</a>.
-      </p>
+        <p class="comment-login-info">
+          Yorum yapmak için
+          <a href="/oturumAc">oturum aç</a>
+          veya
+          <a href="/kayitOl">kayıt ol</a>.
+        </p>
       {{/if}}
 
       {{#if comments.length}}
-      <ul class="comment-list">
+        <ul class="comment-list">
         {{#each comments}}
-        <li class="comment-item">
+          <li class="comment-item">
 
-          <div class="comment-header">
-            <a href="/u/@{{this.username}}" class="comment-author">
-              @{{this.username}}
-            </a>
-            <span class="comment-date">{{generateDate this.date "DD.MM.YYYY"}}</span>
-          </div>
+            <div class="comment-header">
+              <div class="comment-user">
+                <a href="/u/@{{this.username}}" class="comment-author">
+                  @{{this.username}}
+                </a>
+                <span class="comment-date">
+                  {{generateDate this.date "DD.MM.YYYY"}}
+                </span>
+              </div>
 
-          <p class="comment-content">
-            {{this.content}}
-          </p>
+              {{!-- Kullanıcı kendi yorumunu görüyorsa düzenle / sil butonları --}}
+              {{#if (eq ../currentUsername this.username)}}
+                <div class="comment-actions">
+                  <a href="/blog/{{../post._id}}/yorum/{{this._id}}/duzenle" class="comment-edit-btn">
+                    Düzenle
+                  </a>
 
-        </li>
+                  <form
+                    action="/blog/{{../post._id}}/yorum/{{this._id}}/sil"
+                    method="POST"
+                    onsubmit="return confirm('Yorumu silmek istediğine emin misin?');"
+                  >
+                    <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                    <button class="comment-delete-btn">Sil</button>
+                  </form>
+                </div>
+              {{/if}}
+            </div>
+
+            <p class="comment-content">{{this.content}}</p>
+
+          </li>
         {{/each}}
       </ul>
       {{else}}
-      <p class="no-comments">Henüz yorum yok.</p>
+        <p class="no-comments">Henüz yorum yok.</p>
       {{/if}}
     </aside>
 
   </div>
 </section>
+
+<script src="/js/blogCarousel.js"></script>

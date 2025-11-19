@@ -12,6 +12,7 @@ import {
   commentLimiter,
 } from "../middlewares/rateLimiter.js";
 import logger from "../helpers/logger.js";
+import upload from "../middlewares/upload.js";
 
 const blogs = express.Router();
 
@@ -87,26 +88,20 @@ blogs.get("/duzenle/:id", auth, async (req, res) => {
     const post = await Post.findById(req.params.id).lean();
 
     if (!post) {
-      return res.render("pages/blogDuzenle", {
-        error: "Blog bulunamadı."
-      });
+      return res.redirect("/blog?error=Blog+bulunamadı");
     }
 
-    // Post sahibi değilse erişemez
     if (post.user_id.toString() !== req.user.id) {
       return res.redirect("/blog?error=Bu+blogu+düzenleme+yetkin+yok");
     }
 
-    return res.render("pages/blogDuzenle", {
+    res.render("pages/blogDuzenle", {
       post,
-      csrfToken: req.csrfToken()
+      csrfToken: req.csrfToken(),
     });
-
   } catch (err) {
-    console.error("BLOG DÜZENLE GET HATASI:", err);
-    return res.render("pages/blogDuzenle", {
-      error: "Bir hata oluştu."
-    });
+    console.log(err);
+    return res.redirect("/blog?error=Bir+hata+oluştu");
   }
 });
 
@@ -115,57 +110,76 @@ blogs.get("/duzenle/:id", auth, async (req, res) => {
 ============================================================ */
 blogs.post("/duzenle/:id", auth, async (req, res) => {
   try {
-    const postId = req.params.id;
-    const userId = req.user.id;
+    const blog = await Post.findById(req.params.id);
+    if (!blog) return res.status(404).render("pages/404");
 
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res.render("pages/blogDuzenle", {
-        error: "Blog bulunamadı."
-      });
-    }
-
-    if (post.user_id.toString() !== userId) {
-      return res.redirect("/blog?error=Yetkin+yok");
+    // Sahip mi / admin mi?
+    const isOwner = blog.user_id.toString() === req.user.id;
+    const isAdmin = req.user.role === "admin";
+    if (!isOwner && !isAdmin) {
+      return res.status(403).send("Yetkisiz işlem");
     }
 
     const { title, content } = req.body;
 
-    /* ------------------------
-        1) Mevcut görselleri sil
-    ------------------------- */
-    let deleteList = req.body.deleteImages || [];
-    if (!Array.isArray(deleteList)) deleteList = [deleteList];
+    // 1) Mevcut görselleri kopyala
+    let images = Array.isArray(blog.images) ? [...blog.images] : [];
 
-    // Silinmeyecek görseller
-    let newImages = post.images.filter(img => !deleteList.includes(img));
+    // 2) Silinecek görseller (public_id listesi)
+    if (req.body.deleteImages) {
+      let deleteList = [];
+      try {
+        deleteList = JSON.parse(req.body.deleteImages); // ["public_id1", "public_id2"]
+      } catch (e) {
+        deleteList = [];
+      }
 
-    /* ------------------------
-        2) Yeni yüklenen Cloudinary görselleri
-    ------------------------- */
-    let uploadedImages = [];
-    if (req.body.uploadedImages) {
-      uploadedImages = JSON.parse(req.body.uploadedImages);
+      if (deleteList.length) {
+        // Cloudinary'den sil
+        for (const publicId of deleteList) {
+          try {
+            await cloudinary.uploader.destroy(publicId);
+          } catch (err) {
+            logger.error("Cloudinary destroy error (edit):", err);
+          }
+        }
+
+        // DB'den sil
+        images = images.filter(
+          (img) => !deleteList.includes(img.public_id)
+        );
+      }
     }
 
-    // Final görsel listesi:
-    const finalImages = [...newImages, ...uploadedImages];
+    // 3) Yeni eklenen görseller (JS tarafında Cloudinary'e yüklendi)
+    if (req.body.newImagesJson) {
+      try {
+        const newImgs = JSON.parse(req.body.newImagesJson); // [{url, public_id}, ...]
+        if (Array.isArray(newImgs) && newImgs.length) {
+          images = images.concat(
+            newImgs.filter((i) => i.url && i.public_id)
+          );
+        }
+      } catch (e) {
+        logger.warn("newImagesJson parse error:", e);
+      }
+    }
 
-    /* ------------------------
-        3) Güncelleme
-    ------------------------- */
-    post.title = title;
-    post.content = content;
-    post.images = finalImages;
+    // 4) Blog alanlarını güncelle
+    blog.title = title;
+    blog.content = content;
+    blog.images = images;
 
-    await post.save();
+    await blog.save();
 
-    return res.redirect(`/blog/${postId}?success=Blog+güncellendi`);
-
+    return res.redirect(`/blog/${blog._id}`);
   } catch (err) {
-    console.error("BLOG DÜZENLE POST HATASI:", err);
+    logger.error("BLOG UPDATE ERROR:", err);
+    const post = await Post.findById(req.params.id).lean();
     return res.render("pages/blogDuzenle", {
+      post,
       error: "Bir hata oluştu.",
+      csrfToken: req.csrfToken(),
     });
   }
 });
@@ -258,6 +272,27 @@ blogs.post("/:postId/yorum/:commentId/sil", auth, async (req, res) => {
 /* ============================================================
    YORUM DÜZENLE
 ============================================================ */
+blogs.get("/:postId/yorum/:commentId/duzenle", auth, async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId).lean();
+    if (!comment) return res.status(404).render("pages/404");
+
+    const isOwner = comment.user_id.toString() === req.user.id;
+    const isAdmin = req.user.role === "admin";
+
+    if (!isOwner && !isAdmin)
+      return res.status(403).send("Yetkiniz yok.");
+
+    res.render("pages/yorumDuzenle", {
+      comment,
+      postId: req.params.postId,
+      csrfToken: req.csrfToken(),
+    });
+  } catch (err) {
+    logger.error("YORUM DÜZENLE (GET) ERROR:", err);
+    res.status(500).send("Yorum düzenleme sayfası açılırken hata oluştu");
+  }
+});
 blogs.post("/:postId/yorum/:commentId/duzenle", auth, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.commentId);
@@ -308,6 +343,7 @@ blogs.get("/:id", async (req, res) => {
       currentRole: req.user?.role,
       isOwner,
       isAdmin,
+      csrfToken: req.csrfToken(),       // 🔥 BUNU EKLEDİK
       error: req.query.error || null,
       success: req.query.success || null,
     });

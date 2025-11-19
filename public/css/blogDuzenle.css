@@ -1,147 +1,100 @@
-.blog-edit-section {
+.blog-edit {
   max-width: 900px;
   margin: 40px auto;
   padding: 20px;
   background: #fff;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid #ddd;
-  box-shadow: 0 4px 25px rgba(0,0,0,0.05);
-  font-family: "Cardo", serif;
 }
 
-.blog-edit-title {
-  font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 6px;
+.edit-title {
+  font-size: 30px;
+  margin-bottom: 20px;
 }
 
-.blog-edit-desc {
-  color: #666;
-  margin-bottom: 26px;
+.edit-alert {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
 }
 
-.blog-alert {
-  padding: 12px 16px;
-  border-radius: 10px;
-  margin-bottom: 18px;
+.edit-alert.error {
+  background: #ffe1e1;
+  color: #a30000;
 }
 
-.blog-alert.error {
-  background: #ffe3e3;
-  border: 1px solid #ffb3b3;
-  color: #a40000;
-}
-
-.blog-alert.success {
-  background: #e4ffea;
-  border: 1px solid #a5d6a7;
-  color: #1b5e20;
+.edit-alert.success {
+  background: #e7ffe7;
+  color: #125b12;
 }
 
 .form-group {
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
-  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 8px;
   display: block;
-  margin-bottom: 6px;
 }
 
-.input-field {
+.form-group input,
+.form-group textarea {
   width: 100%;
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #bbb;
   background: #fafafa;
-  font-size: 15px;
+  font-size: 16px;
 }
 
-.input-field:focus {
-  border-color: #d62424;
-  background: #fff;
-  outline: none;
-}
-
-.existing-images {
-  display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(140px,1fr));
-  gap: 14px;
-}
-
-.image-box {
-  position: relative;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid #ddd;
-  background: #f8f8f8;
-}
-
-.image-box img {
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-}
-
-.delete-img {
-  display: block;
-  text-align: center;
-  padding: 6px;
-  font-size: 14px;
-  background: #ffe5e5;
-  color: #a40000;
-  cursor: pointer;
-}
-
-.upload-btn {
-  display: inline-block;
-  padding: 10px 16px;
-  background: linear-gradient(to right, #d62424, #ff5858);
-  color: #fff;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.hidden-input {
-  display: none;
-}
-
-.preview-container {
+.edit-gallery {
   display: flex;
+  gap: 14px;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 10px;
+  margin-bottom: 25px;
 }
 
-.preview-container img {
-  width: 140px;
-  height: 120px;
+.gallery-item {
+  position: relative;
+}
+
+.gallery-item img {
+  width: 160px;
+  height: 110px;
   object-fit: cover;
   border-radius: 10px;
   border: 1px solid #ddd;
 }
 
-.form-buttons {
-  display: flex;
-  gap: 14px;
-  margin-top: 20px;
+.remove-label {
+  margin-top: 4px;
+  display: block;
+  font-size: 14px;
 }
 
-.save-btn {
-  padding: 12px 18px;
-  background: linear-gradient(to right, #d62424, #ff5f5f);
-  border: none;
+.preview-area {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.preview-img {
+  width: 150px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.btn.save {
+  padding: 12px 26px;
+  background: linear-gradient(to right, #ff5959, #ff7f7f);
   color: #fff;
+  border: none;
   border-radius: 10px;
   cursor: pointer;
+  font-size: 17px;
 }
 
-.cancel-btn {
-  padding: 12px 18px;
-  background: #ccc;
-  border-radius: 10px;
-  color: black;
-  text-decoration: none;
-}

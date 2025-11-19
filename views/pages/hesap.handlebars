@@ -150,7 +150,10 @@
 
         <form id="avatarForm" action="/hesap/avatar-yukle" method="POST">
           <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-          <input type="hidden" name="avatarUrl" id="avatarUrl" />
+
+          <!-- Güncel Cloudinary sistemine uygun inputlar -->
+          <input type="hidden" name="avatarUrl" id="avatarValue" />
+          <input type="hidden" name="avatarPublicId" id="avatarPid" />
 
           <label for="avatarUpload" class="upload-btn">Yeni Avatar Yükle</label>
           <input type="file" id="avatarUpload" class="hidden-input" accept="image/*" />
@@ -174,7 +177,10 @@
 
         <form id="coverForm" action="/hesap/kapak-yukle" method="POST">
           <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-          <input type="hidden" name="coverUrl" id="coverUrl" />
+
+          <!-- Cloudinary için gerekli inputlar -->
+          <input type="hidden" name="coverUrl" id="coverValue" />
+          <input type="hidden" name="coverPublicId" id="coverPid" />
 
           <label for="coverUpload" class="upload-btn">Yeni Kapak Yükle</label>
           <input type="file" id="coverUpload" class="hidden-input" accept="image/*" />

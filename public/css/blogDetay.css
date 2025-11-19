@@ -12,13 +12,6 @@
    HERO
 =========================== */
 
-.blog-detail-hero {
-  position: relative;
-  height: 290px;
-  overflow: hidden;
-  border-bottom: 3px solid rgba(201, 167, 82, 0.4);
-}
-
 .blog-detail-cover {
   width: 100%;
   height: 100%;
@@ -271,42 +264,213 @@
 }
 
 .blog-detail-actions {
-  margin-top: 18px;
   display: flex;
   gap: 12px;
 }
 
-.blog-detail-actions .edit-btn,
-.blog-detail-actions .delete-btn {
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 14px;
+.delete-form {
+  margin: 0;
+}
+
+/* ================================
+   BLOG DETAY — DÜZENLE/SİL BAR
+================================ */
+
+.blog-detail-actions {
+  width: 100%;
+  background: #0e0e11;
+  padding: 14px 26px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid #272727;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+/* Düzenle */
+.action-btn.edit {
+  background: #ffd86b;
+  color: #000;
+}
+.action-btn.edit:hover {
+  background: #f5c85a;
+}
+
+/* Sil */
+.action-btn.delete {
+  background: #ff4b4b;
+  color: #fff;
+  border: none;
+}
+.action-btn.delete:hover {
+  background: #e84141;
+}
+
+.blog-carousel-container {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+}
+
+.blog-carousel {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+
+.blog-slide {
+  min-width: 100%;
+  height: 100%;
+}
+
+.blog-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Ok butonları */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.45);
+  border: none;
+  color: white;
+  font-size: 32px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: .2s;
+  z-index: 10;
+}
+
+.carousel-btn:hover {
+  background: rgba(0,0,0,0.75);
+}
+
+.prev { left: 15px; }
+.next { right: 15px; }
+
+/* Dots */
+.carousel-dots {
+  position: absolute;
+  bottom: 15px;
+  width: 100%;
+  text-align: center;
+}
+
+.carousel-dots .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 0 4px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  cursor: pointer;
+}
+
+.carousel-dots .dot.active {
+  background: white;
+}
+
+.blog-carousel-wrapper {
+  width: 100%;
+  height: 420px;     /* 🔥 ZORUNLU — yoksa slider çöker */
+  position: relative;
+  overflow: hidden;
+}
+
+.blog-detail-hero {
+  position: relative;
+  height: 420px;   /* Slider ile aynı yükseklik */
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.comment-item {
+  background: rgba(0, 0, 0, 0.35);
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(201, 167, 82, 0.2);
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-user {
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-author {
+  color: #c9a752;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 3px;
+}
+
+.comment-date {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.comment-content {
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+/* Düzenle - Sil butonları */
+.comment-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.comment-edit-btn,
+.comment-delete-btn {
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  border-radius: 6px;
   cursor: pointer;
   border: none;
-  display: flex;
-  align-items: center;
-  gap: 6px;
   text-decoration: none;
-}
-
-.blog-detail-actions .edit-btn {
-  background: #ffd56b;
-  color: #4b3d00;
-}
-
-.blog-detail-actions .edit-btn:hover {
-  background: #ffca3a;
-}
-
-.blog-detail-actions .delete-btn {
-  background: #ff4d4d;
   color: white;
 }
 
-.blog-detail-actions .delete-btn:hover {
-  background: #d93838;
+.comment-edit-btn {
+  background: #ffd86b;
+  color: #000;
 }
 
-.delete-form {
-  margin: 0;
+.comment-edit-btn:hover {
+  background: #ffcf4a;
+}
+
+.comment-delete-btn {
+  background: #ff4b4b;
+}
+
+.comment-delete-btn:hover {
+  background: #e84141;
 }

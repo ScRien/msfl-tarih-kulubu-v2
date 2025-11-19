@@ -1,9 +1,5 @@
+// models/Post.js
 import mongoose from "mongoose";
-
-const ImageSchema = new mongoose.Schema({
-  url: { type: String, required: true },
-  public_id: { type: String, required: true },
-});
 
 const PostSchema = new mongoose.Schema({
   user_id: {
@@ -14,10 +10,13 @@ const PostSchema = new mongoose.Schema({
   username: { type: String },
   title: { type: String, required: true },
   content: { type: String, required: true },
-
-  // Artık string değil — nesne tutuyoruz
-  images: { type: [ImageSchema], default: [] },
-
+  // Sadece string URL tutuyoruz
+  images: [
+    {
+      url: String,
+      public_id: String,
+    },
+  ],
   date: { type: Date, default: Date.now },
 });
 

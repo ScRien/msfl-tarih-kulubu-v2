@@ -1,7 +1,7 @@
 // public/js/blogUpload.js
 document.addEventListener("DOMContentLoaded", () => {
   const cloudName = "deuntxojs";
-  const uploadPreset = "unsigned_upload";
+  const uploadPreset = "tarihkulubu_unsigned";  // 🔥 DOĞRU PRESET
 
   const fileInput = document.getElementById("blogImages");
   const previewBox = document.getElementById("previewBox");
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "<p style='text-align:center; padding:20px;'>Yükleniyor...</p>";
     if (fileCount) fileCount.textContent = `Yükleniyor: ${files.length} dosya`;
 
-    // ✅ PARALEL UPLOAD - Tüm dosyalar aynı anda yüklenir
+    // 🔥 Cloudinary'ye paralel upload
     const uploadPromises = Array.from(files).map(async (file) => {
       try {
         const formData = new FormData();
@@ -67,10 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     try {
-      // ✅ Tüm uploadların bitmesini bekle
       const results = await Promise.allSettled(uploadPromises);
 
-      // Başarılı olanları filtrele
       const successful = results
         .filter((r) => r.status === "fulfilled")
         .map((r) => r.value);
@@ -91,14 +89,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       uploadedUrls = successful;
 
-      // Önizleme oluştur
       const previews = successful
         .map(
           (item) => `
-        <div class="preview-item">
-          <img src="${item.url}" class="preview-img" alt="Preview" />
-        </div>
-      `
+            <div class="preview-item">
+              <img src="${item.url}" class="preview-img" alt="Preview" />
+            </div>
+          `
         )
         .join("");
 

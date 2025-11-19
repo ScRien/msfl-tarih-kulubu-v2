@@ -1,42 +1,16 @@
-const input = document.getElementById("editImages");
-const preview = document.getElementById("editPreviewContainer");
-const outputField = document.getElementById("uploadedImages");
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("newImages");
+  const previewArea = document.getElementById("previewArea");
 
-let uploaded = [];
+  input.addEventListener("change", (e) => {
+    previewArea.innerHTML = "";
 
-if (input) {
-  input.addEventListener("change", async (e) => {
-    preview.innerHTML = "";
-    const files = [...e.target.files];
-
-    if (files.length > 5) {
-      alert("En fazla 5 görsel yükleyebilirsin.");
-      return;
-    }
-
-    uploaded = [];
-
-    for (let file of files) {
-      // Cloudinary upload
-      const form = new FormData();
-      form.append("file", file);
-      form.append("upload_preset", "blog_upload"); // sen ayarlayacaksın
-
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload",
-        { method: "POST", body: form }
-      );
-
-      const data = await res.json();
-      uploaded.push(data.secure_url);
-
-      // Preview göster
+    Array.from(e.target.files).forEach((file) => {
       const img = document.createElement("img");
-      img.src = data.secure_url;
-      preview.appendChild(img);
-    }
-
-    // backend'e yollamak için:
-    outputField.value = JSON.stringify(uploaded);
+      img.src = URL.createObjectURL(file);
+      img.classList.add("preview-img");
+      previewArea.appendChild(img);
+    });
   });
-}
+});
+

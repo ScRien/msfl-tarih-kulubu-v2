@@ -1,7 +1,6 @@
-// public/js/blogEditUpload.js
 document.addEventListener("DOMContentLoaded", () => {
   const cloudName = "deuntxojs";
-  const uploadPreset = "unsigned_upload";
+  const uploadPreset = "tarihkulubu_unsigned";  // 🔥 Yeni preset
 
   const editFileInput = document.getElementById("newImages");
   const editPreviewBox = document.getElementById("editPreviewBox");
@@ -31,12 +30,12 @@ document.addEventListener("DOMContentLoaded", () => {
     editPreviewBox.innerHTML =
       "<p style='text-align:center; padding:20px;'>Yükleniyor...</p>";
 
-    // ✅ PARALEL UPLOAD
     const uploadPromises = Array.from(files).map(async (file) => {
       try {
         const fd = new FormData();
         fd.append("file", file);
-        fd.append("upload_preset", uploadPreset);
+        fd.append("upload_preset", uploadPreset);   // 🔥 doğru preset
+        fd.append("folder", "tarihkulubu/blogs");   // 🔥 doğru klasör
 
         const response = await fetch(
           `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
@@ -90,8 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
           (item) => `
         <div class="preview-item">
           <img src="${item.url}" class="preview-img" alt="Preview" />
-        </div>
-      `
+        </div>`
         )
         .join("");
 

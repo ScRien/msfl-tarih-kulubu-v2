@@ -1,85 +1,72 @@
-<section class="blog-edit-section">
+<section class="blog-edit">
 
-  <h1 class="blog-edit-title">Blogu Düzenle</h1>
-  <p class="blog-edit-desc">Başlık, içerik ve görselleri güncelleyebilirsin.</p>
+  <h1 class="edit-title">Blog Düzenle</h1>
 
   {{#if error}}
-    <div class="blog-alert error">{{error}}</div>
+    <div class="edit-alert error">{{error}}</div>
   {{/if}}
 
   {{#if success}}
-    <div class="blog-alert success">{{success}}</div>
+    <div class="edit-alert success">{{success}}</div>
   {{/if}}
 
-  <form id="blogEditForm" method="POST" action="/blog/duzenle/{{post._id}}">
+  <form
+    id="blogEditForm"
+    method="POST"
+    action="/blog/duzenle/{{post._id}}"
+  >
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <input type="hidden" id="deleteImages" name="deleteImages" value="[]">
+    <input type="hidden" id="newImagesJson" name="newImagesJson" value="[]">
 
-    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-
-    <!-- BAŞLIK -->
+    <!-- Başlık -->
     <div class="form-group">
       <label>Başlık</label>
-      <input
-        type="text"
-        name="title"
-        class="input-field"
-        value="{{post.title}}"
-        required
-      />
+      <input type="text" name="title" value="{{post.title}}" required>
     </div>
 
-    <!-- İÇERİK -->
+    <!-- İçerik -->
     <div class="form-group">
       <label>İçerik</label>
-      <textarea
-        name="content"
-        rows="8"
-        class="input-field"
-        required
-      >{{post.content}}</textarea>
+      <textarea name="content" rows="10" required>{{post.content}}</textarea>
     </div>
 
-    <!-- MEVCUT GÖRSELLER -->
-    <div class="form-group">
-      <label>Mevcut Fotoğraflar</label>
+    <!-- Mevcut Fotoğraflar -->
+    <div class="edit-gallery">
+      <p class="gallery-title">Mevcut Fotoğraflar</p>
 
-      <div class="existing-images">
-        {{#each post.images}}
-          <div class="image-box">
-            <img src="{{this}}" alt="Blog Görseli" />
-
-            <label class="delete-img">
-              <input type="checkbox" name="deleteImages" value="{{this}}" />
+      {{#if post.images.length}}
+        <div class="gallery-grid">
+          {{#each post.images}}
+          <div class="gallery-item">
+            <img src="{{this.url}}" alt="Görsel">
+            <label class="remove-label">
+              <input
+                type="checkbox"
+                class="deleteImageCheck"
+                value="{{this.public_id}}"
+              >
               Sil
             </label>
           </div>
-        {{/each}}
-      </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="no-images">Bu blog için henüz görsel eklenmemiş.</p>
+      {{/if}}
     </div>
 
-    <!-- YENİ FOTOĞRAF YÜKLE -->
+    <!-- Yeni Fotoğraf Ekle -->
     <div class="form-group">
-      <label>Yeni Fotoğraflar (En fazla 5)</label>
-
-      <label for="editImages" class="upload-btn">Fotoğraf Seç</label>
-      <input
-        type="file"
-        id="editImages"
-        accept="image/*"
-        multiple
-        class="hidden-input"
-      />
-
-      <div id="editPreviewContainer" class="preview-container"></div>
-
-      <!-- Cloudinary geçişli upload için: -->
-      <input type="hidden" name="uploadedImages" id="uploadedImages" />
+      <label>Yeni Fotoğraf Ekle (Max 5)</label>
+      <input type="file" id="newImages" accept="image/*" multiple>
+      <div id="editPreviewBox" class="preview-area"></div>
     </div>
 
-    <div class="form-buttons">
-      <button type="submit" class="save-btn">Güncelle</button>
-      <a href="/blog/{{post._id}}" class="cancel-btn">İptal</a>
-    </div>
+    <button class="btn save">Güncelle</button>
   </form>
+
 </section>
 
-<script src="/js/blogEdit.js"></script>
+<script src="/js/blogEditUpload.js"></script>
+<script src="/js/blogForm.js"></script>
