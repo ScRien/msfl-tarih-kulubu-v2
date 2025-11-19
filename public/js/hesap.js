@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ===========================================================
-   HESAP SİLME MODAL FONKSİYONLARI
+   HESAP SİLME MODAL FONKSİYONLARI (CSRF DESTEKLİ)
 =========================================================== */
 function openDeleteModal() {
   const modal = document.getElementById("deleteModal");
@@ -93,6 +93,7 @@ function closeDeleteModal() {
 async function confirmDelete() {
   const c = document.getElementById("confirmC").value.trim().toUpperCase();
   const password = document.getElementById("deletePassword").value.trim();
+  const csrf = document.getElementById("csrfDelete").value.trim();
   const errorBox = document.getElementById("modalError");
 
   errorBox.textContent = "";
@@ -110,7 +111,10 @@ async function confirmDelete() {
   try {
     const res = await fetch("/hesap/sil", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "CSRF-Token": csrf,
+      },
       body: JSON.stringify({ password }),
     });
 
