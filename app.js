@@ -63,6 +63,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+app.locals.isProd = process.env.NODE_ENV === "production";
+
 // ===============================
 // JWT AUTH
 // ===============================

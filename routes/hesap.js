@@ -12,6 +12,11 @@ import bcrypt from "bcrypt";
 
 const router = express.Router();
 
+router.use((req, res, next) => {
+  req.isProd = req.app.locals.isProd;
+  next();
+});
+
 /* ============================================================
    HESAP SAYFASI (GET)
 ============================================================ */
@@ -213,7 +218,7 @@ router.post("/sil", auth, async (req, res) => {
     // ➤ Cookie temizle
     res.clearCookie("auth_token", {
       httpOnly: true,
-      secure: isProd,
+      secure: req.isProd,
       sameSite: "lax",
     });
 
