@@ -152,8 +152,8 @@
           <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
           <!-- Güncel Cloudinary sistemine uygun inputlar -->
-          <input type="hidden" name="avatarUrl" id="avatarValue" />
-          <input type="hidden" name="avatarPublicId" id="avatarPid" />
+          <input type="hidden" id="avatarValue" name="avatarUrl">
+          <input type="hidden" id="avatarPid" name="avatarPublicId">
 
           <label for="avatarUpload" class="upload-btn">Yeni Avatar Yükle</label>
           <input type="file" id="avatarUpload" class="hidden-input" accept="image/*" />
@@ -179,8 +179,8 @@
           <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
           <!-- Cloudinary için gerekli inputlar -->
-          <input type="hidden" name="coverUrl" id="coverValue" />
-          <input type="hidden" name="coverPublicId" id="coverPid" />
+          <input type="hidden" id="coverValue" name="coverUrl">
+          <input type="hidden" id="coverPid" name="coverPublicId">
 
           <label for="coverUpload" class="upload-btn">Yeni Kapak Yükle</label>
           <input type="file" id="coverUpload" class="hidden-input" accept="image/*" />

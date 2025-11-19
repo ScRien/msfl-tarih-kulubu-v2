@@ -1,27 +1,50 @@
 // public/js/avatarCoverUpload.js
 document.addEventListener("DOMContentLoaded", () => {
+
   const cloudName = "deuntxojs";
   const uploadPreset = "unsigned_upload";
 
+  // ===============================
+  // GENEL CLOUDINARY UPLOAD FONKSİYONU
+  // ===============================
   async function uploadToCloudinary(file) {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", uploadPreset);
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("upload_preset", uploadPreset);
 
-    const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      {
+    try {
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
         method: "POST",
-        body: formData,
-      }
-    );
+        body: fd,
+      });
 
-    return await res.json();
+      const data = await res.json();
+      console.log("Cloudinary Response:", data);
+      return data;
+
+    } catch (err) {
+      console.error("Cloudinary Upload Error:", err);
+      return null;
+    }
   }
 
-  /* ===========================
-      AVATAR
-  =========================== */
+  // ===============================
+  // INPUT'A URL YAZMA — SAFARI FIX
+  // ===============================
+  function safeSetValue(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    // Safari bazen ilk denemede yazmıyor
+    el.value = value;
+    setTimeout(() => {
+      el.value = value;
+    }, 50);
+  }
+
+  // ===============================
+  // AVATAR UPLOAD
+  // ===============================
   const avatarInput = document.getElementById("avatarUpload");
   const avatarPreview = document.getElementById("avatarPreview");
 
@@ -35,24 +58,31 @@ document.addEventListener("DOMContentLoaded", () => {
       reader.onload = (ev) => (avatarPreview.src = ev.target.result);
       reader.readAsDataURL(file);
 
-      // Cloudinary
+      // Upload
       const result = await uploadToCloudinary(file);
 
-      if (result.secure_url && result.public_id) {
-        document.getElementById("avatarValue").value = result.secure_url;
-        document.getElementById("avatarPid").value = result.public_id;
+      if (!result) {
+        alert("⚠ Avatar yüklenemedi! (network)");
+        return;
+      }
 
-        console.log("Avatar yüklendi:", result);
+      const finalUrl = result.secure_url || result.url;
+
+      if (finalUrl && result.public_id) {
+        safeSetValue("avatarValue", finalUrl);
+        safeSetValue("avatarPid", result.public_id);
+
+        console.log("✔ Avatar hazır →", finalUrl);
       } else {
-        alert("Avatar yüklenemedi!");
-        console.error(result);
+        console.error("Cloudinary Hatalı Response:", result);
+        alert("⚠ Avatar yüklenemedi! (API Response)");
       }
     });
   }
 
-  /* ===========================
-      COVER
-  =========================== */
+  // ===============================
+  // COVER UPLOAD
+  // ===============================
   const coverInput = document.getElementById("coverUpload");
   const coverPreview = document.getElementById("coverPreview");
 
@@ -66,18 +96,26 @@ document.addEventListener("DOMContentLoaded", () => {
       reader.onload = (ev) => (coverPreview.src = ev.target.result);
       reader.readAsDataURL(file);
 
-      // Cloudinary
+      // Upload
       const result = await uploadToCloudinary(file);
 
-      if (result.secure_url && result.public_id) {
-        document.getElementById("coverValue").value = result.secure_url;
-        document.getElementById("coverPid").value = result.public_id;
+      if (!result) {
+        alert("⚠ Kapak yüklenemedi! (network)");
+        return;
+      }
 
-        console.log("Kapak yüklendi:", result);
+      const finalUrl = result.secure_url || result.url;
+
+      if (finalUrl && result.public_id) {
+        safeSetValue("coverValue", finalUrl);
+        safeSetValue("coverPid", result.public_id);
+
+        console.log("✔ Kapak hazır →", finalUrl);
       } else {
-        alert("Kapak yüklenemedi!");
-        console.error(result);
+        console.error("Cloudinary Hatalı Response:", result);
+        alert("⚠ Kapak yüklenemedi! (API Response)");
       }
     });
   }
+
 });
