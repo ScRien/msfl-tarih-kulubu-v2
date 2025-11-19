@@ -282,7 +282,7 @@ export function accountDeletedMailTemplate(username) {
 
       <p>
         Eğer bu işlemi siz gerçekleştirmediyseniz veya destek talep etmek isterseniz,
-        kullanıcı adınızı belirterek şu adrese e-posta gönderebilirsiniz:
+        kullanıcı adınızı ve mail adresinizi belirterek şu adrese e-posta gönderebilirsiniz:
         <br><br>
         <strong>msfltarihkulubu@outlook.com</strong>
       </p>
