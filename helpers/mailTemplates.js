@@ -185,21 +185,23 @@ export function verificationMailTemplate(name, code) {
             <div class="verify-code">${code}</div>
           </div>
 
-          <a class="btn">Kodu Kullan</a>
+          <a class="btn" href="https://msfltarihkulubu.vercel.app/sifre-unuttum">
+            Kodu Kullan
+          </a>
 
           <p style="margin-top: 18px;">
-              Kodun <b>5 dakika</b> boyunca geçerlidir. Bu işlemi sen yapmadıysan lütfen 
-              öğretmenine ya da <b>msfltarihkulubu@outlook.com</b> adresine haber ver.
+            Kodun <b>5 dakika</b> boyunca geçerlidir.<br>
+            Eğer bu işlemi sen yapmadıysan lütfen <b>msfltarihkulubu@outlook.com</b> adresine haber ver.
           </p>
         </div>
 
-        <!-- NEXT STEPS SECTION -->
+        <!-- NEXT STEPS -->
         <div class="gray-section">
           <h3>Bundan sonra ne olacak?</h3>
           <ul>
             <li>Doğrulama kodunu kullanarak işlemini tamamlayacaksın.</li>
             <li>Hesabın daha güvenli hale gelecek.</li>
-            <li>Gerekirse bizi her zaman bilgilendirebilirsin.</li>
+            <li>Gerekirse bizimle iletişime geçebilirsin.</li>
           </ul>
         </div>
 

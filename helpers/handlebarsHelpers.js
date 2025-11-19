@@ -64,4 +64,20 @@ Handlebars.registerHelper("formatParagraphs", (content) => {
   return new Handlebars.SafeString(paragraphs);
 });
 
+Handlebars.registerHelper("length", (value) => {
+  if (!value) return 0;
+
+  // Dizi veya string ise length döndür
+  if (Array.isArray(value) || typeof value === "string") {
+    return value.length;
+  }
+
+  // Object ise key sayısı döndür
+  if (typeof value === "object") {
+    return Object.keys(value).length;
+  }
+
+  return 0;
+});
+
 export default Handlebars;
