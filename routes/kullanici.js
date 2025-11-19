@@ -18,6 +18,9 @@ const userRouter = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "jwt_super_secret_123";
 const isProd = process.env.NODE_ENV === "production";
 
+// ================================
+// JWT COOKIE
+// ================================
 function setAuthCookie(res, user) {
   const token = jwt.sign(
     {
@@ -45,21 +48,26 @@ userRouter.get("/kayitOl", (req, res) => {
 });
 
 /* ================================
-   KAYIT OL POST
+   KAYIT OL POST (Tam Düzeltilmiş)
 ================================ */
 userRouter.post(
   "/kayitOl",
+  registerLimiter, // 1) önce rate limit
   (req, res, next) => {
     req.validationErrorView = "pages/kayitOl";
     req.validationErrorData = req.body;
     next();
   },
-  registerValidation,
-  registerLimiter,
+  registerValidation, // 2) sonra validation
   async (req, res) => {
     try {
-      let { username, email, password, name, surname } = req.body;
+      let username = req.body.username.trim();
+      let email = req.body.email.trim().toLowerCase();
+      let name = req.body.name.trim();
+      let surname = req.body.surname.trim();
+      const password = req.body.password;
 
+      // Benzersizlik
       const exists = await User.findOne({
         $or: [{ username }, { email }],
       });
@@ -67,7 +75,10 @@ userRouter.post(
       if (exists) {
         return res.render("pages/kayitOl", {
           error: "Bu email veya kullanıcı adı zaten kayıtlı.",
-          ...req.body,
+          username,
+          email,
+          name,
+          surname,
         });
       }
 
@@ -107,16 +118,17 @@ userRouter.get("/oturumAc", (req, res) => {
 ================================ */
 userRouter.post(
   "/oturumAc",
+  loginLimiter,
   (req, res, next) => {
     req.validationErrorView = "pages/oturumAc";
     req.validationErrorData = {};
     next();
   },
   loginValidation,
-  loginLimiter,
   async (req, res) => {
     try {
-      const { username, password } = req.body;
+      const username = req.body.username.trim();
+      const password = req.body.password;
 
       const user = await User.findOne({ username });
       if (!user)
