@@ -449,3 +449,403 @@
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
+
+/* ======= RESPONSIVE TASARIM ======= */
+
+/* Tablet - 1024px ve altı */
+@media (max-width: 1024px) {
+  .texts {
+    padding: 0 60px;
+    height: auto;
+    min-height: 500px;
+    gap: 30px;
+  }
+
+  .texts-left h3 {
+    font-size: 36px;
+  }
+
+  .sub-quote {
+    font-size: 36px;
+  }
+
+  .signature {
+    width: 180px;
+    margin: 10px 0 30px 150px;
+  }
+
+  .tughra {
+    width: 150px;
+    margin-left: 150px;
+  }
+
+  .divider {
+    height: 400px;
+  }
+
+  .texts-right {
+    font-size: 18px;
+  }
+
+  .tarih-aralari {
+    padding: 0 60px;
+    height: auto;
+    min-height: 650px;
+  }
+
+  .title {
+    font-size: 36px;
+  }
+
+  .subtitle {
+    font-size: 20px;
+  }
+
+  .highlight {
+    font-size: 24px;
+  }
+
+  .tarihle-bulusuyoruz {
+    padding: 0 60px;
+    height: auto;
+    min-height: 650px;
+  }
+
+  .etkinlik-content {
+    margin-left: 300px;
+  }
+
+  .etkinlik-bottom {
+    margin-top: 200px;
+  }
+
+  .tarihte-bugun {
+    padding: 0 60px;
+    height: auto;
+    min-height: 500px;
+  }
+
+  .bugun-left {
+    margin-right: 30%;
+  }
+
+  .aramiza-katil {
+    height: auto;
+    min-height: 400px;
+    padding: 60px 40px;
+  }
+
+  .katil-title {
+    font-size: 36px;
+  }
+
+  .katil-text {
+    font-size: 20px;
+  }
+}
+
+/* Tablet küçük - 768px ve altı */
+@media (max-width: 768px) {
+  .texts {
+    flex-direction: column;
+    padding: 40px 30px;
+    gap: 30px;
+  }
+
+  .texts-middle {
+    display: none;
+  }
+
+  .texts-left {
+    text-align: center;
+  }
+
+  .texts-left h3 {
+    font-size: 28px;
+  }
+
+  .sub-quote {
+    font-size: 28px;
+  }
+
+  .signature {
+    width: 150px;
+    margin: 10px auto 30px;
+  }
+
+  .tughra {
+    width: 120px;
+    margin: 0 auto;
+  }
+
+  .texts-right {
+    text-align: center;
+    font-size: 16px;
+  }
+
+  .tarih-aralari {
+    flex-direction: column;
+    padding: 40px 30px;
+    gap: 40px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .subtitle {
+    font-size: 18px;
+  }
+
+  .highlight {
+    font-size: 22px;
+  }
+
+  .featured-posts {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .post {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .explore {
+    margin-right: 0;
+  }
+
+  .tarihle-bulusuyoruz {
+    padding: 40px 30px;
+  }
+
+  .etkinlik-content {
+    margin-left: 0;
+  }
+
+  .etkinlik-content .title {
+    font-size: 32px;
+  }
+
+  .etkinlik-content .subtitle {
+    font-size: 18px;
+  }
+
+  .etkinlik-bottom {
+    margin-top: 100px;
+  }
+
+  .quote-text {
+    font-size: 18px;
+  }
+
+  .quote-text span {
+    font-size: 16px;
+  }
+
+  .tarihte-bugun {
+    flex-direction: column;
+    padding: 40px 30px;
+    gap: 40px;
+  }
+
+  .bugun-left {
+    margin-right: 0;
+  }
+
+  .tarihte-bugun .title {
+    font-size: 32px;
+  }
+
+  .tarihte-bugun .subtitle {
+    font-size: 18px;
+  }
+
+  .date-item p {
+    font-size: 16px;
+  }
+
+  .quote {
+    font-size: 18px;
+  }
+
+  .bugun-right {
+    justify-content: center;
+  }
+
+  .bugun-right img {
+    width: 280px;
+  }
+
+  .aramiza-katil {
+    padding: 40px 30px;
+  }
+
+  .katil-title {
+    font-size: 28px;
+  }
+
+  .katil-text {
+    font-size: 18px;
+  }
+
+  .katil-button {
+    font-size: 18px;
+    padding: 12px 30px;
+  }
+}
+
+/* Mobil - 480px ve altı */
+@media (max-width: 480px) {
+  .texts {
+    padding: 30px 20px;
+  }
+
+  .texts-left h3 {
+    font-size: 22px;
+  }
+
+  .sub-quote {
+    font-size: 22px;
+  }
+
+  .signature {
+    width: 120px;
+  }
+
+  .tughra {
+    width: 100px;
+  }
+
+  .texts-right {
+    font-size: 14px;
+  }
+
+  .texts-right button {
+    padding: 8px 20px;
+    font-size: 14px;
+  }
+
+  .tarih-aralari {
+    padding: 30px 20px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    margin-bottom: 25px;
+  }
+
+  .highlight {
+    font-size: 20px;
+  }
+
+  .post h4 {
+    font-size: 14px;
+  }
+
+  .post p {
+    font-size: 11px;
+  }
+
+  .post button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .explore p {
+    font-size: 18px;
+  }
+
+  .explore button {
+    padding: 8px 20px;
+    font-size: 14px;
+  }
+
+  .tarihle-bulusuyoruz {
+    padding: 30px 20px;
+  }
+
+  .etkinlik-content .title {
+    font-size: 26px;
+  }
+
+  .etkinlik-content .subtitle {
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+
+  .etkinlik-bottom {
+    margin-top: 60px;
+  }
+
+  .quote-text {
+    font-size: 16px;
+  }
+
+  .quote-text span {
+    font-size: 14px;
+  }
+
+  .etkinlik-bottom button {
+    padding: 10px 24px;
+    font-size: 13px;
+  }
+
+  .tarihte-bugun {
+    padding: 30px 20px;
+  }
+
+  .tarihte-bugun .title {
+    font-size: 26px;
+  }
+
+  .tarihte-bugun .subtitle {
+    font-size: 16px;
+    margin-bottom: 25px;
+  }
+
+  .calendar {
+    font-size: 18px;
+    padding: 16px 12px 8px 12px;
+    min-width: 45px;
+  }
+
+  .date-item p {
+    font-size: 14px;
+  }
+
+  .quote {
+    font-size: 16px;
+  }
+
+  .tarihte-bugun button {
+    padding: 10px 24px;
+    font-size: 13px;
+  }
+
+  .bugun-right img {
+    width: 220px;
+  }
+
+  .aramiza-katil {
+    padding: 30px 20px;
+  }
+
+  .katil-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .katil-text {
+    font-size: 16px;
+  }
+
+  .katil-button {
+    font-size: 16px;
+    padding: 10px 24px;
+  }
+}
