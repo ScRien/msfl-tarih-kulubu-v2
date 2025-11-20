@@ -1,53 +1,69 @@
-/* ======= ANA METİN ======= */
+/* ======= GENEL AYARLAR ======= */
+* {
+  box-sizing: border-box; /* Paddinglerin genişliği etkilemesini engeller */
+}
+
+/* ======= ANA METİN (HERO SECTION) ======= */
 .texts {
   display: flex;
   align-items: center;
   justify-content: center;
   background: url("/img/texts-background.png") center/cover no-repeat;
-  height: 620px;
-  padding: 0 120px;
-  gap: 50px;
+  min-height: 620px; /* height yerine min-height */
+  padding: 40px 5%; /* Sabit 120px yerine % kullanımı */
+  gap: 30px;
   color: #111;
+  width: 100%;
 }
 
 /* Sol taraf */
 .texts-left {
-  flex: 1.75;
+  flex: 1.5;
   text-align: left;
+  display: flex;
+  flex-direction: column;
 }
 
 .texts-left h3 {
   font-family: "Cardo", serif;
-  font-size: 46px;
+  font-size: clamp(28px, 4vw, 46px); /* Font boyutunu ekrana göre ölçekler */
   margin-bottom: 15px;
 }
 
 .signature {
   width: 240px;
-  margin: 10px 0 40px 220px;
+  max-width: 100%;
+  margin: 10px 0 40px auto; /* Sağa yaslamak için auto margin */
+  align-self: flex-end; /* Flex içinde sağa yaslama */
+  margin-right: 20%; /* Görsel denge için */
 }
 
 .sub-quote {
   font-family: "Cardo", serif;
-  font-size: 46px;
+  font-size: clamp(24px, 3.5vw, 46px);
   font-weight: 600;
   margin-bottom: 15px;
 }
 
 .tughra {
   width: 190px;
-  margin-left: 220px;
+  max-width: 80%;
+  margin-left: auto; /* Sağa yaslama mantığı */
+  margin-right: 20%;
 }
 
 /* Orta */
 .texts-middle {
-  flex: 0 0 80px;
+  flex: 0 0 50px;
   display: flex;
   justify-content: center;
 }
 
 .divider {
-  height: 520px;
+  height: auto;
+  max-height: 520px;
+  width: auto;
+  max-width: 100%;
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.4));
   opacity: 0.9;
 }
@@ -57,7 +73,7 @@
   flex: 1;
   text-align: right;
   font-family: "Cardo", serif;
-  font-size: 20px;
+  font-size: clamp(16px, 1.5vw, 20px);
   line-height: 1.6;
   color: #5b0000;
 }
@@ -85,24 +101,26 @@
   align-items: center;
   justify-content: space-between;
   background: url("/img/tarih-aralari_background.png") center/cover no-repeat;
-  height: 788px;
-  padding: 0 120px;
+  min-height: 788px;
+  padding: 60px 5%;
   color: #111;
+  flex-wrap: wrap; /* İçerik sığmazsa alta geçsin */
 }
 
 .tarih-left {
   flex: 1;
+  min-width: 300px; /* Çok daralmasını engeller */
 }
 
 .title {
   font-family: "Cardo", serif;
-  font-size: 42px;
+  font-size: clamp(32px, 4vw, 42px);
   font-weight: 700;
 }
 
 .subtitle {
   font-family: "Cardo", serif;
-  font-size: 24px;
+  font-size: clamp(18px, 2vw, 24px);
   margin-bottom: 40px;
 }
 
@@ -119,6 +137,7 @@
 .featured-posts {
   display: flex;
   gap: 30px;
+  flex-wrap: wrap; /* Kartlar sığmazsa alta geçsin */
 }
 
 .post {
@@ -126,21 +145,25 @@
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   padding: 20px;
-  max-width: 290px;
+  flex: 1; /* Eşit genişlikte yayılsın */
+  min-width: 250px; /* Çok küçülmesin */
+  max-width: 100%;
 }
 
 .post h4 {
   font-family: "Aileron", sans-serif;
-  font-size: 15.1px;
+  font-size: 16px;
   font-weight: 700;
   margin-bottom: 10px;
+  line-height: 1.4;
 }
 
 .post p {
   font-family: "Aileron", sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   margin-bottom: 20px;
+  line-height: 1.5;
 }
 
 .post button {
@@ -153,16 +176,17 @@
   font-weight: 700;
   cursor: pointer;
   transition: 0.3s;
+  width: 100%; /* Mobilde butona basmayı kolaylaştırır */
 }
 
 .post button:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
 .explore {
   text-align: center;
   margin-top: 40px;
-  margin-right: 50px;
+  /* margin-right: 50px;  Kaldırıldı, ortalasın */
 }
 
 .explore p {
@@ -187,51 +211,55 @@
   transition: 0.3s;
 }
 
-.explore button:hover {
-  transform: translateY(-2px);
-}
-
 .tarih-right {
   flex: 1;
-  display: flex;
-  justify-content: center;
+  /* Eğer sağ tarafta görsel yoksa display:none veya görsel varsa responsive ayarı yapılmalı */
+  display: none; /* HTML'de boş görünüyor, gizledim */
 }
 
 /* ======= BU YIL TARİHLE BULUŞUYORUZ ======= */
 .tarihle-bulusuyoruz {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: url("/img/tarihle-bulusuyoruz_background.png") center/cover
-    no-repeat;
-  height: 788px;
-  padding: 0 120px;
+  justify-content: flex-end; /* İçeriği sağa yaslar */
+  background: url("/img/tarihle-bulusuyoruz_background.png") center/cover no-repeat;
+  min-height: 788px;
+  padding: 60px 5%;
   color: #111;
 }
 
+/* EN BÜYÜK DÜZELTME BURADA: margin-left: 550px kaldırıldı */
 .etkinlik-content {
-  max-width: 900px;
+  width: 100%;
+  max-width: 600px; /* İçeriğin çok yayılmasını engeller */
   text-align: center;
-  margin-left: 550px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.5); /* Okunabilirlik için hafif arka plan eklenebilir */
+  padding: 20px;
+  border-radius: 15px;
+  backdrop-filter: blur(2px); /* Modern tarayıcılar için */
 }
 
 .etkinlik-content .title {
   font-family: "Cardo", serif;
-  font-size: 42px;
+  font-size: clamp(32px, 4vw, 42px);
   font-weight: 700;
   margin-bottom: 20px;
 }
 
 .etkinlik-content .subtitle {
   font-family: "Cardo", serif;
-  font-size: 24px;
-  margin-bottom: 50px;
+  font-size: clamp(18px, 2vw, 24px);
+  margin-bottom: 30px;
   line-height: 1.5;
 }
 
 /* Alt Kısım */
 .etkinlik-bottom {
-  margin-top: 354px;
+  margin-top: 50px; /* 354px yerine makul bir boşluk */
   text-align: center;
 }
 
@@ -266,28 +294,32 @@
 
 .etkinlik-bottom button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
+/* ======= TARİHTE BUGÜN ======= */
 .tarihte-bugun {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* justify-content: space-between;  Gerek yok */
   background: url("/img/tarihtebugun_background.png") center/cover no-repeat;
-  height: 600px;
-  padding: 0 120px;
+  min-height: 600px;
+  padding: 60px 5%;
   color: #111;
 }
 
 /* Sol taraf */
 .bugun-left {
-  margin-right: 50%;
-  flex: 1;
+  /* margin-right: 50%; KALDIRILDI - Bu tüm yapıyı bozuyordu */
+  flex: 0 0 50%; /* Genişliği ekranın yarısı yap */
+  max-width: 600px;
+  background: rgba(255, 255, 255, 0.7); /* Yazı okunabilirliği için */
+  padding: 30px;
+  border-radius: 15px;
 }
 
 .tarihte-bugun .title {
   font-family: "Cardo", serif;
-  font-size: 42px;
+  font-size: clamp(32px, 4vw, 42px);
   font-weight: 700;
   margin-bottom: 5px;
 }
@@ -325,9 +357,9 @@
   text-align: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   border: 1px solid #ccc;
+  flex-shrink: 0; /* Kutunun sıkışmasını engeller */
 }
 
-/* Üst kırmızı şerit (takvim başlığı gibi) */
 .calendar::before {
   content: "";
   position: absolute;
@@ -340,7 +372,6 @@
   border-top-right-radius: 8px;
 }
 
-/* Sayı ortalanmış dursun */
 .calendar span {
   position: relative;
   top: 4px;
@@ -349,11 +380,11 @@
 
 .date-item p {
   font-family: "Cardo", serif;
-  font-size: 20px;
+  font-size: 18px;
   color: #111;
+  margin: 0;
 }
 
-/* Alttaki kırmızı metin */
 .quote {
   font-family: "Cardo", serif;
   font-size: 21px;
@@ -364,7 +395,6 @@
   margin-bottom: 25px;
 }
 
-/* Buton */
 .tarihte-bugun button {
   background: linear-gradient(to right, #6d7486, #0a0d13);
   color: white;
@@ -384,37 +414,26 @@
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Sağ taraf */
-.bugun-right {
-  flex: 0.9;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.bugun-right img {
-  width: 350px;
-  height: auto;
-  object-fit: contain;
-}
-
 /* ======= ARAMIZA KATIL ======= */
 .aramiza-katil {
   display: flex;
   align-items: center;
   justify-content: center;
   background: url("/img/aramizakatil_bg.png") center/cover no-repeat;
-  height: 480px;
+  min-height: 480px; /* height -> min-height */
+  padding: 60px 20px;
   text-align: center;
   color: #111;
 }
 
 .katil-container {
   max-width: 850px;
+  width: 100%;
 }
 
 .katil-title {
   font-family: "Cardo", serif;
-  font-size: 42px;
+  font-size: clamp(32px, 5vw, 42px);
   font-weight: 700;
   margin-bottom: 25px;
   text-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
@@ -422,7 +441,7 @@
 
 .katil-text {
   font-family: "Cardo", serif;
-  font-size: 24px;
+  font-size: clamp(18px, 3vw, 24px);
   font-weight: 500;
   line-height: 1.6;
   background: linear-gradient(to right, #731919, #e52b2b);
@@ -450,402 +469,94 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
-/* ======= RESPONSIVE TASARIM ======= */
+/* ======= RESPONSIVE TASARIM (MEDIA QUERIES) ======= */
 
-/* Tablet - 1024px ve altı */
+/* Tablet (1024px ve altı) */
 @media (max-width: 1024px) {
   .texts {
-    padding: 0 60px;
-    height: auto;
-    min-height: 500px;
-    gap: 30px;
-  }
-
-  .texts-left h3 {
-    font-size: 36px;
-  }
-
-  .sub-quote {
-    font-size: 36px;
-  }
-
-  .signature {
-    width: 180px;
-    margin: 10px 0 30px 150px;
-  }
-
-  .tughra {
-    width: 150px;
-    margin-left: 150px;
-  }
-
-  .divider {
-    height: 400px;
-  }
-
-  .texts-right {
-    font-size: 18px;
-  }
-
-  .tarih-aralari {
-    padding: 0 60px;
-    height: auto;
-    min-height: 650px;
-  }
-
-  .title {
-    font-size: 36px;
-  }
-
-  .subtitle {
-    font-size: 20px;
-  }
-
-  .highlight {
-    font-size: 24px;
-  }
-
-  .tarihle-bulusuyoruz {
-    padding: 0 60px;
-    height: auto;
-    min-height: 650px;
-  }
-
-  .etkinlik-content {
-    margin-left: 300px;
-  }
-
-  .etkinlik-bottom {
-    margin-top: 200px;
-  }
-
-  .tarihte-bugun {
-    padding: 0 60px;
-    height: auto;
-    min-height: 500px;
-  }
-
-  .bugun-left {
-    margin-right: 30%;
-  }
-
-  .aramiza-katil {
-    height: auto;
-    min-height: 400px;
-    padding: 60px 40px;
-  }
-
-  .katil-title {
-    font-size: 36px;
-  }
-
-  .katil-text {
-    font-size: 20px;
-  }
-}
-
-/* Tablet küçük - 768px ve altı */
-@media (max-width: 768px) {
-  .texts {
-    flex-direction: column;
+    flex-direction: column; /* Alt alta sırala */
+    text-align: center;
     padding: 40px 30px;
-    gap: 30px;
-  }
-
-  .texts-middle {
-    display: none;
   }
 
   .texts-left {
+    align-items: center;
     text-align: center;
   }
-
-  .texts-left h3 {
-    font-size: 28px;
+  
+  .signature, .tughra {
+    margin: 20px auto; /* Ortala */
+    align-self: center;
   }
 
-  .sub-quote {
-    font-size: 28px;
-  }
-
-  .signature {
-    width: 150px;
-    margin: 10px auto 30px;
-  }
-
-  .tughra {
-    width: 120px;
-    margin: 0 auto;
+  .texts-middle {
+    display: none; /* Ayracı gizle */
   }
 
   .texts-right {
     text-align: center;
-    font-size: 16px;
   }
-
-  .tarih-aralari {
-    flex-direction: column;
-    padding: 40px 30px;
-    gap: 40px;
-  }
-
-  .title {
-    font-size: 32px;
-  }
-
-  .subtitle {
-    font-size: 18px;
-  }
-
-  .highlight {
-    font-size: 22px;
-  }
-
-  .featured-posts {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .post {
-    max-width: 100%;
-    width: 100%;
-  }
-
-  .explore {
-    margin-right: 0;
-  }
-
+  
   .tarihle-bulusuyoruz {
-    padding: 40px 30px;
+    justify-content: center; /* Ortala */
   }
-
+  
   .etkinlik-content {
-    margin-left: 0;
+    background: rgba(255,255,255,0.85); /* Mobilde yazı okunsun diye */
   }
-
-  .etkinlik-content .title {
-    font-size: 32px;
-  }
-
-  .etkinlik-content .subtitle {
-    font-size: 18px;
-  }
-
-  .etkinlik-bottom {
-    margin-top: 100px;
-  }
-
-  .quote-text {
-    font-size: 18px;
-  }
-
-  .quote-text span {
-    font-size: 16px;
-  }
-
-  .tarihte-bugun {
-    flex-direction: column;
-    padding: 40px 30px;
-    gap: 40px;
-  }
-
+  
   .bugun-left {
-    margin-right: 0;
-  }
-
-  .tarihte-bugun .title {
-    font-size: 32px;
-  }
-
-  .tarihte-bugun .subtitle {
-    font-size: 18px;
-  }
-
-  .date-item p {
-    font-size: 16px;
-  }
-
-  .quote {
-    font-size: 18px;
-  }
-
-  .bugun-right {
-    justify-content: center;
-  }
-
-  .bugun-right img {
-    width: 280px;
-  }
-
-  .aramiza-katil {
-    padding: 40px 30px;
-  }
-
-  .katil-title {
-    font-size: 28px;
-  }
-
-  .katil-text {
-    font-size: 18px;
-  }
-
-  .katil-button {
-    font-size: 18px;
-    padding: 12px 30px;
+    flex: 1; /* Tam genişlik */
+    max-width: 100%;
   }
 }
 
-/* Mobil - 480px ve altı */
-@media (max-width: 480px) {
-  .texts {
-    padding: 30px 20px;
+/* Mobil (768px ve altı) */
+@media (max-width: 768px) {
+  .featured-posts {
+    flex-direction: column;
   }
-
-  .texts-left h3 {
-    font-size: 22px;
-  }
-
-  .sub-quote {
-    font-size: 22px;
-  }
-
-  .signature {
-    width: 120px;
-  }
-
-  .tughra {
-    width: 100px;
-  }
-
-  .texts-right {
-    font-size: 14px;
-  }
-
-  .texts-right button {
-    padding: 8px 20px;
-    font-size: 14px;
-  }
-
-  .tarih-aralari {
-    padding: 30px 20px;
-  }
-
-  .title {
-    font-size: 26px;
-  }
-
-  .subtitle {
-    font-size: 16px;
-    margin-bottom: 25px;
-  }
-
-  .highlight {
-    font-size: 20px;
-  }
-
-  .post h4 {
-    font-size: 14px;
-  }
-
-  .post p {
-    font-size: 11px;
-  }
-
-  .post button {
-    padding: 8px 16px;
-    font-size: 12px;
-  }
-
-  .explore p {
-    font-size: 18px;
-  }
-
-  .explore button {
-    padding: 8px 20px;
-    font-size: 14px;
+  
+  .post {
+    width: 100%;
   }
 
   .tarihle-bulusuyoruz {
-    padding: 30px 20px;
+    padding: 40px 20px;
+    align-items: flex-start; /* İçeriği yukarı al */
   }
-
-  .etkinlik-content .title {
-    font-size: 26px;
+  
+  .etkinlik-content {
+    padding: 15px;
   }
-
-  .etkinlik-content .subtitle {
-    font-size: 16px;
-    margin-bottom: 30px;
-  }
-
-  .etkinlik-bottom {
-    margin-top: 60px;
-  }
-
+  
   .quote-text {
-    font-size: 16px;
+    font-size: 18px;
   }
+}
 
-  .quote-text span {
-    font-size: 14px;
-  }
-
-  .etkinlik-bottom button {
-    padding: 10px 24px;
-    font-size: 13px;
-  }
-
-  .tarihte-bugun {
-    padding: 30px 20px;
-  }
-
-  .tarihte-bugun .title {
-    font-size: 26px;
-  }
-
-  .tarihte-bugun .subtitle {
-    font-size: 16px;
-    margin-bottom: 25px;
+/* Küçük Mobil (480px ve altı) */
+@media (max-width: 480px) {
+  .texts-right button,
+  .post button,
+  .explore button,
+  .etkinlik-bottom button,
+  .tarihte-bugun button,
+  .katil-button {
+    width: 100%; /* Butonları tam genişlik yap */
+    padding: 12px;
   }
 
   .calendar {
+    padding: 12px 10px 6px 10px;
     font-size: 18px;
-    padding: 16px 12px 8px 12px;
-    min-width: 45px;
   }
-
-  .date-item p {
-    font-size: 14px;
+  
+  .date-item {
+    gap: 10px;
   }
-
-  .quote {
-    font-size: 16px;
-  }
-
-  .tarihte-bugun button {
-    padding: 10px 24px;
-    font-size: 13px;
-  }
-
-  .bugun-right img {
-    width: 220px;
-  }
-
-  .aramiza-katil {
-    padding: 30px 20px;
-  }
-
-  .katil-title {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-
-  .katil-text {
-    font-size: 16px;
-  }
-
-  .katil-button {
-    font-size: 16px;
-    padding: 10px 24px;
+  
+  .title {
+    line-height: 1.2;
   }
 }
