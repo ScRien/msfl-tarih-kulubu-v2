@@ -14,4 +14,22 @@ legalRouter.get("/kullanim-sartlari", (req, res) => {
   res.render("pages/legal/kullanim-sartlari");
 });
 
+// ===============================
+// İLETİŞİM
+// ===============================
+legalRouter.get("/iletisim", (req, res) => {
+  res.render("pages/legal/iletisim", {
+    title: "İletişim",
+  });
+});
+
+// ===============================
+// SİTE HARİTASI
+// ===============================
+legalRouter.get("/site-haritasi", (req, res) => {
+  res.render("pages/legal/site-haritasi", {
+    title: "Site Haritası",
+  });
+});
+
 export default legalRouter;
