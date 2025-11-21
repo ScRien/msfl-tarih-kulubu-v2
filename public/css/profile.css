@@ -52,7 +52,9 @@
 .profile-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;   /* İKON ARTIK KESİLMEYECEK */
+  padding: 10px;         /* Kenarlardan biraz boşluk verelim */
+  background: #fff;      /* Arka plan temiz dursun */
 }
 
 .profile-text .username {
