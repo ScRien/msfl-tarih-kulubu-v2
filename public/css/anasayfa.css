@@ -295,7 +295,8 @@
 .tarihte-bugun .subtitle {
   font-family: "Cardo", serif;
   font-size: 24px;
-  margin-bottom: 40px;
+  margin: 0px;
+  margin-bottom: 25px;
 }
 
 /* Tarih kutuları */
