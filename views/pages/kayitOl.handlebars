@@ -5,10 +5,6 @@
     <div class="register-left">
       <h2 class="register-title">Kayıt Ol</h2>
 
-      {{#if error}}
-        <p class="auth-error">{{error}}</p>
-      {{/if}}
-
       <form
         id="register-form"
         class="register-form"
@@ -82,7 +78,7 @@
           <label class="checkbox-label">
             <input type="checkbox" name="kvkk" required />
             <span>
-              <a href="/kvkk" class="terms-link" target="_blank">KVKK metnini</a>
+              <a href="/legal/acik-riza-metni" class="terms-link" target="_blank">Açık Rıza Metnini</a>
               kabul ediyorum.
             </span>
           </label>
@@ -90,7 +86,7 @@
           <label class="checkbox-label">
             <input type="checkbox" name="privacy" required />
             <span>
-              <a href="/gizlilik" class="terms-link" target="_blank">Gizlilik
+              <a href="/legal/gizlilik-politikasi" class="terms-link" target="_blank">Gizlilik
                 politikasını</a>
               kabul ediyorum.
             </span>
@@ -100,7 +96,7 @@
             <input type="checkbox" name="terms" required />
             <span>
               <a
-                href="/kullanim-sartlari"
+                href="/legal/kullanim-sartlari"
                 class="terms-link"
                 target="_blank"
               >Kullanıcı şartlarını</a>

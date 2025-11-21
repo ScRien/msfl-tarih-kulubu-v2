@@ -3,13 +3,6 @@
   <div class="blog-add-form">
     <h1 class="blog-add-title">Kendi Tarihini Yaz!</h1>
 
-    {{#if error}}
-      <div class="blog-add-alert error">{{error}}</div>
-    {{/if}}
-    {{#if success}}
-      <div class="blog-add-alert success">{{success}}</div>
-    {{/if}}
-
     <form id="blogForm" method="POST" action="/blog/olustur">
       <input type="hidden" name="_csrf" value="{{csrfToken}}" />
       <div class="form-top">
