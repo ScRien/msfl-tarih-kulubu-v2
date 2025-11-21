@@ -99,6 +99,13 @@
   color: #731919;
   padding: 15px 18px 5px;
   line-height: 1.3;
+
+  /* --- BAŞLIK KISITLAMA --- */
+  display: -webkit-box;
+  -webkit-line-clamp: 1;   /* yalnızca 1 satır */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Özet */
