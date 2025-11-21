@@ -117,3 +117,17 @@ function confirmDelete() {
   // Formu gönder
   form.submit();
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const loader = document.getElementById("accountLoading");
+
+  // min 350ms gösterelim (daha akıcı)
+  setTimeout(() => {
+    loader.style.opacity = "0";
+
+    setTimeout(() => {
+      loader.style.display = "none";
+    }, 250);
+
+  }, 350);
+});

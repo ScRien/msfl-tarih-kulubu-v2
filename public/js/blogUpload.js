@@ -1,12 +1,23 @@
 // public/js/blogUpload.js
 document.addEventListener("DOMContentLoaded", () => {
   const cloudName = "deuntxojs";
-  const uploadPreset = "tarihkulubu_unsigned";  // 🔥 DOĞRU PRESET
+  const uploadPreset = "tarihkulubu_unsigned";
 
   const fileInput = document.getElementById("blogImages");
   const previewBox = document.getElementById("previewBox");
   const imageUrlsInput = document.getElementById("imageUrls");
   const fileCount = document.getElementById("fileCount");
+
+  // 🔥 TAM EKRAN LOADER
+  const loader = document.getElementById("blogUploadLoading");
+
+  function showLoader() {
+    if (loader) loader.style.display = "flex";
+  }
+
+  function hideLoader() {
+    if (loader) loader.style.display = "none";
+  }
 
   if (!fileInput || !previewBox || !imageUrlsInput) return;
 
@@ -29,12 +40,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // === LOADING BAŞLA ===
+    showLoader();
+
     uploadedUrls = [];
     previewBox.innerHTML =
       "<p style='text-align:center; padding:20px;'>Yükleniyor...</p>";
     if (fileCount) fileCount.textContent = `Yükleniyor: ${files.length} dosya`;
 
-    // 🔥 Cloudinary'ye paralel upload
     const uploadPromises = Array.from(files).map(async (file) => {
       try {
         const formData = new FormData();
@@ -84,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
           "<p style='color:red; text-align:center; padding:20px;'>Hiçbir görsel yüklenemedi.</p>";
         imageUrlsInput.value = "[]";
         if (fileCount) fileCount.textContent = "Seçili dosya yok";
+        hideLoader();
         return;
       }
 
@@ -111,5 +125,8 @@ document.addEventListener("DOMContentLoaded", () => {
         "<p style='color:red; text-align:center; padding:20px;'>Yükleme sırasında hata oluştu.</p>";
       imageUrlsInput.value = "[]";
     }
+
+    // === LOADING BİTİR ===
+    hideLoader();
   });
 });

@@ -2,19 +2,15 @@
 
   <h1 class="edit-title">Blog Düzenle</h1>
 
-  <form
-    id="blogEditForm"
-    method="POST"
-    action="/blog/duzenle/{{post._id}}"
-  >
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    <input type="hidden" id="deleteImages" name="deleteImages" value="[]">
-    <input type="hidden" id="newImagesJson" name="newImagesJson" value="[]">
+  <form id="blogEditForm" method="POST" action="/blog/duzenle/{{post._id}}">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+    <input type="hidden" id="deleteImages" name="deleteImages" value="[]" />
+    <input type="hidden" id="newImagesJson" name="newImagesJson" value="[]" />
 
     <!-- Başlık -->
     <div class="form-group">
       <label>Başlık</label>
-      <input type="text" name="title" value="{{post.title}}" required>
+      <input type="text" name="title" value="{{post.title}}" required />
     </div>
 
     <!-- İçerik -->
@@ -30,17 +26,17 @@
       {{#if post.images.length}}
         <div class="gallery-grid">
           {{#each post.images}}
-          <div class="gallery-item">
-            <img src="{{this.url}}" alt="Görsel">
-            <label class="remove-label">
-              <input
-                type="checkbox"
-                class="deleteImageCheck"
-                value="{{this.public_id}}"
-              >
-              Sil
-            </label>
-          </div>
+            <div class="gallery-item">
+              <img src="{{this.url}}" alt="Görsel" />
+              <label class="remove-label">
+                <input
+                  type="checkbox"
+                  class="deleteImageCheck"
+                  value="{{this.public_id}}"
+                />
+                Sil
+              </label>
+            </div>
           {{/each}}
         </div>
       {{else}}
@@ -51,12 +47,20 @@
     <!-- Yeni Fotoğraf Ekle -->
     <div class="form-group">
       <label>Yeni Fotoğraf Ekle (Max 5)</label>
-      <input type="file" id="newImages" accept="image/*" multiple>
+      <span class="img-hint">En uygun boyut: 1600×900 • Max 2 MB</span>
+      <input type="file" id="newImages" accept="image/*" multiple />
       <div id="editPreviewBox" class="preview-area"></div>
     </div>
 
     <button class="btn save">Güncelle</button>
   </form>
+
+  <div id="blogEditLoading" class="blog-upload-loader" style="display:none;">
+    <div class="blog-loader-box">
+      <div class="blog-spinner"></div>
+      <span>Görseller yükleniyor...</span>
+    </div>
+  </div>
 
 </section>
 

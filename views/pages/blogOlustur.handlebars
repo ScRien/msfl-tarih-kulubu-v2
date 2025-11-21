@@ -1,4 +1,4 @@
-{{!-- views/pages/blogOlustur.handlebars --}}
+{{! views/pages/blogOlustur.handlebars }}
 <section class="blog-add-section">
   <div class="blog-add-form">
     <h1 class="blog-add-title">Kendi Tarihini Yaz!</h1>
@@ -13,6 +13,8 @@
           class="input-field"
           required
         />
+
+        <span class="img-hint">En uygun boyut: 1600×900 • Max 2 MB</span>
 
         <div class="upload-wrapper">
           <label for="blogImages" class="upload-label">
@@ -42,16 +44,23 @@
 
       <div class="warning-box">
         <strong>Uyarı:</strong>
-        Lütfen hakaret içeren, yanlış veya yanıltıcı tarih bilgileri,
-        kişisel veriler ve telif hakkı ihlali olabilecek içerikler
-        paylaşmayınız. Gönderilen bloglar, kulüp danışman öğretmeni
-        tarafından kontrol edilebilir.
+        Lütfen hakaret içeren, yanlış veya yanıltıcı tarih bilgileri, kişisel
+        veriler ve telif hakkı ihlali olabilecek içerikler paylaşmayınız.
+        Gönderilen bloglar, kulüp danışman öğretmeni tarafından kontrol
+        edilebilir.
       </div>
 
       <input type="hidden" id="imageUrls" name="imageUrls" value="[]" />
 
       <button type="submit" class="submit-btn">Blogu Oluştur</button>
     </form>
+  </div>
+
+  <div id="blogUploadLoading" class="blog-upload-loader" style="display:none;">
+    <div class="blog-loader-box">
+      <div class="blog-spinner"></div>
+      <span>Görseller yükleniyor...</span>
+    </div>
   </div>
 </section>
 

@@ -138,3 +138,9 @@ function goToSlide(i) {
 }
 
 showSlide(0);
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Eğer sunucu cevap veriyor ve DOM hazırsa loadingi kaldır
+  const loader = document.getElementById("globalLoading");
+  if (loader) loader.style.display = "none";
+});

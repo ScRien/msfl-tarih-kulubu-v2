@@ -39,6 +39,12 @@
   <!-- SAĞ PANEL -->
   <main class="account-content">
 
+    <!-- ✨ LOADER -->
+    <div id="accountLoading" class="account-loading">
+      <div class="spinner"></div>
+      <p>Hesap bilgileri yükleniyor...</p>
+    </div>
+
     <!-- PROFİL -->
     <div class="content-box" id="profile" style="display: block;">
       <h2 class="title">Profil Bilgileri</h2>
@@ -165,6 +171,11 @@
             class="cover-img"
             id="coverPreview"
           />
+        </div>
+
+        <div id="mediaLoading" class="media-loading" style="display: none;">
+          <div class="spinner"></div>
+          <span>Yükleniyor...</span>
         </div>
 
         <form id="coverForm" action="/hesap/kapak-yukle" method="POST">
@@ -370,6 +381,14 @@
           </div>
         </form>
 
+      </div>
+    </div>
+
+        <!-- GLOBAL LOADING OVERLAY -->
+    <div id="globalLoader" class="global-loader" style="display:none;">
+      <div class="loader-box">
+        <div class="loader-spinner"></div>
+        <span>Yükleniyor...</span>
       </div>
     </div>
 
