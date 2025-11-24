@@ -174,7 +174,6 @@
 .explore {
   text-align: center;
   margin-top: 40px;
-  margin-right: 50px;
 }
 
 .explore p {
@@ -197,6 +196,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: 0.3s;
+  margin: 0 auto !important;
 }
 
 .explore button:hover {
@@ -639,4 +639,20 @@
   .divider-mobile {
     display: block !important;
   }
+}
+
+.texts,
+.texts-left,
+.texts-middle,
+.texts-right {
+  text-align: center !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* TÜM BUTONLARI ORTALAMAK İÇİN GENEL FIX */
+section button {
+  display: block;
+  margin: 0 auto !important;
+  text-align: center !important;
 }

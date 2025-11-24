@@ -280,3 +280,20 @@ body {
     padding-top: 135px;
   }
 }
+
+.close-menu {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  font-size: 32px;
+  cursor: pointer;
+  color: #fff;
+  display: none;
+  z-index: 10000;
+}
+
+@media (max-width: 850px) {
+  .close-menu {
+    display: block;
+  }
+}
