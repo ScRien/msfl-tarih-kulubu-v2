@@ -1,9 +1,9 @@
 /* ============================================
    GLOBAL PADDING (NAVBAR + SOSYAL MEDYA BAR)
 ============================================ */
-body {
-  padding-top: 150px; /* 100px navbar + 50px sosyal medya bar */
-}
+/* body {
+  padding-top: 100px; /* 100px navbar + 50px sosyal medya bar */
+/* } */
 
 /* ============================================
    NAVBAR (MODERN & RESPONSIVE)
@@ -127,11 +127,13 @@ body {
   height: 50px;
   gap: 80px;
 
-  position: fixed;
-  top: 100px; /* navbar'ın TAM altı */
+  /* SABİT OLANLAR SİLİNDİ */
+  position: relative;
+  top: 0;
   left: 0;
+
   width: 100%;
-  z-index: 999;
+  z-index: 5;
 
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }

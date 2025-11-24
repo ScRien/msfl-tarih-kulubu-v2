@@ -1,7 +1,7 @@
 /* ======= YILLIK PLAN ======= */
 .yillik-plan {
   width: 100%;
-  background: url('/img/yillikPlan_bg.png') center/cover no-repeat;
+  background: url("/img/yillikPlan_bg.png") center/cover no-repeat;
   background: linear-gradient(to bottom, #888888, #000000);
   padding-bottom: 60px;
 }
@@ -12,22 +12,34 @@
   padding: 60px 40px;
 }
 
+/* === PLAN TITLE – DÜZELTİLMİŞ === */
 .plan-title {
   font-family: "Cardo", serif;
   font-size: 45px;
   font-weight: 700;
+
   background: linear-gradient(to right, #af3725, #9b1c0e);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
   margin-bottom: 80px;
   padding: 30px 60px;
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 50px;
-  display: inline-block;
+
   width: auto;
   margin-left: 50%;
   transform: translateX(-50%);
+}
+
+/* Tek satır zorlaması */
+.plan-title span {
+  white-space: nowrap;
 }
 
 /* Timeline */
@@ -236,9 +248,16 @@
     border-color: transparent #7a7a7a transparent transparent !important;
   }
 
+  /* === PLAN TITLE MOBİL FIX === */
   .plan-title {
-    font-size: 32px;
-    padding: 20px 30px;
+    margin-left: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    padding: 25px 20px;
+  }
+
+  .plan-title span {
+    font-size: 30px;
   }
 
   .card-date {

@@ -6,6 +6,7 @@
   background: url("/img/texts-background.png") center/cover no-repeat;
   height: 620px;
   padding: 0 120px;
+  padding-top: 25px;
   gap: 50px;
   color: #111;
 }
@@ -468,7 +469,7 @@
   .texts {
     flex-direction: column;
     text-align: center;
-    padding: 60px 40px;
+    padding: 100px 40px;
     height: auto;
     gap: 30px;
   }
@@ -560,7 +561,7 @@
 /* Mobil */
 @media (max-width: 600px) {
   .texts {
-    padding: 40px 20px;
+    padding: 60px 20px;
   }
 
   .texts-left h3,

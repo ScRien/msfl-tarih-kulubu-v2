@@ -87,7 +87,7 @@
   gap: 10px;
   font-family: glacial, sans-serif;
   font-size: 14px;
-  color: #d4d4d4;
+  color: #4b4b4b !important;
   cursor: pointer;
   font-style: italic;
 }
@@ -219,7 +219,7 @@
 /* Kayıt sayfası - KVKK / Gizlilik / Kullanım linkleri */
 .terms-container .terms-link,
 .terms-container .terms-link:visited {
-  color: #d8d8d8;           /* hafif gri */
+  color: #333 !important;           /* hafif gri */
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
