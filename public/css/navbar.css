@@ -1,9 +1,9 @@
 /* ============================================
    GLOBAL PADDING (NAVBAR + SOSYAL MEDYA BAR)
 ============================================ */
-/* body {
-  padding-top: 100px; /* 100px navbar + 50px sosyal medya bar */
-/* } */
+body {
+  padding-top: 150px; /* 100px navbar + 50px sosyal medya bar */
+}
 
 /* ============================================
    NAVBAR (MODERN & RESPONSIVE)
@@ -127,13 +127,12 @@
   height: 50px;
   gap: 80px;
 
-  /* SABİT OLANLAR SİLİNDİ */
-  position: relative;
-  top: 0;
+  position: absolute;
+  top: 100px;
   left: 0;
 
   width: 100%;
-  z-index: 5;
+  z-index: 999;
 
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
@@ -196,7 +195,11 @@
     height: auto;
     gap: 25px;
     padding: 12px;
-    top: 90px; /* Mobil navbar daha kısa */
+    top: 90px;
+  }
+
+  body {
+    padding-top: 140px;
   }
 }
 
@@ -224,7 +227,10 @@
     gap: 16px;
     padding: 8px;
     top: 85px;
-    margin-bottom: 36px; /* <<< BUNU EKLE */
+  }
+
+  body {
+    padding-top: 135px;
   }
 }
 
@@ -271,15 +277,6 @@
     width: 70%;
     text-align: center;
     font-size: 16px;
-  }
-}
-
-/* ============================================
-   MOBİL BODY PADDING
-============================================ */
-@media (max-width: 768px) {
-  body {
-    padding-top: 135px;
   }
 }
 
