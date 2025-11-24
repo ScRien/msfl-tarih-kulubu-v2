@@ -1,4 +1,11 @@
 /* ============================================
+   GLOBAL PADDING (NAVBAR + SOSYAL MEDYA BAR)
+============================================ */
+body {
+  padding-top: 150px; /* 100px navbar + 50px sosyal medya bar */
+}
+
+/* ============================================
    NAVBAR (MODERN & RESPONSIVE)
 ============================================ */
 .navbar {
@@ -20,7 +27,6 @@
 
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
 
-  /* Mobil cihazlarda titreme önleme */
   backface-visibility: hidden;
   transform: translateZ(0);
 }
@@ -44,7 +50,6 @@
 .nav-center {
   flex: 1;
   text-align: center;
-  pointer-events: auto;
 }
 
 .nav-center a {
@@ -109,7 +114,7 @@
 }
 
 /* ============================================
-   SOSYAL MEDYA BAR
+   SOSYAL MEDYA BAR (NAVBAR ALTINA SABİT)
 ============================================ */
 .social-media {
   display: flex;
@@ -121,6 +126,14 @@
 
   height: 50px;
   gap: 80px;
+
+  position: fixed;
+  top: 100px; /* navbar'ın TAM altı */
+  left: 0;
+  width: 100%;
+  z-index: 999;
+
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
 .social-group {
@@ -181,6 +194,7 @@
     height: auto;
     gap: 25px;
     padding: 12px;
+    top: 90px; /* Mobil navbar daha kısa */
   }
 }
 
@@ -207,5 +221,62 @@
   .social-media {
     gap: 16px;
     padding: 8px;
+    top: 85px;
+    margin-bottom: 36px; /* <<< BUNU EKLE */
+  }
+}
+
+/* ===========================================
+   MOBİL HAMBURGER MENÜ
+=========================================== */
+.hamburger {
+  display: none;
+  font-size: 30px;
+  cursor: pointer;
+  color: white;
+}
+
+/* Mobil görünüm */
+@media (max-width: 850px) {
+  .nav-right {
+    position: fixed;
+    top: 0;
+    right: -260px;
+    height: 100vh;
+    width: 260px;
+
+    background: linear-gradient(to bottom, #731919, #e52b2b);
+    box-shadow: -3px 0 12px rgba(0, 0, 0, 0.3);
+
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 120px;
+    gap: 20px;
+
+    transition: 0.35s ease;
+    z-index: 9999;
+  }
+
+  .nav-right.active {
+    right: 0;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .nav-right a {
+    width: 70%;
+    text-align: center;
+    font-size: 16px;
+  }
+}
+
+/* ============================================
+   MOBİL BODY PADDING
+============================================ */
+@media (max-width: 768px) {
+  body {
+    padding-top: 135px;
   }
 }

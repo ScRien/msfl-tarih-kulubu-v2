@@ -1,18 +1,18 @@
-<!-- NAVBAR -->
 <header class="navbar">
   <div class="nav-left">
-    <a href="/">
-      <img src="/img/msfltemiz.png" class="logo" alt="MSFL" />
-    </a>
-    <a href="/">
-      <img src="/img/kulup_temiz.png" class="logo" alt="Kulüp" />
-    </a>
+    <a href="/"><img src="/img/msfltemiz.png" class="logo" /></a>
+    <a href="/"><img src="/img/kulup_temiz.png" class="logo" /></a>
   </div>
 
   <div class="nav-center">
     <a href="/" class="nav-title">
       Mustafa Saffet Fen Lisesi Tarih Kulübü
     </a>
+  </div>
+
+  <!-- HAMBURGER ARTIK BURADA -->
+  <div class="hamburger" id="hamburger">
+    <i class="fa-solid fa-bars"></i>
   </div>
 
   <div class="nav-right">
@@ -23,21 +23,17 @@
 
     {{#if isAuth}}
       <a href="/hesap" class="account-btn">
-        <i class="fa-solid fa-user"></i>
-        {{currentUser}}
+        <i class="fa-solid fa-user"></i> {{currentUser}}
       </a>
       <a href="/kullanici/cikis" class="logout-btn">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        Çıkış
+        <i class="fa-solid fa-right-from-bracket"></i> Çıkış
       </a>
     {{else}}
       <a href="/kullanici/oturumAc" class="login-btn">
-        <i class="fa-solid fa-right-to-bracket"></i>
-        Oturum Aç
+        <i class="fa-solid fa-right-to-bracket"></i> Oturum Aç
       </a>
       <a href="/kullanici/kayitOl" class="register-btn">
-        <i class="fa-solid fa-user-plus"></i>
-        Kayıt Ol
+        <i class="fa-solid fa-user-plus"></i> Kayıt Ol
       </a>
     {{/if}}
   </div>
@@ -45,46 +41,22 @@
 
 <!-- SOSYAL MEDYA ÇUBUĞU -->
 <div class="social-media">
-  <a
-    href="https://www.instagram.com/msfl_tarihkulubu/"
-    target="_blank"
-    class="social-group"
-  >
-    <img
-      src="/img/socialmedia/instagram.png"
-      alt="Instagram"
-      class="media-icon"
-    />
+  <a href="https://www.instagram.com/msfl_tarihkulubu/" target="_blank" class="social-group">
+    <img src="/img/socialmedia/instagram.png" alt="Instagram" class="media-icon" />
     <span class="media-link">@msfltarihkulubu</span>
   </a>
 
-  <a
-    href="https://x.com/msfltarihkulubu"
-    target="_blank"
-    class="social-group"
-  >
+  <a href="https://x.com/msfltarihkulubu" target="_blank" class="social-group">
     <img src="/img/socialmedia/twitter.png" alt="Twitter" class="media-icon" />
     <span class="media-link">@msfltarihkulubu</span>
   </a>
 
-  <a
-    href="https://www.facebook.com/profile.php?id=61584218810881"
-    target="_blank"
-    class="social-group"
-  >
-    <img
-      src="/img/socialmedia/facebook.png"
-      alt="Facebook"
-      class="media-icon"
-    />
+  <a href="https://www.facebook.com/profile.php?id=61584218810881" target="_blank" class="social-group">
+    <img src="/img/socialmedia/facebook.png" alt="Facebook" class="media-icon" />
     <span class="media-link">/msfltarihkulubu</span>
   </a>
 
-  <a
-    href="https://www.youtube.com/@ghvmsfltarihkulubu"
-    target="_blank"
-    class="social-group"
-  >
+  <a href="https://www.youtube.com/@ghvmsfltarihkulubu" target="_blank" class="social-group">
     <img src="/img/socialmedia/youtube.png" alt="YouTube" class="media-icon" />
     <span class="media-link">MSFL Tarih Kulübü</span>
   </a>
