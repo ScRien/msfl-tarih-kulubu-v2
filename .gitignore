@@ -4,4 +4,3 @@ logs/
 *.log
 *.zip
 .vercel
-*.txt
