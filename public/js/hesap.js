@@ -120,6 +120,7 @@ function confirmDelete() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const loader = document.getElementById("accountLoading");
+  if (!loader) return; // ✅ KRİTİK SATIR
 
   // min 350ms gösterelim (daha akıcı)
   setTimeout(() => {

@@ -12,6 +12,7 @@
     "vercel-build": "echo 'Build aşamasında özel bir şey yok'"
   },
   "dependencies": {
+    "@imagekit/nodejs": "^7.1.1",
     "@sendgrid/mail": "^8.1.6",
     "@vercel/analytics": "^1.5.0",
     "bcrypt": "^6.0.0",
@@ -28,6 +29,7 @@
     "express-session": "^1.18.2",
     "express-validator": "^7.3.0",
     "helmet": "^8.1.0",
+    "imagekit": "^6.0.0",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
     "mongo-connect": "^0.0.6",
@@ -36,7 +38,7 @@
     "nodemailer": "^7.0.10",
     "serverless-http": "^4.0.0",
     "validator": "^13.15.23",
-    "vercel": "^48.10.10",
+    "vercel": "^41.0.2",
     "winston": "^3.18.3"
   }
 }

@@ -1,70 +1,67 @@
-/* public/css/blogOlustur.css */
+/* =========================================
+   BLOG OLUŞTUR – GENEL
+========================================= */
 
 .blog-add-section {
   width: 100%;
-  background: url("/img/blogOlustur_bg.png") center/cover no-repeat;
-  padding: 80px 120px;
+  padding: 90px 120px;
   font-family: "Cardo", serif;
 }
 
 .blog-add-form {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 20px;
-  padding: 40px 60px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 22px;
+  padding: 44px 64px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
 }
 
+/* Başlık */
 .blog-add-title {
-  font-size: 40px;
-  font-weight: bold;
+  font-size: 42px;
+  font-weight: 700;
   background: linear-gradient(to right, #731919, #e52b2b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 30px;
+  margin-bottom: 36px;
 }
 
-.blog-add-alert {
-  padding: 10px 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 15px;
-}
+/* =================================================
+   FORM ÜST SATIR
+================================================= */
 
-.blog-add-alert.error {
-  background: rgba(255, 0, 0, 0.1);
-  color: #7c0000;
-}
-
-.blog-add-alert.success {
-  background: rgba(0, 128, 0, 0.1);
-  color: #145214;
-}
-
-/* Üst satır */
 .form-top {
   display: flex;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 28px;
+  margin-bottom: 26px;
 }
 
 /* Başlık input */
 .input-field {
   flex: 1;
-  padding: 12px 18px;
-  font-size: 18px;
-  border-radius: 10px;
+  padding: 14px 22px;
+  font-size: 19px;
+  border-radius: 12px;
   border: none;
-  background: linear-gradient(to bottom, #dfdcda, #858176);
+  background: linear-gradient(to bottom, #e2dfdb, #8c877a);
   color: #000;
   font-family: "Cardo", serif;
   outline: none;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
 }
 
-/* Upload alanı */
+.input-field::placeholder {
+  color: #555;
+}
+
+/* =================================================
+   GÖRSEL YÜKLEME BLOĞU
+================================================= */
+
 .upload-wrapper {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 190px;
 }
 
 .file-input {
@@ -72,44 +69,68 @@
 }
 
 .upload-label {
-  padding: 12px 18px;
-  border-radius: 10px;
-  background: linear-gradient(to bottom, #dfdcda, #858176);
-  font-weight: bold;
+  padding: 12px 22px;
+  border-radius: 12px;
+  background: linear-gradient(to bottom, #dedad5, #8a867c);
+  font-weight: 700;
+  font-size: 16px;
   text-align: center;
   cursor: pointer;
   font-family: "Cardo", serif;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
 }
 
 .upload-label:hover {
-  background: linear-gradient(to bottom, #d6d3cf, #6f6a61);
+  transform: translateY(-1px);
+  background: linear-gradient(to bottom, #d4d0cb, #757066);
 }
 
 .file-count {
   font-size: 14px;
-  color: #333;
+  color: #444;
   padding-left: 4px;
-  font-family: "Cardo", serif;
 }
 
-/* Önizleme alanı */
+/* =================================================
+   BİLGİ METNİ
+================================================= */
+
+.img-hint {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  opacity: 0.95;
+  margin-top: 6px;
+  max-width: 520px;
+}
+
+.img-hint strong {
+  display: block;
+  margin-top: 4px;
+  color: #731919;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* =================================================
+   ÖNİZLEME
+================================================= */
+
 .preview-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
-  margin: 20px 0;
+  gap: 16px;
+  margin: 26px 0;
 }
 
-/* Tek görsel kutusu */
 .preview-item {
-  position: relative;
-  width: 140px;
-  height: 110px;
-  border-radius: 12px;
+  width: 150px;
+  height: 112px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.28);
 }
 
 .preview-img {
@@ -118,76 +139,72 @@
   object-fit: cover;
 }
 
-/* Metin alanı */
+/* =================================================
+   METİN ALANI
+================================================= */
+
 .textarea-field {
   width: 100%;
   font-size: 18px;
-  padding: 15px;
-  border-radius: 10px;
+  padding: 18px;
+  border-radius: 14px;
   border: none;
-  background: linear-gradient(to bottom, #dfdcda, #858176);
+  background: linear-gradient(to bottom, #dedad5, #8a867c);
   font-family: "Cardo", serif;
   resize: vertical;
   outline: none;
   color: #000;
-  margin-bottom: 25px;
+  margin-bottom: 28px;
+  min-height: 190px;
 }
 
-/* Uyarı kutusu */
+.textarea-field::placeholder {
+  color: #555;
+}
+
+/* =================================================
+   UYARI
+================================================= */
+
 .warning-box {
   font-size: 15px;
   line-height: 1.6;
-  background: rgba(255, 255, 255, 0.7);
-  padding: 20px;
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 20px 24px;
+  border-radius: 12px;
   color: #000;
-  margin-bottom: 30px;
+  margin-bottom: 34px;
   border-left: 5px solid #731919;
 }
 
-/* Gönder butonu */
+/* =================================================
+   SUBMIT
+================================================= */
+
 .submit-btn {
   display: block;
   margin-left: auto;
-  padding: 12px 40px;
+  padding: 14px 44px;
   border: none;
-  border-radius: 40px;
+  border-radius: 42px;
   font-size: 20px;
   font-family: "Cardo", serif;
-  font-weight: bold;
-  background: linear-gradient(to right, #ff3131, #ff914d);
+  font-weight: 700;
+  background: linear-gradient(to right, #c62828, #ff914d);
   color: white;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
 }
 
 .submit-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
 }
 
-/* Biraz responsive */
-@media (max-width: 992px) {
-  .blog-add-section {
-    padding: 80px 20px;
-  }
+/* =================================================
+   LOADING
+================================================= */
 
-  .blog-add-form {
-    padding: 30px 20px;
-  }
-
-  .form-top {
-    flex-direction: column;
-  }
-
-  .upload-label {
-    width: 100%;
-  }
-}
-
-/* ===========================
-     BLOG UPLOAD LOADING
-=========================== */
 .blog-upload-loader {
   position: fixed;
   inset: 0;
@@ -201,28 +218,22 @@
 
 .blog-loader-box {
   background: #ffffff;
-  padding: 24px 28px;
-  border-radius: 16px;
-  box-shadow: 0 4px 22px rgba(0,0,0,0.22);
+  padding: 26px 30px;
+  border-radius: 18px;
+  box-shadow: 0 6px 26px rgba(0,0,0,0.25);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  min-width: 140px;
 }
 
 .blog-spinner {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border: 4px solid #e3e3e3;
-  border-top-color: #c62828;
+  border-top-color: #731919;
   border-radius: 50%;
   animation: blogSpin .75s linear infinite;
-}
-
-.blog-loader-box span {
-  font-size: 14px;
-  color: #333;
 }
 
 @keyframes blogSpin {
@@ -230,12 +241,35 @@
   to   { transform: rotate(360deg); }
 }
 
-.img-hint {
-  font-size: 13px;
-  color: #444;
-  opacity: 0.8;
-  margin-top: -4px;
-  margin-bottom: 4px;
-  display: block;
-  font-family: "Cardo", serif;
+/* =================================================
+   RESPONSIVE
+================================================= */
+
+@media (max-width: 992px) {
+  .blog-add-section {
+    padding: 70px 20px;
+  }
+
+  .blog-add-form {
+    padding: 32px 22px;
+  }
+
+  .form-top {
+    flex-direction: column;
+  }
+
+  .upload-wrapper {
+    width: 100%;
+  }
+
+  .upload-label {
+    width: 100%;
+  }
+}
+
+/* PC hizalama */
+@media (min-width: 993px) {
+  .form-top {
+    align-items: flex-end;
+  }
 }

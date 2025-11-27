@@ -1,10 +1,10 @@
-{{! views/pages/blogOlustur.handlebars }}
 <section class="blog-add-section">
   <div class="blog-add-form">
     <h1 class="blog-add-title">Kendi Tarihini Yaz!</h1>
 
     <form id="blogForm" method="POST" action="/blog/olustur">
       <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
       <div class="form-top">
         <input
           type="text"
@@ -14,24 +14,31 @@
           required
         />
 
-        <span class="img-hint">En uygun boyut: 1600×900 • Max 10 MB</span>
+        <span class="img-hint">
+          Önerilen boyut: 1600×900 • Maks. 5 görsel • Her biri en fazla 10 MB
+          <br />
+          <strong>Tüm görselleri tek seferde seçiniz.</strong>
+        </span>
 
         <div class="upload-wrapper">
-          <label for="blogImages" class="upload-label">
-            Görsel Yükle (max 5)
-          </label>
+          <button type="button" class="upload-label" id="openImagePicker">
+            Görsel Yükle
+          </button>
+
           <input
             type="file"
             id="blogImages"
-            name="images"
             class="file-input"
             accept="image/*"
             multiple
           />
+
           <span id="fileCount" class="file-count">Seçili dosya yok</span>
         </div>
+
       </div>
 
+      <!-- ✅ Önizleme -->
       <div id="previewBox" class="preview-container"></div>
 
       <textarea
@@ -44,18 +51,20 @@
 
       <div class="warning-box">
         <strong>Uyarı:</strong>
-        Lütfen hakaret içeren, yanlış veya yanıltıcı tarih bilgileri, kişisel
-        veriler ve telif hakkı ihlali olabilecek içerikler paylaşmayınız.
-        Gönderilen bloglar, kulüp danışman öğretmeni tarafından kontrol
-        edilebilir.
+        Yanıltıcı tarih bilgileri ve telif ihlali içeren içerikler
+        paylaşmayınız.
       </div>
 
+      <!-- ✅ ImageKit → [{ url, fileId }] -->
       <input type="hidden" id="imageUrls" name="imageUrls" value="[]" />
 
-      <button type="submit" class="submit-btn">Blogu Oluştur</button>
+      <button type="submit" class="submit-btn">
+        Blogu Oluştur
+      </button>
     </form>
   </div>
 
+  <!-- ✅ Loader -->
   <div id="blogUploadLoading" class="blog-upload-loader" style="display:none;">
     <div class="blog-loader-box">
       <div class="blog-spinner"></div>
@@ -64,4 +73,6 @@
   </div>
 </section>
 
-<script src="/js/blogUpload.js"></script>
+<!-- ✅ Yeni ImageKit sistemi -->
+<script type="module" src="/js/uploadClient.js"></script>
+<script type="module" src="/js/blogUpload.js"></script>

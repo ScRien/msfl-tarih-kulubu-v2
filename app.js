@@ -30,6 +30,7 @@ import profileRoute from "./routes/profile.js";
 import publicProfileRoute from "./routes/publicProfile.js";
 import sifreUnuttumRoute from "./routes/sifreUnuttum.js";
 import adminRoute from "./routes/admin.js";
+import uploadRoutes from "./routes/upload.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -126,8 +127,9 @@ app.use(
 );
 
 // BODY & COOKIE
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.urlencoded({ limit: "20mb", extended: true }));
+app.use(express.json({ limit: "20mb" }));
+
 app.use(cookieParser());
 app.locals.isProd = process.env.NODE_ENV === "production";
 
@@ -163,6 +165,8 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.use("/api/upload", uploadRoutes);
 
 // STATIC
 app.use("/public", express.static(path.join(__dirname, "public")));

@@ -487,3 +487,43 @@
   color: #e7d197;
   text-shadow: 0 0 6px rgba(201, 167, 82, 0.55);
 }
+
+/* ==============================
+   BLOG DETAIL ACTIONS — MODERN MOBILE
+============================== */
+
+@media (max-width: 768px) {
+  .blog-detail-actions {
+    position: sticky;
+    top: 64px; /* navbar altı */
+    z-index: 1001;
+    background: rgba(10, 10, 12, 0.92);
+    backdrop-filter: blur(10px);
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    padding: 12px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+  }
+
+  .action-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 14px;
+    padding: 10px 0;
+    border-radius: 999px;
+  }
+
+  .action-btn.edit {
+    background: linear-gradient(135deg, #ffde88, #f1c40f);
+    color: #000;
+  }
+
+  .action-btn.delete {
+    background: linear-gradient(135deg, #ff5f5f, #d62828);
+    color: #fff;
+  }
+}

@@ -4,7 +4,7 @@
         DÜZENLE / SİL BUTONLARI (SADE - ŞIK)
     ========================================== }}
   {{#if isAuth}}
-    {{#if (eq currentUsername post.username)}}
+    {{#if (eq currentUser post.username)}}
       <div class="blog-detail-actions">
 
         <a href="/blog/duzenle/{{post._id}}" class="action-btn edit">
@@ -45,12 +45,26 @@
 
       <div class="blog-carousel-container">
         <div class="blog-carousel" id="blogCarousel">
-          {{#each post.images}}
+          {{#if post.images.length}}
+            {{#each post.images}}
+              <div class="blog-slide">
+                <img
+                  class="blog-cover-img"
+                  src="{{this.url}}"
+                  alt="Blog Görseli"
+                />
+              </div>
+            {{/each}}
+          {{else}}
             <div class="blog-slide">
-              <img src="{{this.url}}" alt="Blog Görseli" />
+              <img
+                class="blog-cover-img"
+                src="/img/default-blog.jpg"
+                alt="Varsayılan Görsel"
+              />
             </div>
-          {{/each}}
-        </div>
+          {{/if}}
+      </div>
       </div>
 
       <!-- 🔥 DOTS (EKLENEN) -->

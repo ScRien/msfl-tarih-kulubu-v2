@@ -1,118 +1,80 @@
 // public/js/blogEditUpload.js
+import { uploadImage } from "./uploadClient.js";
+
 document.addEventListener("DOMContentLoaded", () => {
 
-  const cloudName = "deuntxojs";
-  const uploadPreset = "tarihkulubu_unsigned";
+  const form = document.getElementById("blogEditForm");
+  const deleteInput = document.getElementById("deleteImages");
 
-  const newImagesInput = document.getElementById("newImages");
-  const previewBox = document.getElementById("editPreviewBox");
-  const newImagesJson = document.getElementById("newImagesJson");
-  const deleteImagesInput = document.getElementById("deleteImages");
   const deleteCheckboxes = document.querySelectorAll(".deleteImageCheck");
 
-  // === TAM EKRAN LOADER ===
+  const input = document.getElementById("newImages");
+  const preview = document.getElementById("editPreviewBox");
+  const hiddenNew = document.getElementById("newImagesJson");
+
+  const openBtn = document.getElementById("openEditImagePicker");
   const loader = document.getElementById("blogEditLoading");
 
-  function showLoader() {
-    if (loader) loader.style.display = "flex";
+  /* =====================================
+     📌 DOSYA PENCERESİ AÇ
+  ===================================== */
+  if (openBtn && input) {
+    openBtn.addEventListener("click", () => input.click());
   }
 
-  function hideLoader() {
-    if (loader) loader.style.display = "none";
-  }
-
-  // MEVCUT GÖRSELLER SİLME
+  /* =====================================
+     🗑️ MEVCUT GÖRSEL SİLME - CHANGE EVENT
+  ===================================== */
   deleteCheckboxes.forEach((chk) => {
     chk.addEventListener("change", () => {
-      const checked = Array.from(deleteCheckboxes)
-        .filter((c) => c.checked)
-        .map((c) => c.value);
+      const selected = Array.from(deleteCheckboxes)
+        .filter(c => c.checked)
+        .map(c => c.value);
 
-      deleteImagesInput.value = JSON.stringify(checked);
+      deleteInput.value = JSON.stringify(selected);
     });
   });
 
-  // YENİ GÖRSELLER (UPLOAD)
-  if (!newImagesInput || !previewBox || !newImagesJson) return;
+  /* =====================================
+     🆕 YENİ GÖRSEL YÜKLEME
+  ===================================== */
+  let newImages = [];
 
-  newImagesInput.addEventListener("change", async (e) => {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
+  input?.addEventListener("change", async () => {
+    preview.innerHTML = "";
+    newImages = [];
+
+    const files = Array.from(input.files);
 
     if (files.length > 5) {
-      alert("En fazla 5 yeni görsel ekleyebilirsiniz!");
+      alert("En fazla 5 görsel yükleyebilirsiniz.");
+      input.value = "";
       return;
     }
 
-    // === LOADER AÇ ===
-    showLoader();
-
-    previewBox.innerHTML = "<p style='padding:20px; text-align:center;'>Yükleniyor...</p>";
-
-    const uploadPromises = files.map(async (file) => {
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", uploadPreset);
-
-        const res = await fetch(
-          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-          { method: "POST", body: formData }
-        );
-
-        const result = await res.json();
-
-        if (result.secure_url && result.public_id) {
-          return {
-            url: result.secure_url,
-            public_id: result.public_id,
-          };
-        } else {
-          throw new Error("Cloudinary hatalı yanıt verdi");
-        }
-      } catch (err) {
-        console.error("Upload error:", err);
-        throw err;
-      }
-    });
+    loader.style.display = "flex";
 
     try {
-      const results = await Promise.allSettled(uploadPromises);
+      for (const file of files) {
+        const img = await uploadImage(file, "/blogs");
+        newImages.push(img);
 
-      const successful = results
-        .filter((r) => r.status === "fulfilled")
-        .map((r) => r.value);
-
-      if (!successful.length) {
-        previewBox.innerHTML =
-          "<p style='color:red; padding:20px; text-align:center;'>Yükleme başarısız.</p>";
-        newImagesJson.value = "[]";
-        hideLoader();
-        return;
+        preview.innerHTML += `
+          <div class="preview-item">
+            <img src="${img.url}" class="preview-img" />
+          </div>
+        `;
       }
 
-      newImagesJson.value = JSON.stringify(successful);
-
-      const html = successful
-        .map(
-          (item) => `
-          <div class="preview-item">
-            <img src="${item.url}" alt="Preview" class="preview-img">
-          </div>
-        `
-        )
-        .join("");
-
-      previewBox.innerHTML = html;
+      hiddenNew.value = JSON.stringify(newImages);
 
     } catch (err) {
-      console.error(err);
-      previewBox.innerHTML =
-        "<p style='color:red; padding:20px; text-align:center;'>Yükleme sırasında bir hata oluştu.</p>";
-      newImagesJson.value = "[]";
+      console.error("UPLOAD ERROR:", err);
+      hiddenNew.value = "[]";
+      alert("Görsel yüklenirken hata oluştu.");
+    } finally {
+      loader.style.display = "none";
     }
-
-    // === LOADER KAPAT ===
-    hideLoader();
   });
+
 });
