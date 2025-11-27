@@ -1,0 +1,1668 @@
+blogOlustur.handlebars:
+{{! views/pages/blogOlustur.handlebars }}
+<section class="blog-add-section">
+  <div class="blog-add-form">
+    <h1 class="blog-add-title">Kendi Tarihini Yaz!</h1>
+
+    <form id="blogForm" method="POST" action="/blog/olustur">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+      <div class="form-top">
+        <input
+          type="text"
+          name="title"
+          placeholder="Blog Başlığı"
+          class="input-field"
+          required
+        />
+
+        <span class="img-hint">En uygun boyut: 1600×900 • Max 10 MB</span>
+
+        <div class="upload-wrapper">
+          <label for="blogImages" class="upload-label">
+            Görsel Yükle (max 5)
+          </label>
+          <input
+            type="file"
+            id="blogImages"
+            name="images"
+            class="file-input"
+            accept="image/*"
+            multiple
+          />
+          <span id="fileCount" class="file-count">Seçili dosya yok</span>
+        </div>
+      </div>
+
+      <div id="previewBox" class="preview-container"></div>
+
+      <textarea
+        name="content"
+        class="textarea-field"
+        rows="8"
+        placeholder="Blog içeriğini buraya yaz..."
+        required
+      ></textarea>
+
+      <div class="warning-box">
+        <strong>Uyarı:</strong>
+        Lütfen hakaret içeren, yanlış veya yanıltıcı tarih bilgileri, kişisel
+        veriler ve telif hakkı ihlali olabilecek içerikler paylaşmayınız.
+        Gönderilen bloglar, kulüp danışman öğretmeni tarafından kontrol
+        edilebilir.
+      </div>
+
+      <input type="hidden" id="imageUrls" name="imageUrls" value="[]" />
+
+      <button type="submit" class="submit-btn">Blogu Oluştur</button>
+    </form>
+  </div>
+
+  <div id="blogUploadLoading" class="blog-upload-loader" style="display:none;">
+    <div class="blog-loader-box">
+      <div class="blog-spinner"></div>
+      <span>Görseller yükleniyor...</span>
+    </div>
+  </div>
+</section>
+
+<script src="/js/blogUpload.js"></script>
+
+blogDuzenle.handlebars:
+<section class="blog-edit">
+
+  <h1 class="edit-title">Blog Düzenle</h1>
+
+  <form id="blogEditForm" method="POST" action="/blog/duzenle/{{post._id}}">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+    <input type="hidden" id="deleteImages" name="deleteImages" value="[]" />
+    <input type="hidden" id="newImagesJson" name="newImagesJson" value="[]" />
+
+    <!-- Başlık -->
+    <div class="form-group">
+      <label>Başlık</label>
+      <input type="text" name="title" value="{{post.title}}" required />
+    </div>
+
+    <!-- İçerik -->
+    <div class="form-group">
+      <label>İçerik</label>
+      <textarea name="content" rows="10" required>{{post.content}}</textarea>
+    </div>
+
+    <!-- Mevcut Fotoğraflar -->
+    <div class="edit-gallery">
+      <p class="gallery-title">Mevcut Fotoğraflar</p>
+
+      {{#if post.images.length}}
+        <div class="gallery-grid">
+          {{#each post.images}}
+            <div class="gallery-item">
+              <img src="{{this.url}}" alt="Görsel" />
+              <label class="remove-label">
+                <input
+                  type="checkbox"
+                  class="deleteImageCheck"
+                  value="{{this.public_id}}"
+                />
+                Sil
+              </label>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="no-images">Bu blog için henüz görsel eklenmemiş.</p>
+      {{/if}}
+    </div>
+
+    <!-- Yeni Fotoğraf Ekle -->
+    <div class="form-group">
+      <label>Yeni Fotoğraf Ekle (Max 5)</label>
+      <span class="img-hint">En uygun boyut: 1600×900 • Max 10 MB</span>
+      <input type="file" id="newImages" accept="image/*" multiple />
+      <div id="editPreviewBox" class="preview-area"></div>
+    </div>
+
+    <button class="btn save">Güncelle</button>
+  </form>
+
+  <div id="blogEditLoading" class="blog-upload-loader" style="display:none;">
+    <div class="blog-loader-box">
+      <div class="blog-spinner"></div>
+      <span>Görseller yükleniyor...</span>
+    </div>
+  </div>
+
+</section>
+
+<script src="/js/blogEditUpload.js"></script>
+<script src="/js/blogForm.js"></script>
+
+/js/blogForm.js:
+// =================================
+// BLOG OLUŞTURMA FORMU
+// =================================
+const blogImagesInput = document.getElementById("blogImages");
+const imageUrlsInput = document.getElementById("imageUrls");
+let uploadedImages = [];
+
+if (blogImagesInput) {
+  blogImagesInput.addEventListener("change", async function (e) {
+    const files = Array.from(e.target.files);
+    uploadedImages = [];
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "tarihkulubu");
+
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/deuntxojs/image/upload",
+        { method: "POST", body: formData }
+      );
+
+      const data = await res.json();
+
+      uploadedImages.push({
+        url: data.secure_url,
+        public_id: data.public_id,
+      });
+    }
+
+    imageUrlsInput.value = JSON.stringify(uploadedImages);
+  });
+}
+
+// =================================
+// BLOG DÜZENLEME FORMU
+// =================================
+const deleteImagesInput = document.getElementById("deleteImages");
+const deleteChecks = document.querySelectorAll(".deleteImageCheck");
+
+if (deleteChecks.length) {
+  deleteChecks.forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      const selected = Array.from(deleteChecks)
+        .filter((c) => c.checked)
+        .map((c) => c.value);
+
+      deleteImagesInput.value = JSON.stringify(selected);
+    });
+  });
+}
+
+// Yeni eklenen görseller
+const newImagesInput = document.getElementById("newBlogImages");
+const newImagesJson = document.getElementById("newImagesJson");
+
+if (newImagesInput) {
+  newImagesInput.addEventListener("change", async function (e) {
+    const files = Array.from(e.target.files);
+    let newImgs = [];
+
+    for (const file of files) {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("upload_preset", "tarihkulubu");
+
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/deuntxojs/image/upload",
+        { method: "POST", body: fd }
+      );
+
+      const data = await res.json();
+
+      newImgs.push({
+        url: data.secure_url,
+        public_id: data.public_id,
+      });
+    }
+
+    newImagesJson.value = JSON.stringify(newImgs);
+  });
+}
+
+/js/blogEditUpload:
+// public/js/blogEditUpload.js
+document.addEventListener("DOMContentLoaded", () => {
+
+  const cloudName = "deuntxojs";
+  const uploadPreset = "tarihkulubu_unsigned";
+
+  const newImagesInput = document.getElementById("newImages");
+  const previewBox = document.getElementById("editPreviewBox");
+  const newImagesJson = document.getElementById("newImagesJson");
+  const deleteImagesInput = document.getElementById("deleteImages");
+  const deleteCheckboxes = document.querySelectorAll(".deleteImageCheck");
+
+  // === TAM EKRAN LOADER ===
+  const loader = document.getElementById("blogEditLoading");
+
+  function showLoader() {
+    if (loader) loader.style.display = "flex";
+  }
+
+  function hideLoader() {
+    if (loader) loader.style.display = "none";
+  }
+
+  // MEVCUT GÖRSELLER SİLME
+  deleteCheckboxes.forEach((chk) => {
+    chk.addEventListener("change", () => {
+      const checked = Array.from(deleteCheckboxes)
+        .filter((c) => c.checked)
+        .map((c) => c.value);
+
+      deleteImagesInput.value = JSON.stringify(checked);
+    });
+  });
+
+  // YENİ GÖRSELLER (UPLOAD)
+  if (!newImagesInput || !previewBox || !newImagesJson) return;
+
+  newImagesInput.addEventListener("change", async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    if (files.length > 5) {
+      alert("En fazla 5 yeni görsel ekleyebilirsiniz!");
+      return;
+    }
+
+    // === LOADER AÇ ===
+    showLoader();
+
+    previewBox.innerHTML = "<p style='padding:20px; text-align:center;'>Yükleniyor...</p>";
+
+    const uploadPromises = files.map(async (file) => {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", uploadPreset);
+
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          { method: "POST", body: formData }
+        );
+
+        const result = await res.json();
+
+        if (result.secure_url && result.public_id) {
+          return {
+            url: result.secure_url,
+            public_id: result.public_id,
+          };
+        } else {
+          throw new Error("Cloudinary hatalı yanıt verdi");
+        }
+      } catch (err) {
+        console.error("Upload error:", err);
+        throw err;
+      }
+    });
+
+    try {
+      const results = await Promise.allSettled(uploadPromises);
+
+      const successful = results
+        .filter((r) => r.status === "fulfilled")
+        .map((r) => r.value);
+
+      if (!successful.length) {
+        previewBox.innerHTML =
+          "<p style='color:red; padding:20px; text-align:center;'>Yükleme başarısız.</p>";
+        newImagesJson.value = "[]";
+        hideLoader();
+        return;
+      }
+
+      newImagesJson.value = JSON.stringify(successful);
+
+      const html = successful
+        .map(
+          (item) => `
+          <div class="preview-item">
+            <img src="${item.url}" alt="Preview" class="preview-img">
+          </div>
+        `
+        )
+        .join("");
+
+      previewBox.innerHTML = html;
+
+    } catch (err) {
+      console.error(err);
+      previewBox.innerHTML =
+        "<p style='color:red; padding:20px; text-align:center;'>Yükleme sırasında bir hata oluştu.</p>";
+      newImagesJson.value = "[]";
+    }
+
+    // === LOADER KAPAT ===
+    hideLoader();
+  });
+});
+
+/js/blogUpload.js:
+// public/js/blogUpload.js
+document.addEventListener("DOMContentLoaded", () => {
+  const cloudName = "deuntxojs";
+  const uploadPreset = "tarihkulubu_unsigned";
+
+  const fileInput = document.getElementById("blogImages");
+  const previewBox = document.getElementById("previewBox");
+  const imageUrlsInput = document.getElementById("imageUrls");
+  const fileCount = document.getElementById("fileCount");
+
+  // 🔥 TAM EKRAN LOADER
+  const loader = document.getElementById("blogUploadLoading");
+
+  function showLoader() {
+    if (loader) loader.style.display = "flex";
+  }
+
+  function hideLoader() {
+    if (loader) loader.style.display = "none";
+  }
+
+  if (!fileInput || !previewBox || !imageUrlsInput) return;
+
+  let uploadedUrls = [];
+
+  fileInput.addEventListener("change", async () => {
+    const files = fileInput.files;
+
+    if (!files || files.length === 0) {
+      uploadedUrls = [];
+      previewBox.innerHTML = "";
+      imageUrlsInput.value = "[]";
+      if (fileCount) fileCount.textContent = "Seçili dosya yok";
+      return;
+    }
+
+    if (files.length > 5) {
+      alert("En fazla 5 görsel yükleyebilirsiniz!");
+      fileInput.value = "";
+      return;
+    }
+
+    // === LOADING BAŞLA ===
+    showLoader();
+
+    uploadedUrls = [];
+    previewBox.innerHTML =
+      "<p style='text-align:center; padding:20px;'>Yükleniyor...</p>";
+    if (fileCount) fileCount.textContent = `Yükleniyor: ${files.length} dosya`;
+
+    const uploadPromises = Array.from(files).map(async (file) => {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", uploadPreset);
+
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const result = await response.json();
+
+        if (result.secure_url && result.public_id) {
+          return {
+            url: result.secure_url,
+            public_id: result.public_id,
+          };
+        } else {
+          console.error("Cloudinary upload hatası:", result);
+          throw new Error(`Görsel yüklenemedi: ${file.name}`);
+        }
+      } catch (err) {
+        console.error("Upload error:", err);
+        throw err;
+      }
+    });
+
+    try {
+      const results = await Promise.allSettled(uploadPromises);
+
+      const successful = results
+        .filter((r) => r.status === "fulfilled")
+        .map((r) => r.value);
+
+      const failed = results.filter((r) => r.status === "rejected").length;
+
+      if (failed > 0) {
+        alert(`${failed} görsel yüklenemedi. Lütfen tekrar deneyin.`);
+      }
+
+      if (successful.length === 0) {
+        previewBox.innerHTML =
+          "<p style='color:red; text-align:center; padding:20px;'>Hiçbir görsel yüklenemedi.</p>";
+        imageUrlsInput.value = "[]";
+        if (fileCount) fileCount.textContent = "Seçili dosya yok";
+        hideLoader();
+        return;
+      }
+
+      uploadedUrls = successful;
+
+      const previews = successful
+        .map(
+          (item) => `
+            <div class="preview-item">
+              <img src="${item.url}" class="preview-img" alt="Preview" />
+            </div>
+          `
+        )
+        .join("");
+
+      previewBox.innerHTML = previews;
+      imageUrlsInput.value = JSON.stringify(uploadedUrls);
+
+      if (fileCount) {
+        fileCount.textContent = `${successful.length} dosya yüklendi`;
+      }
+    } catch (err) {
+      console.error("Upload process error:", err);
+      previewBox.innerHTML =
+        "<p style='color:red; text-align:center; padding:20px;'>Yükleme sırasında hata oluştu.</p>";
+      imageUrlsInput.value = "[]";
+    }
+
+    // === LOADING BİTİR ===
+    hideLoader();
+  });
+});
+
+HESAP KISMI:
+hesap.handlebars:
+<link rel="stylesheet" href="/css/hesap.css" />
+
+<section class="account-wrapper">
+
+  <!-- SOL MENÜ -->
+  <aside class="account-sidebar">
+
+    <a href="/u/@{{user.username}}" class="public-profile-btn">
+      Profilimi Görüntüle →
+    </a>
+
+    <div class="sidebar-category">Hesap</div>
+    <button class="sidebar-item active" data-target="profile">Profil Bilgileri</button>
+
+    <div class="sidebar-category">Hesap Ayarları</div>
+    <button class="sidebar-item disabled">Tema Ayarları (Yakında)</button>
+    <button class="sidebar-item disabled">Bildirimler (Yakında)</button>
+
+    <div class="sidebar-category">Profil Medyası</div>
+    <button class="sidebar-item" data-target="media">Profil Fotoğrafları</button>
+
+    <div class="sidebar-category">Sosyal</div>
+    <button class="sidebar-item" data-target="social">Sosyal Medya</button>
+
+    <div class="sidebar-category">Gizlilik & Güvenlik</div>
+    <button class="sidebar-item" data-target="password">Şifre Değiştir</button>
+    <button class="sidebar-item" data-target="cookies">Çerez Ayarları</button>
+    <button class="sidebar-item" data-target="data-usage">Veri Kullanımı</button>
+    <button class="sidebar-item" data-target="devices" disabled>Giriş Yapılan Cihazlar (Yakında)</button>
+    <button class="sidebar-item danger" data-target="delete">Hesabı Sil</button>
+    <button class="sidebar-item" data-target="policies">Site Politikaları</button>
+
+    <div class="sidebar-category">Gelişmiş Güvenlik</div>
+    <button class="sidebar-item disabled">2FA Doğrulama (Yakında)</button>
+    <button class="sidebar-item disabled">Oturum Yönetimi (Yakında)</button>
+
+  </aside>
+
+  <!-- SAĞ PANEL -->
+  <main class="account-content">
+
+    <!-- ✨ LOADER -->
+    <div id="accountLoading" class="account-loading">
+      <div class="spinner"></div>
+      <p>Hesap bilgileri yükleniyor...</p>
+    </div>
+
+    <!-- PROFİL -->
+    <div class="content-box" id="profile" style="display: block;">
+      <h2 class="title">Profil Bilgileri</h2>
+      <p class="desc">Bilgileriniz güvende. Dilediğiniz zaman güncelleyebilirsiniz.</p>
+
+      <form action="/hesap/profil" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        
+        <div class="form-group">
+          <label>Kullanıcı Adı</label>
+          <input type="text" value="{{user.username}}" disabled />
+          <span class="info">Kullanıcı adı değiştirilemez.</span>
+        </div>
+
+        <div class="form-group">
+          <label>Ad</label>
+          <input type="text" name="name" value="{{user.name}}" />
+        </div>
+
+        <div class="form-group">
+          <label>Soyad</label>
+          <input type="text" name="surname" value="{{user.surname}}" />
+        </div>
+
+        <div class="form-group">
+          <label>E-posta</label>
+          <input type="email" name="email" value="{{user.email}}" />
+          <span class="info">E-posta doğrulama ileride eklenecek.</span>
+        </div>
+
+        <!-- BİYOGRAFİ -->
+        <div class="form-group">
+          <label>Biyografi</label>
+          <textarea 
+            name="bio" 
+            rows="4" 
+            maxlength="200"
+            placeholder="Kendinizi tanıtan kısa bir yazı..."
+          >{{user.bio}}</textarea>
+
+          <div class="bio-hint">
+            <span>200 karakter sınırı</span>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button type="submit" class="btn save">Kaydet</button>
+          <button type="reset" class="btn cancel">İptal</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- SOSYAL -->
+    <div class="content-box" id="social">
+      <h2 class="title">Sosyal Medya Bağlantıları</h2>
+      <p class="desc">Profilinde görünecek sosyal medya bağlantıları.</p>
+
+      <form action="/hesap/social" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+        <div class="form-group">
+          <label>Instagram</label>
+          <input type="text" name="instagram" value="{{user.social.instagram}}" placeholder="@kullanici" />
+        </div>
+
+        <div class="form-group">
+          <label>X (Twitter)</label>
+          <input type="text" name="x" value="{{user.social.x}}" placeholder="@kullanici" />
+        </div>
+
+        <div class="form-group">
+          <label>GitHub</label>
+          <input type="text" name="github" value="{{user.social.github}}" placeholder="github.com/kullanici" />
+        </div>
+
+        <div class="btn-group">
+          <button type="submit" class="btn save">Kaydet</button>
+          <button type="reset" class="btn cancel">İptal</button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- PROFİL MEDYASI -->
+    <div class="content-box" id="media">
+      <h2 class="title">Profil Fotoğrafları</h2>
+      <p class="desc">Profil ve kapak fotoğrafınızı buradan yönetebilirsiniz.</p>
+
+      <!-- AVATAR -->
+      <div class="profile-section">
+        <h3>Profil Fotoğrafı</h3>
+
+        <div class="avatar-box">
+          <img
+            src="{{user.avatar}}"
+            alt="Avatar"
+            class="avatar-img"
+            id="avatarPreview"
+          />
+        </div>
+
+        <form id="avatarForm" action="/hesap/avatar-yukle" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+          <!-- Güncel Cloudinary sistemine uygun inputlar -->
+          <input type="hidden" id="avatarValue" name="avatarUrl">
+          <input type="hidden" id="avatarPid" name="avatarPublicId">
+
+          <label for="avatarUpload" class="upload-btn">Yeni Avatar Yükle</label>
+          <input type="file" id="avatarUpload" class="hidden-input" accept="image/*" />
+
+          <button type="submit" class="save-btn">Kaydet</button>
+        </form>
+      </div>
+
+      <!-- KAPAK -->
+      <div class="cover-section">
+        <h3>Kapak Fotoğrafı</h3>
+
+        <div class="cover-box">
+          <img
+            src="{{user.coverPhoto}}"
+            alt="Kapak"
+            class="cover-img"
+            id="coverPreview"
+          />
+        </div>
+
+        <div id="mediaLoading" class="media-loading" style="display: none;">
+          <div class="spinner"></div>
+          <span>Yükleniyor...</span>
+        </div>
+
+        <form id="coverForm" action="/hesap/kapak-yukle" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+          <!-- Cloudinary için gerekli inputlar -->
+          <input type="hidden" id="coverValue" name="coverUrl">
+          <input type="hidden" id="coverPid" name="coverPublicId">
+
+          <label for="coverUpload" class="upload-btn">Yeni Kapak Yükle</label>
+          <input type="file" id="coverUpload" class="hidden-input" accept="image/*" />
+
+          <button type="submit" class="save-btn">Kaydet</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ŞİFRE -->
+    <div class="content-box" id="password">
+      <h2 class="title">Şifre Değiştir</h2>
+      <p class="desc">Mail adresine doğrulama kodu gönderilecek.</p>
+
+      <!-- 1) Kod gönder -->
+      <form action="/hesap/sifre-kod" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <button class="btn save">
+          <i class="fa-solid fa-paper-plane"></i> Mailime Kod Gönder
+        </button>
+      </form>
+
+      <!-- 2) Doğrulama kutusu -->
+      <div id="verifyBox" style="display: none; margin-top:20px;">
+        <h3 class="subtitle">Doğrulama Kodu</h3>
+
+        <form action="/hesap/sifre-kod-dogrula-form" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+          <input type="text" name="code" placeholder="6 haneli kod" class="input" required />
+          <button class="btn green">
+            <i class="fa-solid fa-lock"></i> Kodu Doğrula
+          </button>
+        </form>
+      </div>
+
+      <!-- 3) Yeni şifre -->
+      <div id="newPasswordBox" style="display: {{#if showNewPasswordBox}}block{{else}}none{{/if}}; margin-top: 30px;">
+        <h3 class="subtitle">Yeni Şifre Oluştur</h3>
+
+        <form action="/hesap/sifre-yeni" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+          <input type="password" name="password1" placeholder="Yeni Şifre" class="input" required />
+          <input type="password" name="password2" placeholder="Yeni Şifre Tekrar" class="input" required />
+
+          <button class="btn save">
+            <i class="fa-solid fa-unlock-keyhole"></i> Şifreyi Güncelle
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- ÇEREZLER -->
+    <div class="content-box" id="cookies">
+      <h2 class="title">Çerez Ayarları</h2>
+      <p class="desc">Tarayıcı çerezleri deneyimi iyileştirir.</p>
+
+      <form action="/hesap/cookies" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <div class="toggle-row">
+          <label>Gerekli Çerezler</label>
+          <input type="checkbox" checked disabled />
+        </div>
+
+        <div class="toggle-row">
+          <label>Analitik Çerezler</label>
+          <label class="switch">
+            <input type="checkbox" name="analyticsCookies"
+              {{#if user.analyticsCookies}}checked{{/if}} />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <label>Kişiselleştirme Çerezleri</label>
+          <label class="switch">
+            <input type="checkbox" name="personalizationCookies"
+              {{#if user.personalizationCookies}}checked{{/if}} />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn save">Kaydet</button>
+          <button class="btn cancel" type="reset">İptal</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- VERİ -->
+    <div class="content-box" id="data-usage">
+      <h2 class="title">Veri Kullanımı</h2>
+
+      <form action="/hesap/data-usage" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <div class="toggle-row">
+          <label>Hizmet kalitesi için anonim veri</label>
+          <label class="switch">
+            <input type="checkbox" name="serviceDataUsage"
+              {{#if user.serviceDataUsage}}checked{{/if}} />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <label>Kişiselleştirilmiş içerik</label>
+          <label class="switch">
+            <input type="checkbox" name="personalizedContent"
+              {{#if user.personalizedContent}}checked{{/if}} />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn save">Kaydet</button>
+          <button class="btn cancel" type="reset">İptal</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ========== HESAP SİLME (SIDEBAR İÇERİĞİ) ========== -->
+    <div class="content-box" id="delete">
+      <h2 class="title danger">Hesabı Sil</h2>
+      <p class="desc">
+        Hesabınızı kalıcı olarak silmek istiyorsanız aşağıdaki butona tıklayın.
+        Bu işlem geri alınamaz.
+      </p>
+
+      <button class="danger-btn" type="button" onclick="openDeleteModal()">
+        Hesabımı Kalıcı Olarak Sil
+      </button>
+    </div>
+
+    <!-- POLİTİKALAR -->
+    <div class="content-box" id="policies">
+      <h2 class="title">Site Politikaları</h2>
+      <p class="desc">Gizlilik, veri politikası ve kullanım şartları.</p>
+
+      <div class="policy-card">
+        <h3 class="policy-title">📘 Açık Rıza Metni</h3>
+        <a href="/legal/acik-riza-metni" class="policy-link">Açık Rıza Metni →</a>
+      </div>
+
+      <div class="policy-card">
+        <h3 class="policy-title">🔒 Gizlilik Politikası</h3>
+        <a href="/legal/gizlilik-politikasi" class="policy-link">Gizlilik Politikası →</a>
+      </div>
+
+      <div class="policy-card">
+        <h3 class="policy-title">📄 Kullanım Şartları</h3>
+        <a href="/legal/kullanim-sartlari" class="policy-link">Kullanım Şartları →</a>
+      </div>
+
+    </div>
+
+    <!-- ========== HESAP SİLME MODALI (OVERLAY) ========== -->
+    <div id="deleteModal" class="delete-modal">
+      <div class="delete-modal-content">
+
+        <h2>Hesabı Sil</h2>
+        <p class="warning-text">
+          Bu işlem geri alınamaz! Hesabınızı <b>kalıcı olarak</b> silmek istediğinize emin misiniz?
+        </p>
+
+        <!-- Form: CSRF + şifre -->
+        <form id="deleteForm" action="/hesap/sil" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+          <!-- C doğrulaması -->
+          <label class="modal-label">Onay için <b>C</b> harfini girin:</label>
+          <input
+            type="text"
+            id="confirmC"
+            maxlength="1"
+            class="modal-input"
+            placeholder="C"
+          />
+
+          <!-- Şifre -->
+          <label class="modal-label">Şifrenizi girin:</label>
+          <input
+            type="password"
+            id="deletePassword"
+            name="password"
+            class="modal-input"
+            placeholder="Şifreniz"
+          />
+
+          <p id="modalError" class="modal-error"></p>
+
+          <!-- Butonlar -->
+          <div class="modal-buttons">
+            <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Vazgeç</button>
+            <button type="button" class="delete-btn" onclick="confirmDelete()">Hesabı Sil</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+        <!-- GLOBAL LOADING OVERLAY -->
+    <div id="globalLoader" class="global-loader" style="display:none;">
+      <div class="loader-box">
+        <div class="loader-spinner"></div>
+        <span>Yükleniyor...</span>
+      </div>
+    </div>
+
+  </main>
+</section>
+
+<script src="/js/avatarCoverUpload.js"></script>
+<script src="/js/hesap.js"></script>
+
+/js/avatarCoverUpload.js:
+// public/js/avatarCoverUpload.js
+document.addEventListener("DOMContentLoaded", () => {
+
+  const cloudName = "deuntxojs";
+  const uploadPreset = "unsigned_upload";
+
+  // Global overlay loader
+  const loader = document.getElementById("mediaLoading");
+
+  function showLoader() {
+    if (loader) loader.style.display = "flex";
+  }
+
+  function hideLoader() {
+    if (loader) loader.style.display = "none";
+  }
+
+  // ===============================
+  // CLOUDINARY UPLOAD
+  // ===============================
+  async function uploadToCloudinary(file) {
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("upload_preset", uploadPreset);
+
+    try {
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        { method: "POST", body: fd }
+      );
+      return await res.json();
+    } catch (err) {
+      console.error("Cloudinary Upload Error:", err);
+      return null;
+    }
+  }
+
+  function safeSetValue(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.value = value;
+    setTimeout(() => (el.value = value), 50);
+  }
+
+  // ===============================
+  // AVATAR UPLOAD
+  // ===============================
+  const avatarInput = document.getElementById("avatarUpload");
+  const avatarPreview = document.getElementById("avatarPreview");
+
+  if (avatarInput && avatarPreview) {
+    avatarInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      showLoader();
+
+      const reader = new FileReader();
+      reader.onload = ev => (avatarPreview.src = ev.target.result);
+      reader.readAsDataURL(file);
+
+      const result = await uploadToCloudinary(file);
+
+      hideLoader();
+
+      if (!result) {
+        alert("⚠ Avatar yuklenemedi! (network)");
+        return;
+      }
+
+      const finalUrl = result.secure_url || result.url;
+
+      if (finalUrl && result.public_id) {
+        safeSetValue("avatarValue", finalUrl);
+        safeSetValue("avatarPid", result.public_id);
+      } else {
+        alert("⚠ Avatar yuklenemedi!");
+      }
+    });
+  }
+
+  // ===============================
+  // COVER UPLOAD
+  // ===============================
+  const coverInput = document.getElementById("coverUpload");
+  const coverPreview = document.getElementById("coverPreview");
+
+  if (coverInput && coverPreview) {
+    coverInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      showLoader();
+
+      const reader = new FileReader();
+      reader.onload = ev => (coverPreview.src = ev.target.result);
+      reader.readAsDataURL(file);
+
+      const result = await uploadToCloudinary(file);
+
+      hideLoader();
+
+      if (!result) {
+        alert("⚠ Kapak yuklenemedi! (network)");
+        return;
+      }
+
+      const finalUrl = result.secure_url || result.url;
+
+      if (finalUrl && result.public_id) {
+        safeSetValue("coverValue", finalUrl);
+        safeSetValue("coverPid", result.public_id);
+      } else {
+        alert("⚠ Kapak yuklenemedi!");
+      }
+    });
+  }
+
+});
+
+routes/blogs.js:
+import express from "express";
+import Post from "../models/Post.js";
+import Comment from "../models/Comment.js";
+import auth from "../middlewares/auth.js";
+import cloudinary from "../helpers/cloudinary.js";
+import {
+  blogValidation,
+  commentValidation,
+} from "../middlewares/validators.js";
+import {
+  blogCreateLimiter,
+  commentLimiter,
+} from "../middlewares/rateLimiter.js";
+import logger from "../helpers/logger.js";
+import upload from "../middlewares/upload.js";
+
+const blogs = express.Router();
+
+/* ============================================================
+   BLOG OLUŞTUR (GET)
+============================================================ */
+blogs.get("/olustur", auth, (req, res) => {
+  res.render("pages/blogOlustur", {
+    error: req.query.error || null,
+    success: req.query.success || null,
+    data: {},
+  });
+});
+
+/* ============================================================
+   BLOG OLUŞTUR (POST)
+============================================================ */
+blogs.post(
+  "/olustur",
+  auth,
+  (req, res, next) => {
+    // VALIDATION ERROR'DA BURAYA DÖNECEK
+    req.validationErrorView = "pages/blogOlustur";
+    req.validationErrorData = { data: req.body };
+    next();
+  },
+  blogCreateLimiter,
+  blogValidation,
+  async (req, res) => {
+    try {
+      const { title, content } = req.body;
+
+      let images = [];
+      if (req.body.imageUrls) {
+        try {
+          const parsed = JSON.parse(req.body.imageUrls);
+          if (Array.isArray(parsed))
+            images = parsed.filter(
+              (img) => img?.url && img?.public_id
+            );
+        } catch (e) {
+          logger.warn("JSON parse error:", e);
+        }
+      }
+
+      await Post.create({
+        user_id: req.user.id,
+        username: req.user.username,
+        title,
+        content,
+        images,
+      });
+
+      return res.redirect("/blog?success=Blog+başarıyla+oluşturuldu");
+    } catch (err) {
+      logger.error("Blog oluşturma hatası:", {
+        message: err.message,
+        stack: err.stack,
+        user: req.user?.username,
+        ip: req.ip,
+      });
+
+      return res.redirect("/blog/olustur?error=Bir+hata+oluştu");
+    }
+  }
+);
+
+/* ============================================================
+   BLOG DÜZENLE (GET)
+============================================================ */
+blogs.get("/duzenle/:id", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id).lean();
+
+    if (!post) {
+      return res.redirect("/blog?error=Blog+bulunamadı");
+    }
+
+    if (post.user_id.toString() !== req.user.id) {
+      return res.redirect("/blog?error=Bu+blogu+düzenleme+yetkin+yok");
+    }
+
+    res.render("pages/blogDuzenle", {
+      post,
+      csrfToken: req.csrfToken(),
+    });
+  } catch (err) {
+    console.log(err);
+    return res.redirect("/blog?error=Bir+hata+oluştu");
+  }
+});
+
+/* ============================================================
+   BLOG DÜZENLE (POST)
+============================================================ */
+blogs.post("/duzenle/:id", auth, async (req, res) => {
+  try {
+    const blog = await Post.findById(req.params.id);
+    if (!blog) return res.status(404).render("pages/404");
+
+    // Sahip mi / admin mi?
+    const isOwner = blog.user_id.toString() === req.user.id;
+    const isAdmin = req.user.role === "admin";
+    if (!isOwner && !isAdmin) {
+      return res.status(403).send("Yetkisiz işlem");
+    }
+
+    const { title, content } = req.body;
+
+    // 1) Mevcut görselleri kopyala
+    let images = Array.isArray(blog.images) ? [...blog.images] : [];
+
+    // 2) Silinecek görseller (public_id listesi)
+    if (req.body.deleteImages) {
+      let deleteList = [];
+      try {
+        deleteList = JSON.parse(req.body.deleteImages); // ["public_id1", "public_id2"]
+      } catch (e) {
+        deleteList = [];
+      }
+
+      if (deleteList.length) {
+        // Cloudinary'den sil
+        for (const publicId of deleteList) {
+          try {
+            await cloudinary.uploader.destroy(publicId);
+          } catch (err) {
+            logger.error("Cloudinary destroy error (edit):", err);
+          }
+        }
+
+        // DB'den sil
+        images = images.filter(
+          (img) => !deleteList.includes(img.public_id)
+        );
+      }
+    }
+
+    // 3) Yeni eklenen görseller (JS tarafında Cloudinary'e yüklendi)
+    if (req.body.newImagesJson) {
+      try {
+        const newImgs = JSON.parse(req.body.newImagesJson); // [{url, public_id}, ...]
+        if (Array.isArray(newImgs) && newImgs.length) {
+          images = images.concat(
+            newImgs.filter((i) => i.url && i.public_id)
+          );
+        }
+      } catch (e) {
+        logger.warn("newImagesJson parse error:", e);
+      }
+    }
+
+    // 4) Blog alanlarını güncelle
+    blog.title = title;
+    blog.content = content;
+    blog.images = images;
+
+    await blog.save();
+
+    return res.redirect(`/blog/${blog._id}`);
+  } catch (err) {
+    logger.error("BLOG UPDATE ERROR:", err);
+    const post = await Post.findById(req.params.id).lean();
+    return res.render("pages/blogDuzenle", {
+      post,
+      error: "Bir hata oluştu.",
+      csrfToken: req.csrfToken(),
+    });
+  }
+});
+
+/* ============================================================
+   BLOG SİL
+============================================================ */
+blogs.post("/:id/sil", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.redirect("/blog?error=Blog+bulunamadı");
+
+    const isOwner = post.user_id.toString() === req.user.id;
+    const isAdmin = req.user.role === "admin";
+
+    if (!isOwner && !isAdmin)
+      return res.redirect("/blog?error=Yetkiniz+yok");
+
+    for (const img of post.images) {
+      try {
+        await cloudinary.uploader.destroy(img.public_id);
+      } catch (err) {
+        logger.error("Cloudinary destroy error:", err);
+      }
+    }
+
+    await Post.findByIdAndDelete(req.params.id);
+    return res.redirect("/blog?success=Blog+silindi");
+  } catch (err) {
+    logger.error("BLOG DELETE ERROR:", err);
+    res.status(500).send("Blog silinirken hata oluştu");
+  }
+});
+
+/* ============================================================
+   YORUM EKLE
+============================================================ */
+blogs.post(
+  "/:id/yorum",
+  auth,
+  (req, res, next) => {
+    req.validationErrorView = "pages/blogDetay";
+    req.validationErrorData = {};
+    next();
+  },
+  commentLimiter,
+  commentValidation,
+  async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.id);
+      if (!post) return res.status(404).render("pages/404");
+
+      await Comment.create({
+        post_id: post._id,
+        user_id: req.user.id,
+        username: req.user.username,
+        content: req.body.content.trim(),
+      });
+
+      return res.redirect(`/blog/${post._id}`);
+    } catch (err) {
+      logger.error("YORUM EKLE ERROR:", err);
+      return res.redirect(`/blog/${req.params.id}?error=Yorum+eklenemedi`);
+    }
+  }
+);
+
+/* ============================================================
+   YORUM SİL
+============================================================ */
+blogs.post("/:postId/yorum/:commentId/sil", auth, async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    if (!comment) return res.status(404).render("pages/404");
+
+    const isOwner = comment.user_id.toString() === req.user.id;
+    const isAdmin = req.user.role === "admin";
+
+    if (!isOwner && !isAdmin)
+      return res.status(403).send("Yetkiniz yok.");
+
+    await Comment.findByIdAndDelete(req.params.commentId);
+    return res.redirect(`/blog/${req.params.postId}`);
+  } catch (err) {
+    logger.error("YORUM SİL ERROR:", err);
+    res.status(500).send("Yorum silinirken hata oluştu");
+  }
+});
+
+/* ============================================================
+   YORUM DÜZENLE
+============================================================ */
+blogs.get("/:postId/yorum/:commentId/duzenle", auth, async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId).lean();
+    if (!comment) return res.status(404).render("pages/404");
+
+    const isOwner = comment.user_id.toString() === req.user.id;
+    const isAdmin = req.user.role === "admin";
+
+    if (!isOwner && !isAdmin)
+      return res.status(403).send("Yetkiniz yok.");
+
+    res.render("pages/yorumDuzenle", {
+      comment,
+      postId: req.params.postId,
+      csrfToken: req.csrfToken(),
+    });
+  } catch (err) {
+    logger.error("YORUM DÜZENLE (GET) ERROR:", err);
+    res.status(500).send("Yorum düzenleme sayfası açılırken hata oluştu");
+  }
+});
+blogs.post("/:postId/yorum/:commentId/duzenle", auth, async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    if (!comment) return res.status(404).render("pages/404");
+
+    const isOwner = comment.user_id.toString() === req.user.id;
+    const isAdmin = req.user.role === "admin";
+
+    if (!isOwner && !isAdmin)
+      return res.status(403).send("Yetkiniz yok.");
+
+    const newContent = (req.body.content || "").trim();
+    if (!newContent)
+      return res.redirect(`/blog/${req.params.postId}`);
+
+    comment.content = newContent;
+    await comment.save();
+
+    return res.redirect(`/blog/${req.params.postId}`);
+  } catch (err) {
+    logger.error("YORUM DÜZENLE ERROR:", err);
+    res.status(500).send("Yorum düzenlenirken hata oluştu");
+  }
+});
+
+/* ============================================================
+   BLOG DETAY
+============================================================ */
+blogs.get("/:id", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id).lean();
+    if (!post) return res.status(404).render("pages/404");
+
+    const comments = await Comment.find({ post_id: post._id })
+      .sort({ date: -1 })
+      .lean();
+
+    const isAuth = !!req.user;
+    const isOwner = isAuth && post.user_id.toString() === req.user.id;
+    const isAdmin = isAuth && req.user.role === "admin";
+
+    res.render("pages/blogDetay", {
+      post,
+      comments,
+      isAuth,
+      currentUserId: req.user?.id,
+      currentUsername: req.user?.username,
+      currentRole: req.user?.role,
+      isOwner,
+      isAdmin,
+      csrfToken: req.csrfToken(),       // 🔥 BUNU EKLEDİK
+      error: req.query.error || null,
+      success: req.query.success || null,
+    });
+  } catch (err) {
+    logger.error("BLOG DETAY ERROR:", err);
+    res.status(500).send("Hata oluştu");
+  }
+});
+
+export default blogs;
+
+routes/hesap.js:
+// routes/hesap.js
+import express from "express";
+import auth from "../middlewares/auth.js";
+import User from "../models/User.js";
+import Post from "../models/Post.js";
+import cloudinary from "../helpers/cloudinary.js";
+import Comment from "../models/Comment.js";
+import { sendMail } from "../helpers/mail.js";
+import {
+  accountDeletedMailTemplate,
+  verificationMailTemplate,
+} from "../helpers/mailTemplates.js";
+import Backup from "../models/Backup.js";
+import bcrypt from "bcrypt";
+
+const router = express.Router();
+
+/* ============================================================
+   HESAP SAYFASI (GET)
+============================================================ */
+router.get("/", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).lean();
+
+    return res.render("pages/hesap", {
+      user,
+      success: req.query.success || null,
+      error: req.query.error || null,
+      showVerify: req.query.showVerify || null,
+      showNewPasswordBox: req.query.showNewPasswordBox || false,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.render("pages/hesap", { error: "Hesap yüklenemedi" });
+  }
+});
+
+/* ============================================================
+   PROFİL BİLGİLERİ GÜNCELLE
+============================================================ */
+router.post("/profil", auth, async (req, res) => {
+  try {
+    const { name, surname, email, bio } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if (!user) return res.redirect("/hesap?error=Kullanıcı+bulunamadı");
+
+    if (email && email !== user.email) {
+      const exists = await User.findOne({
+        email,
+        _id: { $ne: user._id },
+      });
+
+      if (exists) {
+        return res.redirect("/hesap?error=Bu+email+başka+bir+hesapta+kayıtlı");
+      }
+    }
+
+    user.name = name;
+    user.surname = surname;
+    user.email = email;
+    user.bio = bio?.trim() || "";
+    await user.save();
+
+    return res.redirect("/hesap?success=Profil+bilgileri+güncellendi");
+  } catch (err) {
+    console.log(err);
+    return res.redirect("/hesap?error=Güncelleme+başarısız");
+  }
+});
+
+/* ============================================================
+   ÇEREZ AYARLARI
+============================================================ */
+router.post("/cookies", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    user.analyticsCookies = !!req.body.analyticsCookies;
+    user.personalizationCookies = !!req.body.personalizationCookies;
+    await user.save();
+    return res.redirect("/hesap?success=Çerez+ayarları+güncellendi");
+  } catch {
+    return res.redirect("/hesap?error=Çerez+ayarları+kaydedilemedi");
+  }
+});
+
+/* ============================================================
+   VERİ KULLANIMI
+============================================================ */
+router.post("/data-usage", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    user.serviceDataUsage = !!req.body.serviceDataUsage;
+    user.personalizedContent = !!req.body.personalizedContent;
+
+    await user.save();
+    return res.redirect("/hesap?success=Veri+ayarları+güncellendi");
+  } catch {
+    return res.redirect("/hesap?error=Veri+ayarları+kaydedilemedi");
+  }
+});
+
+/* ============================================================
+   🔥 AVATAR YÜKLEME (Cloudinary public_id dahil)
+============================================================ */
+router.post("/avatar-yukle", auth, async (req, res) => {
+  try {
+    const { avatarUrl, avatarPublicId } = req.body; // 👈 isimler form ile aynı
+
+    if (!avatarUrl) {
+      return res.redirect("/hesap?error=Avatar+yüklenemedi");
+    }
+
+    const user = await User.findById(req.user.id);
+
+    // eski avatarı Cloudinary'den sil
+    if (user.avatarPublicId) {
+      try {
+        await cloudinary.uploader.destroy(user.avatarPublicId);
+      } catch (e) {
+        console.log("Eski avatar silinemedi:", e.message);
+      }
+    }
+
+    user.avatar = avatarUrl; // 👈 url buraya
+    user.avatarPublicId = avatarPublicId || null;
+
+    await user.save();
+    return res.redirect("/hesap?success=Avatar+güncellendi");
+  } catch (err) {
+    console.error(err);
+    return res.redirect("/hesap?error=Avatar+güncellenemedi");
+  }
+});
+
+/* ============================================================
+   🔥 KAPAK FOTO YÜKLEME (Cloudinary public_id dahil)
+============================================================ */
+router.post("/kapak-yukle", auth, async (req, res) => {
+  try {
+    const { coverUrl, coverPublicId } = req.body; // 👈 form isimleri
+
+    if (!coverUrl) {
+      return res.redirect("/hesap?error=Kapak+yüklenemedi");
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (user.coverPublicId) {
+      try {
+        await cloudinary.uploader.destroy(user.coverPublicId);
+      } catch (e) {
+        console.log("Eski kapak silinemedi:", e.message);
+      }
+    }
+
+    user.coverPhoto = coverUrl; // 👈 user modeldeki alan
+    user.coverPublicId = coverPublicId || null;
+
+    await user.save();
+    return res.redirect("/hesap?success=Kapak+fotoğrafı+güncellendi");
+  } catch (err) {
+    console.error(err);
+    return res.redirect("/hesap?error=Kapak+fotoğrafı+güncellenemedi");
+  }
+});
+
+/* ============================================================
+   SOSYAL MEDYA
+============================================================ */
+router.post("/social", auth, async (req, res) => {
+  try {
+    const { instagram, x, github } = req.body;
+
+    await User.findByIdAndUpdate(req.user.id, {
+      social: { instagram, x, github },
+    });
+
+    return res.redirect("/hesap?success=Sosyal+medya+güncellendi");
+  } catch {
+    return res.redirect("/hesap?error=Güncellenemedi");
+  }
+});
+
+/* ============================================================
+   HESAP SİLME
+============================================================ */
+router.post("/sil", auth, async (req, res) => {
+  try {
+    const { password } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if (!password) return res.redirect("/hesap?error=Şifre+girilmedi");
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.redirect("/hesap?error=Şifre+yanlış");
+
+    const posts = await Post.find({ user_id: user._id }).lean();
+    const comments = await Comment.find({ user_id: user._id }).lean();
+
+    await Backup.create({
+      userId: user._id,
+      username: user.username,
+      email: user.email,
+      userData: { profile: user.toObject(), posts, comments },
+    });
+
+    await Post.deleteMany({ user_id: user._id });
+    await Comment.deleteMany({ user_id: user._id });
+    await User.findByIdAndDelete(user._id);
+
+    await sendMail(
+      user.email,
+      "Hesabınız Silindi",
+      accountDeletedMailTemplate(user.username)
+    );
+
+    res.clearCookie("auth_token");
+
+    return res.redirect("/?success=Hesabınız+silindi");
+  } catch (err) {
+    console.error(err);
+    return res.redirect("/hesap?error=Silinemedi");
+  }
+});
+
+/* ============================================================
+   ŞİFRE KODU GÖNDER
+============================================================ */
+router.post("/sifre-kod", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetCode = code;
+    user.resetCodeExpires = new Date(Date.now() + 10 * 60000);
+    await user.save();
+
+    const html = verificationMailTemplate(`${user.name} ${user.surname}`, code);
+    await sendMail(user.email, "Doğrulama Kodunuz", html);
+
+    return res.redirect("/hesap?success=Kod+gönderildi&showVerify=1");
+  } catch {
+    return res.redirect("/hesap?error=Kod+gönderilemedi");
+  }
+});
+
+/* ============================================================
+   KOD DOĞRULAMA
+============================================================ */
+router.post("/sifre-kod-dogrula-form", auth, async (req, res) => {
+  const { code } = req.body;
+  const user = await User.findById(req.user.id);
+
+  if (!user || !user.resetCode)
+    return res.redirect("/hesap?error=Kod+talep+edilmedi&showVerify=1");
+
+  if (user.resetCodeExpires < new Date())
+    return res.redirect("/hesap?error=Süre+doldu&showVerify=1");
+
+  if (code.trim() !== user.resetCode)
+    return res.redirect("/hesap?error=Kod+yanlış&showVerify=1");
+
+  return res.redirect("/hesap/sifre-yeni");
+});
+
+/* ============================================================
+   YENİ ŞİFRE OLUŞTURMA SAYFASI (GET)
+============================================================ */
+router.get("/sifre-yeni", auth, async (req, res) => {
+  const user = await User.findById(req.user.id).lean();
+  return res.render("pages/hesap", {
+    user,
+    showNewPasswordBox: true,
+  });
+});
+
+/* ============================================================
+   YENİ ŞİFRE KAYDET
+============================================================ */
+router.post("/sifre-yeni", auth, async (req, res) => {
+  try {
+    const { password1, password2 } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if (!password1 || !password2)
+      return res.redirect("/hesap?error=Şifre+boş+olamaz&showNewPasswordBox=1");
+
+    if (password1 !== password2)
+      return res.redirect(
+        "/hesap?error=Şifreler+eşleşmiyor&showNewPasswordBox=1"
+      );
+
+    if (password1.length < 6)
+      return res.redirect(
+        "/hesap?error=Şifre+en+az+6+karakter+olmalı&showNewPasswordBox=1"
+      );
+
+    user.password = await bcrypt.hash(password1, 10);
+    await user.save();
+
+    return res.redirect("/hesap?success=Şifre+güncellendi");
+  } catch {
+    return res.redirect("/hesap?error=Bir+hata+oluştu&showNewPasswordBox=1");
+  }
+});
+
+export default router;
