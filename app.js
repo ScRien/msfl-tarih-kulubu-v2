@@ -200,15 +200,18 @@ app.use(csrfProtection);
 app.use(addCsrfToken);
 
 // ROUTES
-app.use("/", mainRoute);
-app.use("/blog", blogsRoute);
-app.use("/kullanici", kullaniciRoute);
-app.use("/legal", legalRoute);
-app.use("/hesap", hesapRoute);
-app.use("/profile", profileRoute);
-app.use("/sifre-unuttum", sifreUnuttumRoute);
-app.use("/admin", adminRoute);
-app.use("/u", publicProfileRoute);
+//app.use("/", mainRoute);
+//app.use("/blog", blogsRoute);
+//app.use("/kullanici", kullaniciRoute);
+//app.use("/legal", legalRoute);
+//app.use("/hesap", hesapRoute);
+//app.use("/profile", profileRoute);
+//app.use("/sifre-unuttum", sifreUnuttumRoute);
+//app.use("/admin", adminRoute);
+//app.use("/u", publicProfileRoute);
+
+const router = express.Router();
+router.get("/", (req, res) => res.render("pages/bakim"));
 
 // 404
 app.use((req, res) => {
