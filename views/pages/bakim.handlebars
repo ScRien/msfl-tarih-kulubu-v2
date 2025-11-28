@@ -1,13 +1,11 @@
-{{!-- views/bakim.hbs --}}
 <!DOCTYPE html>
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <title>Bakımdayız | Site Güncelleniyor</title>
+    <title>Bakımdayız | Geçici Olarak Kapalıyız</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <style>
-      /* ==== GENEL AYARLAR ==== */
       * {
         margin: 0;
         padding: 0;
@@ -19,185 +17,169 @@
         height: 100%;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
           Roboto, sans-serif;
+        background: linear-gradient(135deg, #ffffff, #f3f3f3, #e6e6e6);
         color: #333;
       }
 
       body {
-        background: linear-gradient(135deg, #ffffff, #f1f1f1, #e0e0e0);
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 24px;
       }
 
-      /* ==== ANA KAPSAYICI ==== */
-      .maintenance-wrapper {
-        max-width: 800px;
+      .maintenance-page {
+        max-width: 900px;
         width: 100%;
         background: #ffffff;
-        border-radius: 18px;
-        padding: 40px 32px;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
         display: flex;
-        gap: 32px;
-        align-items: center;
+        gap: 40px;
+        padding: 48px;
       }
 
-      /* ==== SOL TARAF - GÖRSEL ==== */
-      .maintenance-illustration {
+      .left {
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
-      .maintenance-illustration img {
-        max-width: 220px;
+      .left img {
+        max-width: 260px;
         width: 100%;
-        height: auto;
-        object-fit: contain;
         filter: grayscale(20%);
       }
 
-      /* ==== SAĞ TARAF - METİN ==== */
-      .maintenance-content {
-        flex: 2;
+      .right {
+        flex: 1.4;
       }
 
       .badge {
         display: inline-flex;
         align-items: center;
+        gap: 8px;
         padding: 6px 14px;
         border-radius: 999px;
-        background: #f2f2f2;
+        background: #f1f1f1;
         font-size: 12px;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
         color: #666;
-        margin-bottom: 14px;
+        margin-bottom: 16px;
       }
 
-      .status-dot {
+      .dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        margin-right: 8px;
         background: #ff9800;
-        box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.2);
+        box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.25);
       }
 
-      .maintenance-title {
-        font-size: 28px;
-        margin-bottom: 10px;
+      h1 {
+        font-size: 32px;
+        margin-bottom: 12px;
         color: #222;
       }
 
-      .maintenance-subtitle {
+      .subtitle {
         font-size: 16px;
         color: #666;
-        margin-bottom: 20px;
+        margin-bottom: 22px;
       }
 
-      .maintenance-text {
+      .text {
         font-size: 14px;
-        line-height: 1.7;
+        line-height: 1.75;
         color: #555;
-        margin-bottom: 18px;
+        margin-bottom: 16px;
       }
 
-      .maintenance-highlight {
+      .info-box {
         background: #f7f7f7;
         border-left: 4px solid #9e9e9e;
-        padding: 12px 14px;
-        border-radius: 8px;
+        padding: 14px 16px;
+        border-radius: 10px;
         font-size: 13px;
         color: #555;
+        margin-top: 18px;
       }
 
-      .maintenance-footer {
-        margin-top: 24px;
+      .footer-note {
+        margin-top: 26px;
         font-size: 13px;
         color: #777;
       }
 
-      .maintenance-footer strong {
-        font-weight: 600;
-      }
-
-      /* ==== MOBİL UYUMLULUK ==== */
+      /* MOBİL */
       @media (max-width: 768px) {
-        body {
-          padding: 16px;
-        }
-
-        .maintenance-wrapper {
+        .maintenance-page {
           flex-direction: column;
-          padding: 24px 20px;
           text-align: center;
+          padding: 32px 24px;
         }
 
-        .maintenance-illustration {
+        .left {
           order: -1;
         }
 
-        .badge {
-          margin-bottom: 10px;
-          justify-content: center;
-        }
-
-        .maintenance-title {
-          font-size: 24px;
+        h1 {
+          font-size: 26px;
         }
       }
     </style>
   </head>
 
   <body>
-    <main class="maintenance-wrapper">
-      <div class="maintenance-illustration">
-        {{!-- Buraya kendi bakım görselini koyabilirsin --}}
+    <main class="maintenance-page">
+      <div class="left">
+        <!-- Kendi bakım görselini koy -->
         <img
-          src="/img/bakimdayiz-illustration.png"
+          src="/img/bakimdayiz.png"
           alt="Site bakım çalışması"
         />
       </div>
 
-      <section class="maintenance-content">
+      <div class="right">
         <div class="badge">
-          <span class="status-dot"></span>
-          Bakım Modu Aktif
+          <span class="dot"></span>
+          Bakım Modu
         </div>
 
-        <h1 class="maintenance-title">Şu An Bakımdayız</h1>
-        <p class="maintenance-subtitle">
-          Sitemizi daha hızlı, güvenli ve modern bir yapıya kavuşturmak için
-          geçici olarak bakım moduna aldık.
+        <h1>Şu An Bakımdayız</h1>
+        <p class="subtitle">
+          Sitemiz planlı bir altyapı geçişi nedeniyle geçici olarak hizmet dışıdır.
         </p>
 
-        <p class="maintenance-text">
-          Alt yapımızda gerçekleştirdiğimiz bu geçiş ve iyileştirme süreci
-          boyunca bazı sayfalara veya işlevlere erişim sağlanamayabilir. Veri
-          güvenliğini, içerik bütünlüğünü ve kullanıcı deneyimini korumak için
-          planlı bir bakım çalışması yürütüyoruz.
+        <p class="text">
+          Daha güvenli, daha hızlı ve uzun vadede sürdürülebilir bir sistem
+          oluşturmak amacıyla teknik bir geçiş süreci yürütüyoruz. Bu süreçte
+          veritabanı, dosya yönetimi ve sunucu altyapısında kapsamlı
+          iyileştirmeler yapılmaktadır.
         </p>
 
-        <p class="maintenance-text">
-          Bu süreçte;<br />
-          – Sunucularımızı ve veritabanı bağlantılarımızı güçlendiriyor,<br />
-          – Görsel ve dosya yönetim sistemimizi optimize ediyor,<br />
-          – Yeni özellikler için gerekli arka plan düzenlemelerini yapıyoruz.
+        <p class="text">
+          Bakım çalışmaları boyunca bazı içeriklere erişim sağlanamayabilir.
+          Ancak bu, veri güvenliğini ve site stabilitesini korumak adına
+          planlı ve kontrollü bir işlemdir.
         </p>
 
-        <div class="maintenance-highlight">
-          Sabırlı ve anlayışlı olduğun için teşekkür ederiz. Çalışmalarımız
-          tamamlandığında siteye kaldığın yerden, çok daha akıcı ve keyifli bir
-          deneyimle devam edebileceksin.
+        <p class="text">
+          Çalışmalar tamamlandığında site, önceki halinden çok daha güçlü ve
+          sorunsuz bir yapıyla yeniden yayına alınacaktır.
+        </p>
+
+        <div class="info-box">
+          Anlayışınız ve sabrınız için teşekkür ederiz.
+          Bakım tamamlandığında bu sayfa otomatik olarak devre dışı kalacaktır.
         </div>
 
-        <div class="maintenance-footer">
-          <strong>Not:</strong> Bakım çalışması tamamlandığında bu sayfa
-          otomatik olarak yayından kaldırılacak ve site normal haline dönecek.
+        <div class="footer-note">
+          © MSFL Tarih Kulübü – Sistem Güncellemesi
         </div>
-      </section>
+      </div>
     </main>
   </body>
 </html>
