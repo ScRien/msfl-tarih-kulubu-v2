@@ -36,7 +36,7 @@
                 type="checkbox"
                 class="deleteImageCheck"
                 id="del_{{@index}}"
-                value="{{#if this.fileId}}{{this.fileId}}{{else}}{{this.url}}{{/if}}"
+                value="{{this.fileId}}{{this.public_id}}"
               />
 
               <label for="del_{{@index}}" class="remove-label">

@@ -14,8 +14,9 @@ const PostSchema = new mongoose.Schema({
   images: [
     {
       url: String,
-      public_id: String,
-    },
+      provider: "cloudinary" | "imagekit",
+      fileId: String // cloudinary: public_id, imagekit: fileId
+    }
   ],
   date: { type: Date, default: Date.now },
 });

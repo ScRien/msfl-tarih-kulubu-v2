@@ -94,10 +94,12 @@ blogs.post("/duzenle/:id", auth, async (req, res) => {
         const list = JSON.parse(deleteImages); // ["fileId1", "fileId2", ...]
         if (Array.isArray(list)) {
           images = images.filter((img) => {
-            const fid = img.fileId || null;
-            const url = img.url || null;
-            // fileId varsa fileId'den, yoksa url'den sil
-            return !list.includes(fid) && !list.includes(url);
+            return !(
+              (
+                (img.fileId && list.includes(img.fileId)) || // ImageKit
+                (img.public_id && list.includes(img.public_id))
+              ) // Cloudinary
+            );
           });
         }
       } catch (e) {
