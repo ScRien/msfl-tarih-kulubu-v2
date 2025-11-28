@@ -210,10 +210,12 @@ app.use(addCsrfToken);
 //app.use("/admin", adminRoute);
 //app.use("/u", publicProfileRoute);
 
-const router = express.Router();
-router.get("/", (req, res) =>
-  res.render("pages/bakim", { layout: false })
-);
+// ========================================================
+// BAKIM MODU – TÜM İSTEKLERİ YAKALA
+// ========================================================
+app.get("*", (req, res) => {
+  res.render("pages/bakim", { layout: false });
+});
 
 // 404
 app.use((req, res) => {
