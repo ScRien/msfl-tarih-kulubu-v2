@@ -211,11 +211,11 @@ app.use(addCsrfToken);
 //app.use("/u", publicProfileRoute);
 
 // ========================================================
-// BAKIM MODU – TÜM İSTEKLERİ YAKALA
+// BAKIM MODU – TÜM İSTEKLERİ YAKALA (DOĞRU YÖNTEM)
 // ========================================================
-app.get("*", (req, res) => {
-  res.render("pages/bakim", { layout: false });
-});
+app.use((req, res) => {
+  res.status(503).render("pages/bakim", { layout: false });
+})
 
 // 404
 app.use((req, res) => {
