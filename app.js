@@ -211,7 +211,9 @@ app.use(addCsrfToken);
 //app.use("/u", publicProfileRoute);
 
 const router = express.Router();
-router.get("/", (req, res) => res.render("pages/bakim"));
+router.get("/", (req, res) =>
+  res.render("pages/bakim", { layout: false })
+);
 
 // 404
 app.use((req, res) => {
