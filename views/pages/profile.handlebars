@@ -118,10 +118,16 @@
 
             <div class="blog-card-img">
               {{#if this.images.length}}
-                <img src="{{this.images[0].url}}" alt="Blog Görseli">
-              {{else}}
-                <img src="/img/default-blog.jpg" alt="Varsayılan">
-              {{/if}}
+  {{#with (lookup this.images 0)}}
+    {{#if url}}
+      <img src="{{url}}" alt="Blog Görseli">
+    {{else}}
+      <img src="/img/default-blog.jpg" alt="Varsayılan">
+    {{/if}}
+  {{/with}}
+{{else}}
+  <img src="/img/default-blog.jpg" alt="Varsayılan">
+{{/if}}
             </div>
 
             <div class="blog-card-content">

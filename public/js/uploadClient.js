@@ -38,7 +38,7 @@ async function uploadBase64(file, folder) {
         const csrf =
           document.querySelector('input[name="_csrf"]')?.value || null;
 
-        const res = await fetch("/api/upload", {
+        const res = await fetch("/upload", {
           method: "POST",
           credentials: "same-origin",
           headers: {

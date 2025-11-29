@@ -123,8 +123,8 @@ app.use((req, res, next) => {
 // ========================================================
 // 🔥 CSRF DIŞI API (ÖNCE)
 // ========================================================
-app.use("/api/upload", uploadRoutes);
-app.use("/api/profile-media", profileMediaRouter);
+app.use("/upload", uploadRoutes);
+app.use("/profile-media", profileMediaRouter);
   app.use("/admin", adminRoute);
 
 // ========================================================
