@@ -1,7 +1,92 @@
-<h1>Dashboard</h1>
+<h1 class="admin-title">📊 Admin Dashboard</h1>
 
-<ul>
-  <li>📝 Bloglar: {{stats.blogs}}</li>
-  <li>👤 Kullanıcılar: {{stats.users}}</li>
-  <li>💬 Yorumlar: {{stats.comments}}</li>
-</ul>
+<div class="stats-grid">
+  <div class="stat-card">
+    <span>Toplam Blog</span>
+    <strong>{{stats.blogs}}</strong>
+  </div>
+
+  <div class="stat-card">
+    <span>Toplam Kullanıcı</span>
+    <strong>{{stats.users}}</strong>
+  </div>
+
+  <div class="stat-card">
+    <span>Toplam Yorum</span>
+    <strong>{{stats.comments}}</strong>
+  </div>
+</div>
+
+<!-- GRAFİKLER -->
+<div class="stats-grid">
+
+  <div class="chart-card">
+    <div class="chart-title">📈 Aylara Göre Blog Sayısı</div>
+    <canvas id="blogChart"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">🥧 Genel Dağılım</div>
+    <canvas id="summaryChart"></canvas>
+  </div>
+
+</div>
+
+
+<script>
+  const blogsPerMonth = {{{blogsPerMonth}}};
+
+  Chart.defaults.color = "#cfcfcf";            // 🔥 yazılar görünür
+  Chart.defaults.borderColor = "rgba(255,255,255,0.1)";
+
+  // LINE CHART
+  new Chart(document.getElementById("blogChart"), {
+    type: "line",
+    data: {
+      labels: [
+        "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
+        "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"
+      ],
+      datasets: [{
+        label: "Blog",
+        data: blogsPerMonth,
+        fill: true,
+        tension: 0.35,
+        borderColor: "#c9a752",
+        backgroundColor: "rgba(201,167,82,0.2)",
+        pointBackgroundColor: "#c9a752"
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false, // 🔥 ŞART
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+
+  // PIE CHART
+  new Chart(document.getElementById("summaryChart"), {
+    type: "pie",
+    data: {
+      labels: ["Bloglar", "Kullanıcılar", "Yorumlar"],
+      datasets: [{
+        data: [
+          {{stats.blogs}},
+          {{stats.users}},
+          {{stats.comments}}
+        ],
+        backgroundColor: [
+          "#c9a752",
+          "#4cd964",
+          "#ff5f5f"
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      maintainAspectRatio: false
+    }
+  });
+</script>

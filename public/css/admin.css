@@ -1,0 +1,226 @@
+/* ================================
+   ADMIN MODERN THEME v1
+================================ */
+
+:root {
+  --bg: #0b0b0f;
+  --panel: #111118;
+  --card: #171722;
+  --gold: #c9a752;
+  --text: #eaeaea;
+  --muted: #9a9a9a;
+  --danger: #ff5f5f;
+  --success: #4cd964;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* ===== Layout ===== */
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== Sidebar ===== */
+
+.admin-sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, #141420, #09090f);
+  border-right: 1px solid rgba(255,255,255,.06);
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-sidebar h2 {
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.admin-sidebar span {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.sidebar-link {
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: var(--text);
+  text-decoration: none;
+  margin-bottom: 6px;
+  transition: .2s;
+  background: transparent;
+}
+
+.sidebar-link:hover {
+  background: rgba(201,167,82,.15);
+  color: #fff;
+}
+
+.sidebar-link.danger {
+  margin-top: auto;
+  color: var(--danger);
+}
+
+/* ===== Main ===== */
+
+.admin-main {
+  flex: 1;
+  padding: 28px;
+}
+
+/* ===== Page Title ===== */
+
+.admin-title {
+  font-size: 26px;
+  margin-bottom: 22px;
+}
+
+/* ===== Cards / Stats ===== */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--card);
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.stat-card span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 28px;
+  margin-top: 6px;
+  color: var(--gold);
+}
+
+/* ===== Table ===== */
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.admin-table thead {
+  background: #151522;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.admin-table th {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.admin-table tr:hover {
+  background: rgba(255,255,255,.03);
+}
+
+/* ===== Buttons ===== */
+
+.btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-edit {
+  background: var(--gold);
+  color: #000;
+}
+
+.btn-delete {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* ======================
+   CHART FIX
+====================== */
+
+.chart-card {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 20px;
+  height: 380px; /* 🔥 ÖNEMLİ */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chart-title {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.chart-card canvas {
+  width: 100% !important;
+  height: 300px !important; /* 🔥 GRAFİK BURADA */
+}
+
+/* ======================
+   ADMIN FORM
+====================== */
+
+.admin-form {
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-form label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.admin-form input {
+  background: #0e0e12;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+.admin-form input:focus {
+  outline: none;
+  border-color: #c9a752;
+}
+
+.btn.primary {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#c9a752,#e6d487);
+  color: #000;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
