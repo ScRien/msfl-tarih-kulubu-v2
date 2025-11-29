@@ -15,13 +15,17 @@
         />
 
         <span class="img-hint">
-          Önerilen boyut: 1600×900 • Maks. 5 görsel • Her biri en fazla 10 MB
+          Önerilen boyut: 1600×900 • Maks. 5 görsel • Her biri en fazla 5 MB
           <br />
           <strong>Tüm görselleri tek seferde seçiniz.</strong>
         </span>
 
         <div class="upload-wrapper">
-          <button type="button" class="upload-label" id="openImagePicker">
+          <button
+            type="button"
+            class="upload-label"
+            id="openImagePicker"
+          >
             Görsel Yükle
           </button>
 
@@ -33,9 +37,10 @@
             multiple
           />
 
-          <span id="fileCount" class="file-count">Seçili dosya yok</span>
+          <span id="fileCount" class="file-count">
+            Seçili dosya yok
+          </span>
         </div>
-
       </div>
 
       <!-- ✅ Önizleme -->
@@ -51,12 +56,16 @@
 
       <div class="warning-box">
         <strong>Uyarı:</strong>
-        Yanıltıcı tarih bilgileri ve telif ihlali içeren içerikler
-        paylaşmayınız.
+        Yanıltıcı tarih bilgileri ve telif ihlali içeren içerikler paylaşmayınız.
       </div>
 
-      <!-- ✅ ImageKit → [{ url, fileId }] -->
-      <input type="hidden" id="imageUrls" name="imageUrls" value="[]" />
+      <!-- ✅ ImageKit çıktısı: [{ url, fileId }] -->
+      <input
+        type="hidden"
+        id="imageUrls"
+        name="imageUrls"
+        value="[]"
+      />
 
       <button type="submit" class="submit-btn">
         Blogu Oluştur
@@ -64,8 +73,12 @@
     </form>
   </div>
 
-  <!-- ✅ Loader -->
-  <div id="blogUploadLoading" class="blog-upload-loader" style="display:none;">
+  <!-- ✅ Upload Loader -->
+  <div
+    id="blogUploadLoading"
+    class="blog-upload-loader"
+    style="display:none;"
+  >
     <div class="blog-loader-box">
       <div class="blog-spinner"></div>
       <span>Görseller yükleniyor...</span>
@@ -73,6 +86,6 @@
   </div>
 </section>
 
-<!-- ✅ Yeni ImageKit sistemi -->
+<!-- ✅ TEK uploadClient -->
 <script type="module" src="/js/uploadClient.js"></script>
 <script type="module" src="/js/blogUpload.js"></script>

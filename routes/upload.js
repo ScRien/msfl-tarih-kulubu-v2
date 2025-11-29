@@ -1,13 +1,12 @@
 import express from "express";
-import authApi from "../middlewares/authApi.js";
 import imagekit from "../helpers/imagekit.js";
 
 const uploadRoutes = express.Router();
 
 /* ============================================================
-   IMAGE UPLOAD
+   IMAGE UPLOAD (BLOG / AVATAR / COVER)
 ============================================================ */
-uploadRoutes.post("/", authApi, async (req, res) => {
+uploadRoutes.post("/", async (req, res) => {
   try {
     const { fileBase64, fileName, folder } = req.body;
 
@@ -15,10 +14,28 @@ uploadRoutes.post("/", authApi, async (req, res) => {
       return res.status(400).json({ error: "Eksik veri" });
     }
 
+    if (!fileBase64.startsWith("data:image/")) {
+      return res.status(400).json({ error: "Sadece görsel dosyalar" });
+    }
+
+    /* ✅ BASE64 BOYUT HESABI */
+    const sizeInBytes =
+      (fileBase64.length * 3) / 4 -
+      (fileBase64.endsWith("==") ? 2 : 1);
+
+    const MAX_SIZE = 6 * 1024 * 1024; // ✅ 6 MB (ImageKit safe)
+
+    if (sizeInBytes > MAX_SIZE) {
+      return res.status(400).json({
+        error: "Görsel boyutu 5MB sınırını aşıyor",
+      });
+    }
+
     const result = await imagekit.upload({
       file: fileBase64,
       fileName,
-      folder: folder || "/uploads",
+      folder: folder || "uploads",
+      useUniqueFileName: true,
     });
 
     return res.json({
@@ -32,9 +49,9 @@ uploadRoutes.post("/", authApi, async (req, res) => {
 });
 
 /* ============================================================
-   ✅ IMAGE DELETE (fileId ile)
+   IMAGE DELETE (fileId)
 ============================================================ */
-uploadRoutes.post("/delete", authApi, async (req, res) => {
+uploadRoutes.post("/delete", async (req, res) => {
   try {
     const { fileId } = req.body;
 

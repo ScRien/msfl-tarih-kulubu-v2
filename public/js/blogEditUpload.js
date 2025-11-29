@@ -1,50 +1,40 @@
 // public/js/blogEditUpload.js
-import { uploadImage } from "./uploadClient.js";
+import { uploadBlogImage } from "./uploadClient.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-
-  const form = document.getElementById("blogEditForm");
   const deleteInput = document.getElementById("deleteImages");
-
   const deleteCheckboxes = document.querySelectorAll(".deleteImageCheck");
 
   const input = document.getElementById("newImages");
   const preview = document.getElementById("editPreviewBox");
   const hiddenNew = document.getElementById("newImagesJson");
-
   const openBtn = document.getElementById("openEditImagePicker");
   const loader = document.getElementById("blogEditLoading");
 
-  /* =====================================
-     📌 DOSYA PENCERESİ AÇ
-  ===================================== */
-  if (openBtn && input) {
-    openBtn.addEventListener("click", () => input.click());
-  }
+  /* 📂 Dosya penceresini aç */
+  openBtn?.addEventListener("click", () => {
+    input?.click();
+  });
 
-  /* =====================================
-     🗑️ MEVCUT GÖRSEL SİLME - CHANGE EVENT
-  ===================================== */
+  /* 🗑️ Mevcut görsel silme */
   deleteCheckboxes.forEach((chk) => {
     chk.addEventListener("change", () => {
       const selected = Array.from(deleteCheckboxes)
-        .filter(c => c.checked)
-        .map(c => c.value);
+        .filter((c) => c.checked)
+        .map((c) => c.dataset.fileid)
+        .filter(Boolean); // undefined olanları at
 
       deleteInput.value = JSON.stringify(selected);
     });
   });
 
-  /* =====================================
-     🆕 YENİ GÖRSEL YÜKLEME
-  ===================================== */
-  let newImages = [];
-
+  /* 🆕 Yeni görsel yükleme */
   input?.addEventListener("change", async () => {
     preview.innerHTML = "";
-    newImages = [];
+    hiddenNew.value = "[]";
 
-    const files = Array.from(input.files);
+    const files = Array.from(input.files || []);
+    if (!files.length) return;
 
     if (files.length > 5) {
       alert("En fazla 5 görsel yükleyebilirsiniz.");
@@ -52,29 +42,39 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    loader.style.display = "flex";
+    const uploads = [];
+    if (loader) loader.style.display = "flex";
 
     try {
       for (const file of files) {
-        const img = await uploadImage(file, "/blogs");
-        newImages.push(img);
+        if (!file.type.startsWith("image/")) {
+          alert(`'${file.name}' görsel değil, atlandı.`);
+          continue;
+        }
 
-        preview.innerHTML += `
-          <div class="preview-item">
-            <img src="${img.url}" class="preview-img" />
-          </div>
-        `;
+        // 🔹 Backend limiti ile aynı: 2MB
+        if (file.size > 2 * 1024 * 1024) {
+          alert(`'${file.name}' 2MB sınırını aşıyor, yüklenmedi.`);
+          continue;
+        }
+
+        // 🔹 ImageKit'e upload (folder: blogs)
+        const img = await uploadBlogImage(file, "blogs");
+        uploads.push(img);
+
+        const div = document.createElement("div");
+        div.className = "preview-item";
+        div.innerHTML = `<img src="${img.url}" class="preview-img" />`;
+        preview.appendChild(div);
       }
 
-      hiddenNew.value = JSON.stringify(newImages);
-
+      hiddenNew.value = JSON.stringify(uploads);
     } catch (err) {
       console.error("UPLOAD ERROR:", err);
       hiddenNew.value = "[]";
-      alert("Görsel yüklenirken hata oluştu.");
+      alert("Görseller yüklenirken bir hata oluştu.");
     } finally {
-      loader.style.display = "none";
+      if (loader) loader.style.display = "none";
     }
   });
-
 });

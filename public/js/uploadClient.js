@@ -1,18 +1,50 @@
-// public/js/uploadClient.js
+/* ==========================================================
+   IMAGEKIT UPLOAD CLIENT (GLOBAL)
+   ✅ ES MODULE
+   ✅ Blog + Hesap uyumlu
+========================================================== */
 
-// ✅ GÜVENLİ & STABİL IMAGE UPLOAD
-export async function uploadImage(file, folder = "/blog") {
+const MAX_SIZE_MB = 5;
+const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+/* ===============================
+   VALIDATION
+================================ */
+function validateImage(file) {
+  if (!file) {
+    throw new Error("Dosya yok");
+  }
+
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Sadece görsel dosyalar yüklenebilir");
+  }
+
+  if (file.size > MAX_SIZE_BYTES) {
+    throw new Error(`Maksimum dosya boyutu ${MAX_SIZE_MB}MB`);
+  }
+}
+
+/* ===============================
+   BASE64 UPLOAD
+================================ */
+async function uploadBase64(file, folder) {
+  validateImage(file);
+
   const reader = new FileReader();
 
   return new Promise((resolve, reject) => {
     reader.onload = async () => {
       try {
+        const csrf =
+          document.querySelector('input[name="_csrf"]')?.value || null;
+
         const res = await fetch("/api/upload", {
           method: "POST",
+          credentials: "same-origin",
           headers: {
             "Content-Type": "application/json",
+            ...(csrf && { "csrf-token": csrf }),
           },
-          credentials: "same-origin", // 🔑 auth_token cookie'yi gönder
           body: JSON.stringify({
             fileBase64: reader.result,
             fileName: file.name,
@@ -20,32 +52,48 @@ export async function uploadImage(file, folder = "/blog") {
           }),
         });
 
-        // ❗ Burada hem status hem de content-type kontrolü yapacağız
-        const contentType = res.headers.get("content-type") || "";
-
-        // JSON olmayan / başarısız response'lar için:
-        if (!res.ok || !contentType.includes("application/json")) {
-          const text = await res.text(); // büyük ihtimalle HTML
-          console.error("UPLOAD ERROR RAW RESPONSE:", text);
-          return reject(new Error("Geçersiz sunucu cevabı (JSON değil)"));
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(text || "Upload failed");
         }
 
-        // ✅ Buraya geldiysek artık güvenle JSON parse edebiliriz
         const data = await res.json();
 
-        if (!data?.url || !data?.fileId) {
-          console.error("UPLOAD ERROR DATA:", data);
-          return reject(new Error("Geçersiz upload cevabı (url/fileId yok)"));
+        if (!data.url || !data.fileId) {
+          throw new Error("Geçersiz upload cevabı");
         }
 
-        resolve(data); // { url, fileId }
+        resolve({
+          url: data.url,
+          fileId: data.fileId,
+        });
       } catch (err) {
-        console.error("UPLOAD FETCH ERROR:", err);
         reject(err);
       }
     };
 
-    reader.onerror = () => reject(new Error("Dosya okunamadı"));
+    reader.onerror = () =>
+      reject(new Error("Dosya okunamadı"));
+
     reader.readAsDataURL(file);
   });
+}
+
+/* ==========================================================
+   ✅ EXPORTS
+========================================================== */
+
+/* BLOG */
+export async function uploadBlogImage(file) {
+  return uploadBase64(file, "blogs");
+}
+
+/* PROFILE */
+export async function uploadProfileImage(file, type) {
+  const folder =
+    type === "avatar"
+      ? "users/avatar"
+      : "users/cover";
+
+  return uploadBase64(file, folder);
 }

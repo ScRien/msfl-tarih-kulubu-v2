@@ -31,7 +31,13 @@ blogs.post("/olustur", auth, async (req, res) => {
       try {
         const parsed = JSON.parse(imageUrls);
         if (Array.isArray(parsed)) {
-          images = parsed.filter((img) => img?.url && img?.fileId);
+          images = parsed
+            .filter((img) => img?.url && img?.fileId)
+            .map((img) => ({
+              url: img.url,
+              fileId: img.fileId,
+              provider: "imagekit",
+            }));
         }
       } catch (e) {
         logger.warn("imageUrls JSON parse error", e);
@@ -74,8 +80,6 @@ blogs.get("/duzenle/:id", auth, async (req, res) => {
    BLOG DÜZENLE (POST)
 ============================================================ */
 blogs.post("/duzenle/:id", auth, async (req, res) => {
-  console.log("👉 DELETE IMAGES RAW:", req.body.deleteImages);
-  console.log("👉 NEW IMAGES RAW:", req.body.newImagesJson);
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.redirect("/blog?error=Blog+bulunamadı");
@@ -84,46 +88,60 @@ blogs.post("/duzenle/:id", auth, async (req, res) => {
       return res.redirect("/blog?error=Yetkiniz+yok");
     }
 
-    const { title, content, deleteImages, newImagesJson } = req.body;
+    const { title, content } = req.body;
+    const deleteImagesRaw = req.body.deleteImages || "[]";
+    const newImagesRaw = req.body.newImagesJson || "[]";
 
+    console.log("👉 DELETE IMAGES RAW:", deleteImagesRaw);
+    console.log("👉 NEW IMAGES RAW:", newImagesRaw);
+
+    // Mevcut görselleri klonla
     let images = Array.isArray(post.images) ? [...post.images] : [];
 
-    // silinecek görseller
-    if (deleteImages) {
-      try {
-        const list = JSON.parse(deleteImages); // ["fileId1", "fileId2", ...]
-        if (Array.isArray(list)) {
-          images = images.filter((img) => {
-            return !(
-              (
-                (img.fileId && list.includes(img.fileId)) || // ImageKit
-                (img.public_id && list.includes(img.public_id))
-              ) // Cloudinary
-            );
-          });
-        }
-      } catch (e) {
-        logger.warn("deleteImages JSON parse error", e);
-      }
+    /* ---------- 1) Silinecek görseller ---------- */
+    let toDelete = [];
+    try {
+      const parsed = JSON.parse(deleteImagesRaw);
+      if (Array.isArray(parsed)) toDelete = parsed;
+    } catch (e) {
+      logger.warn("deleteImages JSON parse error", e);
     }
 
-    // yeni eklenenler
-    if (newImagesJson) {
-      try {
-        const parsed = JSON.parse(newImagesJson);
-        if (Array.isArray(parsed)) {
-          images = images.concat(parsed.filter((i) => i?.url));
-        }
-      } catch (e) {
-        logger.warn("newImagesJson JSON parse error", e);
-      }
+    if (toDelete.length) {
+      images = images.filter((img) => {
+        const id = img.fileId || img.public_id;
+        return !toDelete.includes(id);
+      });
     }
 
+    /* ---------- 2) Yeni eklenecek görseller ---------- */
+    let newImages = [];
+    try {
+      const parsed = JSON.parse(newImagesRaw);
+      if (Array.isArray(parsed)) newImages = parsed;
+    } catch (e) {
+      logger.warn("newImagesJson JSON parse error", e);
+    }
+
+    if (newImages.length) {
+      images = images.concat(
+        newImages
+          .filter((i) => i?.url && (i?.fileId || i?.public_id))
+          .map((i) => ({
+            url: i.url,
+            fileId: i.fileId || i.public_id || null,
+            provider: i.provider || "imagekit",
+          }))
+      );
+    }
+
+    // Alanları güncelle
     post.title = title;
     post.content = content;
     post.images = images;
 
     await post.save();
+
     return res.redirect(`/blog/${post._id}`);
   } catch (err) {
     logger.error("BLOG UPDATE ERROR:", err);

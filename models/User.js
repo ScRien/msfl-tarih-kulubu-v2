@@ -9,18 +9,25 @@ const UserSchema = new mongoose.Schema({
   role: { type: String, default: "user" },
   date: { type: Date, default: Date.now },
 
-  /* PROFIL FOTOĞRAF */
+  /* PROFİL FOTOĞRAF */
   avatar: {
-    type: String,
-    default: "/img/default-avatar.png",
+    url: { type: String, default: "" },
+    fileId: { type: String, default: "" },
+    provider: {
+      type: String,
+      default: "imagekit",
+    },
   },
-  avatarPublicId: String,
 
-  coverPhoto: {
-    type: String,
-    default: "/img/default-cover.jpg",
+  /* KAPAK FOTOĞRAF */
+  coverImage: {
+    url: { type: String, default: "" },
+    fileId: { type: String, default: "" },
+    provider: {
+      type: String,
+      default: "imagekit",
+    },
   },
-  coverPublicId: String,
 
   /* SOSYAL MEDYA */
   social: {
@@ -31,7 +38,7 @@ const UserSchema = new mongoose.Schema({
     website: { type: String, default: "" },
   },
 
-  /* BIYOGRAFI */
+  /* BIYOGRAFİ */
   bio: { type: String, default: "" },
 
   /* HESAP AYARLARI */
@@ -40,8 +47,8 @@ const UserSchema = new mongoose.Schema({
   serviceDataUsage: { type: Boolean, default: false },
   personalizedContent: { type: Boolean, default: false },
 
-  /* ŞİFRE SIFIRLAMA ALANLARI */
-  resetCode: { type: String, default: null }, // Artık hash'lenmiş token tutuyor
+  /* ŞİFRE SIFIRLAMA */
+  resetCode: { type: String, default: null },
   resetCodeExpires: { type: Date, default: null },
 });
 

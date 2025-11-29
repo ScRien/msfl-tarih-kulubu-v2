@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Giriş</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: system-ui;
+      background: #0b0b0f;
+      color: white;
+    }
+    .box {
+      background: #15151f;
+      padding: 32px;
+      border-radius: 12px;
+      width: 320px;
+    }
+    input, button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background: #c9a752;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .error {
+      color: #ff6b6b;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <form class="box" method="POST">
+    <h2>Admin Giriş</h2>
+    <input name="token" placeholder="Admin Token" required />
+    <button type="submit">Giriş Yap</button>
+    {{#if error}}
+      <div class="error">{{error}}</div>
+    {{/if}}
+  </form>
+
+</body>
+</html>

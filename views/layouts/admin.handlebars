@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui;
+      background: #0b0b0f;
+      color: #fff;
+    }
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    aside {
+      width: 220px;
+      background: #111;
+      padding: 20px;
+    }
+    aside a {
+      display: block;
+      color: #ddd;
+      margin-bottom: 12px;
+      text-decoration: none;
+    }
+    main {
+      flex: 1;
+      padding: 24px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <aside>
+    <h3>MSFL Admin</h3>
+    <a href="/admin/dashboard">Dashboard</a>
+    <a href="/admin/bloglar">Bloglar</a>
+    <a href="/admin/cikis">Çıkış</a>
+  </aside>
+
+  <main>
+    {{{body}}}
+  </main>
+</div>
+
+</body>
+</html>

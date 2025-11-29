@@ -22,20 +22,12 @@ const PostSchema = new mongoose.Schema({
 
   images: [
     {
-      url: {
-        type: String,
-        required: true,
-      },
-
+      url: String,
+      fileId: String,
       provider: {
         type: String,
-        enum: ["cloudinary", "imagekit"], // ✅ DOĞRU YOL
-        required: true,
-      },
-
-      fileId: {
-        type: String, // cloudinary: public_id | imagekit: fileId
-        required: true,
+        enum: ["imagekit"],
+        default: "imagekit",
       },
     },
   ],

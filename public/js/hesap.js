@@ -1,134 +1,141 @@
-// public/js/hesap.js
+/* ======================================================
+   HESAP – TAM PROFESYONEL SÜRÜM
+   - API tabanlı
+   - ImageKit uyumlu
+   - CSRF yok (API)
+====================================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
-  /* ===========================================================
-     SOL MENÜ GEÇİŞLERİ
-  ============================================================ */
-  const sidebarButtons = document.querySelectorAll(".sidebar-item");
-  const contentBoxes = document.querySelectorAll(".content-box");
+import { uploadProfileImage } from "./uploadClient.js";
 
-  if (sidebarButtons.length && contentBoxes.length) {
-    sidebarButtons.forEach((btn) => {
-      if (btn.classList.contains("disabled")) return;
+/* ======================================================
+   ELEMENTLER
+====================================================== */
+const sidebarItems = document.querySelectorAll(".sidebar-item");
+const contentBoxes = document.querySelectorAll(".content-box");
 
-      btn.addEventListener("click", () => {
-        sidebarButtons.forEach((i) => i.classList.remove("active"));
-        btn.classList.add("active");
+const avatarInput = document.querySelector("#avatarUpload");
+const coverInput = document.querySelector("#coverUpload");
 
-        const target = btn.dataset.target;
-        contentBoxes.forEach((box) => (box.style.display = "none"));
+const avatarPreview = document.querySelector("#avatarPreview");
+const coverPreview = document.querySelector("#coverPreview");
 
-        const open = document.getElementById(target);
-        if (open) open.style.display = "block";
-      });
-    });
+const globalLoader = document.querySelector("#globalLoader");
 
-    // Varsayılan olarak "Profil" açılsın
-    const first = document.querySelector(
-      '.sidebar-item[data-target="profile"]'
-    );
-    if (first) first.click();
-  }
+/* ======================================================
+   SIDEBAR GEÇİŞLERİ
+====================================================== */
+sidebarItems.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    if (btn.classList.contains("disabled")) return;
 
-  /* ===========================================================
-     AVATAR PREVIEW
-  ============================================================ */
-  const avatarInput = document.getElementById("avatarUpload");
-  const avatarPreview = document.getElementById("avatarPreview");
+    sidebarItems.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
 
-  if (avatarInput && avatarPreview) {
-    avatarInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (file) avatarPreview.src = URL.createObjectURL(file);
-    });
-  }
+    contentBoxes.forEach((box) => (box.style.display = "none"));
 
-  /* ===========================================================
-     COVER PREVIEW
-  ============================================================ */
-  const coverInput = document.getElementById("coverUpload");
-  const coverPreview = document.getElementById("coverPreview");
-
-  if (coverInput && coverPreview) {
-    coverInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (file) coverPreview.src = URL.createObjectURL(file);
-    });
-  }
-
-  /* ===========================================================
-     ŞİFRE SIFIRLAMA — UI KONTROL
-  ============================================================ */
-  const verifyBox = document.getElementById("verifyBox");
-  const newPasswordBox = document.getElementById("newPasswordBox");
-  const urlParams = new URLSearchParams(window.location.search);
-
-  // showVerify=1 → doğrulama kodu kutusu aç
-  if (urlParams.get("showVerify") === "1" && verifyBox) {
-    document.querySelector('.sidebar-item[data-target="password"]')?.click();
-
-    verifyBox.style.display = "block";
-    if (newPasswordBox) newPasswordBox.style.display = "none";
-  }
-
-  // /hesap/sifre-yeni → Yeni şifre kutusunu aç + tabı aktive et
-  if (window.location.pathname.includes("sifre-yeni") && newPasswordBox) {
-    document.querySelector('.sidebar-item[data-target="password"]')?.click();
-
-    newPasswordBox.style.display = "block";
-    if (verifyBox) verifyBox.style.display = "none";
-  }
+    const target = btn.dataset.target;
+    const box = document.getElementById(target);
+    if (box) box.style.display = "block";
+  });
 });
 
-/* ===========================================================
-   HESAP SİLME MODAL (FORM SUBMIT)
-=========================================================== */
-function openDeleteModal() {
+/* ======================================================
+   GLOBAL LOADER
+====================================================== */
+function showLoader() {
+  if (globalLoader) globalLoader.style.display = "flex";
+}
+
+function hideLoader() {
+  if (globalLoader) globalLoader.style.display = "none";
+}
+
+/* ======================================================
+   AVATAR & COVER UPLOAD
+====================================================== */
+async function handleProfileUpload(file, type) {
+  try {
+    showLoader();
+
+    // 1️⃣ ImageKit upload
+    const { url, fileId } = await uploadProfileImage(file, type);
+
+    // 2️⃣ Backend'e bildir
+    const res = await fetch("/api/profile-media", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        type,     // avatar | cover
+        url,
+        fileId,
+      }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || "Medya kaydedilemedi");
+    }
+
+    const data = await res.json();
+    if (!data.success) throw new Error("Sunucu hatası");
+
+    // 3️⃣ Önizleme güncelle
+    if (type === "avatar") avatarPreview.src = url;
+    if (type === "cover") coverPreview.src = url;
+  } catch (err) {
+    alert("❌ Yükleme başarısız:\n" + err.message);
+    console.error(err);
+  } finally {
+    hideLoader();
+  }
+}
+
+/* ======================================================
+   INPUT EVENTLERİ
+====================================================== */
+if (avatarInput) {
+  avatarInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) handleProfileUpload(file, "avatar");
+  });
+}
+
+if (coverInput) {
+  coverInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) handleProfileUpload(file, "cover");
+  });
+}
+
+/* ======================================================
+   HESAP SİLME MODAL
+====================================================== */
+window.openDeleteModal = () => {
   document.getElementById("deleteModal").style.display = "flex";
-}
+};
 
-function closeDeleteModal() {
+window.closeDeleteModal = () => {
   document.getElementById("deleteModal").style.display = "none";
-}
+};
 
-function confirmDelete() {
-  const cInput = document.getElementById("confirmC");
-  const pwInput = document.getElementById("deletePassword");
-  const errorBox = document.getElementById("modalError");
-  const form = document.getElementById("deleteForm");
+window.confirmDelete = async () => {
+  const input = document.getElementById("confirmC");
+  const pass = document.getElementById("deletePassword");
 
-  if (!form || !cInput || !pwInput || !errorBox) return;
+  if (!input || !pass) return;
 
-  errorBox.textContent = "";
-
-  const c = cInput.value.trim().toUpperCase();
-  const password = pwInput.value.trim();
-
-  if (c !== "C") {
-    errorBox.textContent = "Onay için C harfini girin.";
+  if (input.value !== "C") {
+    document.getElementById("modalError").innerText =
+      "Onay için C harfini yazmalısınız";
     return;
   }
 
-  if (!password) {
-    errorBox.textContent = "Şifreyi girmelisin.";
+  if (!pass.value) {
+    document.getElementById("modalError").innerText =
+      "Şifre boş olamaz";
     return;
   }
 
-  // Formu gönder
-  form.submit();
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const loader = document.getElementById("accountLoading");
-  if (!loader) return; // ✅ KRİTİK SATIR
-
-  // min 350ms gösterelim (daha akıcı)
-  setTimeout(() => {
-    loader.style.opacity = "0";
-
-    setTimeout(() => {
-      loader.style.display = "none";
-    }, 250);
-
-  }, 350);
-});
+  document.getElementById("deleteForm").submit();
+};

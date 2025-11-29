@@ -210,3 +210,138 @@
   padding: 10px 20px;
   border-radius: 10px;
 }
+
+/* =====================
+   ADMIN LAYOUT
+===================== */
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #0b0b0f;
+  color: #f4f4f4;
+  font-family: system-ui, sans-serif;
+}
+
+/* =====================
+   SIDEBAR
+===================== */
+
+.admin-sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #111118, #050509);
+  border-right: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 24px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  color: #c9a752;
+  font-size: 22px;
+}
+
+.sidebar-header span {
+  font-size: 13px;
+  opacity: .7;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+}
+
+.nav-item {
+  color: #ddd;
+  padding: 12px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all .2s ease;
+  font-size: 15px;
+}
+
+.nav-item:hover {
+  background: rgba(201,167,82,.15);
+  color: #fff;
+}
+
+.nav-item.danger {
+  margin-top: auto;
+  background: rgba(255,75,75,.15);
+  color: #ff8b8b;
+}
+
+.nav-item.danger:hover {
+  background: rgba(255,75,75,.3);
+}
+
+/* =====================
+   MAIN CONTENT
+===================== */
+
+.admin-content {
+  flex: 1;
+  padding: 28px;
+  overflow-x: auto;
+}
+
+/* =====================
+   ADMIN LOGIN
+===================== */
+
+.admin-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.login-box {
+  background: rgba(255,255,255,.04);
+  padding: 32px;
+  border-radius: 16px;
+  width: 320px;
+  border: 1px solid rgba(201,167,82,.25);
+  box-shadow: 0 0 40px rgba(0,0,0,.6);
+}
+
+.login-box h1 {
+  text-align: center;
+  margin-bottom: 18px;
+  color: #c9a752;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  background: #0b0b0f;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 10px;
+  color: white;
+}
+
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg,#c9a752,#f1d483);
+  font-weight: 700;
+}
+
+.login-error {
+  background: rgba(255,80,80,.2);
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-align: center;
+}

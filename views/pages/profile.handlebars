@@ -5,7 +5,7 @@
   {{!-- ================= KAPAK FOTOĞRAFı ================= --}}
   <div class="profile-cover">
     <img 
-      src="{{#if user.coverPhoto}}{{user.coverPhoto}}{{else}}/img/default-cover.jpg{{/if}}" 
+      src="{{#if user.coverImage.url}}{{user.coverImage.url}}{{else}}/img/default-cover.png{{/if}}" 
       class="cover-img" 
       alt="Kapak Fotoğrafı"
     />
@@ -16,7 +16,7 @@
 
     <div class="profile-avatar">
       <img 
-        src="{{#if user.avatar}}{{user.avatar}}{{else}}/img/default-avatar.png{{/if}}" 
+        src="{{#if user.avatar.url}}{{user.avatar.url}}{{else}}/img/default-avatar.png{{/if}}" 
         alt="Avatar"
       />
     </div>
@@ -118,7 +118,7 @@
 
             <div class="blog-card-img">
               {{#if this.images.length}}
-                <img src="{{this.images.[0].url}}" alt="Blog Görseli">
+                <img src="{{this.images[0].url}}" alt="Blog Görseli">
               {{else}}
                 <img src="/img/default-blog.jpg" alt="Varsayılan">
               {{/if}}

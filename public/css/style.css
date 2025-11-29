@@ -1,0 +1,68 @@
+/* ===============================
+   RESPONSIVE IMPROVEMENTS
+================================ */
+
+/* Akıllı font ölçekleme */
+.title {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+}
+
+.lead {
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+}
+
+.info-box {
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+}
+
+.footer-note {
+  font-size: 0.85rem;
+}
+
+/* Görseli daha sinematik yap */
+.hero-img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+/* Büyük ekranlar */
+@media (min-width: 1200px) {
+  .maintenance-box {
+    padding: 64px 72px;
+  }
+
+  .lead {
+    line-height: 1.75;
+  }
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .maintenance-box {
+    padding: 40px 36px;
+  }
+}
+
+/* Mobil */
+@media (max-width: 600px) {
+  body {
+    padding: 16px;
+  }
+
+  .maintenance-box {
+    padding: 28px 24px;
+    border-radius: 16px;
+  }
+
+  .hero-img {
+    max-height: 200px;
+  }
+
+  .footer-note {
+    margin-top: 32px;
+    text-align: center;
+  }
+}
