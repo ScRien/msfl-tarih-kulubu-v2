@@ -1,0 +1,234 @@
+/* ========================================
+   MSFL TARİH KULÜBÜ - SON CSS FİKSLERİ
+   Mobile Responsive & UI Bug Fixes
+======================================== */
+
+/* ============================================
+   1. ANASAYFA - TUĞRA POZİSYON VE BOYUT
+============================================ */
+.texts {
+  padding-top: 0; /* PC için boşluk YOK */
+}
+
+.texts-left {
+  gap: 20px;
+}
+
+.signature {
+  width: 200px;
+  margin: 5px 0 20px auto;
+  display: block;
+}
+
+.tughra {
+  width: 180px;
+  margin: 10px 0 10px auto;
+  display: block;
+}
+
+.texts-left h3 {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+.sub-quote {
+  font-size: clamp(1.6rem, 3.5vw, 2rem);
+  margin-bottom: 15px;
+}
+
+/* Mobilde tuğra ortalansın + boşluk ver */
+@media (max-width: 768px) {
+  .texts {
+    padding-top: 25px;
+  }
+
+  .signature {
+    width: 140px;
+    margin: 5px auto 20px;
+  }
+
+  .tughra {
+    width: 110px;
+    margin: 10px auto;
+  }
+}
+
+/* ============================================
+   2. TARİHTE BUGÜN - BAŞLIK + BUTON
+============================================ */
+.tarihte-bugun button {
+  display: inline-block;
+  margin: 20px 0 0 0;
+  left: -325px;
+  text-align: left;
+}
+
+.bugun-left {
+  margin-right: 0;
+}
+
+.tarihte-bugun .title,
+.tarihte-bugun .subtitle {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.tarihte-bugun .title {
+  font-size: clamp(32px, 6vw, 48px);
+  margin-bottom: 15px;
+}
+
+.tarihte-bugun .subtitle {
+  font-size: clamp(18px, 3vw, 22px);
+  margin-bottom: 30px;
+}
+
+/* Mobilde ortala */
+@media (max-width: 768px) {
+  .tarihte-bugun button {
+    display: block;
+    margin: 20px auto 0;
+    text-align: center;
+  }
+
+  .tarihte-bugun .title,
+  .tarihte-bugun .subtitle {
+    text-align: center;
+  }
+}
+
+/* ============================================
+   3. ETKİNLİKLER - BAŞLIK
+============================================ */
+.plan-title {
+  font-size: clamp(32px, 6vw, 48px);
+  margin: 20px 0 40px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* ============================================
+   4. NAVBAR + SOSYAL MEDYA BAR (KRİTİK ALAN)
+============================================ */
+.navbar {
+  padding: 12px 20px;
+}
+
+/* Social bar */
+.social-media {
+  display: flex;
+  gap: 12px;
+  padding: 10px 15px;
+  align-items: center;
+  overflow-x: auto;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(201, 167, 82, 0.15);
+  position: sticky;
+  top: 70px;
+  z-index: 100;
+}
+
+/* PC’de ALT BOŞLUK YOK */
+.social-media {
+  margin-bottom: 0;
+}
+
+/* Mobilde boşluk var */
+@media (max-width: 768px) {
+  .social-media {
+    margin-bottom: 20px;
+  }
+}
+
+.social-media::-webkit-scrollbar {
+  display: none;
+}
+
+.social-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ============================================
+   5. BLOG / YORUM / PAGINATION
+============================================ */
+.blog-detail-comments {
+  border-radius: 18px;
+  padding: 22px 18px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 40px 0 20px;
+}
+
+/* ============================================
+   6. HESAP SAYFASI - MOBİL
+============================================ */
+@media (max-width: 900px) {
+  .account-wrapper {
+    flex-direction: column;
+    padding: 0 16px 20px;
+  }
+
+  .account-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .account-sidebar {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   7. GENEL GÜVENLİK - ÜST ÜSTE BİNME ÖNLEMİ
+============================================ */
+main,
+.hero,
+.page-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* PC'de navbar ile social bar arası boşluk KALMASIN */
+@media (min-width: 769px) {
+  .social-media {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+/* Desktop'ta navbar ile sosyal bar arasındaki boşluğu sıfırla */
+@media (min-width: 769px) {
+  .social-media {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+.dates {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 35px;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
