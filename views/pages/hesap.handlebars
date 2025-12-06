@@ -10,19 +10,29 @@
     </a>
 
     <div class="sidebar-category">Hesap</div>
-    <button class="sidebar-item active" data-target="profile">Profil Bilgileri</button>
+    <button type="button" class="sidebar-item active" data-target="profile">
+      Profil Bilgileri
+    </button>
 
     <div class="sidebar-category">Profil Medyası</div>
-    <button class="sidebar-item" data-target="media">Profil Fotoğrafları</button>
+    <button type="button" class="sidebar-item" data-target="media">
+      Profil Fotoğrafları
+    </button>
 
     <div class="sidebar-category">Sosyal</div>
-    <button class="sidebar-item" data-target="social">Sosyal Medya</button>
+    <button type="button" class="sidebar-item" data-target="social">
+      Sosyal Medya
+    </button>
 
     <div class="sidebar-category">Gizlilik & Güvenlik</div>
-    <button class="sidebar-item" data-target="password">Şifre Değiştir</button>
+    <button type="button" class="sidebar-item" data-target="password">
+      Şifre Değiştir
+    </button>
 
     <div class="sidebar-category">Diğer</div>
-    <button class="sidebar-item danger" data-target="delete">Hesabı Sil</button>
+    <button type="button" class="sidebar-item danger" data-target="delete">
+      Hesabı Sil
+    </button>
 
   </aside>
 
@@ -46,17 +56,18 @@
         <div class="form-group">
           <label>Kullanıcı Adı</label>
           <input value="{{user.username}}" disabled />
-          <span class="info">Bu alan değiştirilemez.</span>
         </div>
 
         <div class="form-group">
           <label>Ad</label>
-          <input name="name" value="{{user.name}}" />
+          <input name="name" value="{{user.name}}" disabled />
+          <span class="info">Bu alan değiştirilemez.</span>
         </div>
 
         <div class="form-group">
           <label>Soyad</label>
-          <input name="surname" value="{{user.surname}}" />
+          <input name="surname" value="{{user.surname}}" disabled />
+          <span class="info">Bu alan değiştirilemez.</span>
         </div>
 
         <div class="form-group">
@@ -109,28 +120,46 @@
     <!-- ========== MEDYA ========== -->
     <div class="content-box" id="media">
       <h2 class="title">Profil Medyası</h2>
-      <span class="img-hint">Maksimum 2MB (JPEG / PNG)</span>
+      <span class="img-hint">Maksimum 5MB (JPEG / PNG)</span>
 
       <div class="profile-section">
         <h3>Profil Fotoğrafı</h3>
 
         <div class="avatar-box">
-          <img id="avatarPreview" src="{{user.avatar.url}}" class="avatar-img" />
+          <img
+            id="avatarPreview"
+            src="{{user.avatar.url}}"
+            class="avatar-img"
+          />
         </div>
 
         <label class="upload-btn" for="avatarUpload">Yeni Avatar Yükle</label>
-        <input type="file" id="avatarUpload" class="hidden-input" accept="image/*" />
+        <input
+          type="file"
+          id="avatarUpload"
+          class="hidden-input"
+          accept="image/*"
+        />
       </div>
 
       <div class="cover-section">
         <h3>Kapak Fotoğrafı</h3>
 
         <div class="cover-box">
-          <img id="coverPreview" src="{{user.coverImage.url}}" class="cover-img" />
+          <img
+            id="coverPreview"
+            src="{{user.coverImage.url}}"
+            class="cover-img"
+          />
         </div>
 
         <label class="upload-btn" for="coverUpload">Yeni Kapak Yükle</label>
-        <input type="file" id="coverUpload" class="hidden-input" accept="image/*" />
+        <input
+          type="file"
+          id="coverUpload"
+          class="hidden-input"
+          accept="image/*"
+        />
       </div>
     </div>
 
@@ -144,8 +173,18 @@
         <button class="btn save">Mailime Kod Gönder</button>
       </form>
 
-      <div id="verifyBox" style="display:none;"></div>
-      <div id="newPasswordBox" style="display:none;"></div>
+      <div id="verifyBox" style="display:none;" data-show="{{showVerify}}">
+        <form action="/hesap/sifre-dogrula" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+          <div class="form-group">
+            <label>Mail ile gelen kod</label>
+            <input name="code" maxlength="6" required />
+          </div>
+
+          <button class="btn save">Kodu Doğrula</button>
+        </form>
+      </div>
     </div>
 
     <!-- ========== HESAP SİL ========== -->
@@ -153,21 +192,12 @@
       <h2 class="title danger">Hesabı Sil</h2>
       <p class="desc">Bu işlem geri alınamaz.</p>
 
-      <button class="danger-btn" onclick="openDeleteModal()">
+      <button type="button" class="danger-btn" >
         Hesabımı Kalıcı Olarak Sil
       </button>
     </div>
 
   </main>
-
-  <!-- ========== GLOBAL LOADER ========== -->
-  <div id="globalLoader" class="global-loader" style="display:none;">
-    <div class="loader-box">
-      <div class="loader-spinner"></div>
-      <span>Yükleniyor...</span>
-    </div>
-  </div>
-
 </section>
 
 <!-- ========== DELETE MODAL ========== -->
@@ -178,17 +208,28 @@
     <form id="deleteForm" action="/hesap/sil" method="POST">
       <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
-      <label class="modal-label">Onay için C girin</label>
-      <input id="confirmC" class="modal-input" maxlength="1" />
+      <label class="modal-label">Onay için "sil" yazınız.</label>
+      <input id="confirmC" class="modal-input" maxlength="3" />
 
       <label class="modal-label">Şifre</label>
-      <input type="password" id="deletePassword" name="password" class="modal-input" />
+      <input
+        type="password"
+        id="deletePassword"
+        name="password"
+        class="modal-input"
+      />
 
       <p id="modalError"></p>
 
       <div class="modal-buttons">
-        <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Vazgeç</button>
-        <button type="button" class="delete-btn" onclick="confirmDelete()">Hesabı Sil</button>
+        <button
+          type="button"
+          class="cancel-btn"
+        >Vazgeç</button>
+        <button
+          type="button"
+          class="delete-btn"
+        >Hesabı Sil</button>
       </div>
     </form>
   </div>

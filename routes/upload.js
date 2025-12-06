@@ -1,5 +1,7 @@
 import express from "express";
 import imagekit from "../helpers/imagekit.js";
+import csrf from "csurf";
+const csrfProtection = csrf({ cookie: true });
 
 const uploadRoutes = express.Router();
 

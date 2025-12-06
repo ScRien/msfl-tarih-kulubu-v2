@@ -1,7 +1,15 @@
 {{#if error}}
-  <div class="account-alert error">❌ {{error}}</div>
+  <div class="account-alert error" role="alert" data-alert>
+    <span class="icon">❌</span>
+    <span class="text">{{error}}</span>
+    <button class="close" aria-label="Kapat">×</button>
+  </div>
 {{/if}}
 
 {{#if success}}
-  <div class="account-alert success">✅ {{success}}</div>
+  <div class="account-alert success" role="alert" data-alert>
+    <span class="icon">✅</span>
+    <span class="text">{{success}}</span>
+    <button class="close" aria-label="Kapat">×</button>
+  </div>
 {{/if}}

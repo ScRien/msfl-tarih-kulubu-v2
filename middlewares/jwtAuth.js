@@ -5,6 +5,7 @@ export default function jwtAuth(req, res, next) {
 
   if (!token) {
     req.user = null;
+    res.locals.isAuth = false;
     return next();
   }
 
@@ -13,9 +14,15 @@ export default function jwtAuth(req, res, next) {
       token,
       process.env.JWT_SECRET || "jwt_super_secret_123"
     );
+
     req.user = decoded;
+    res.locals.isAuth = true;
+    res.locals.currentUser = decoded.username;
+    res.locals.currentUserRole = decoded.role;
   } catch (err) {
+    res.clearCookie("auth_token");
     req.user = null;
+    res.locals.isAuth = false;
   }
 
   next();

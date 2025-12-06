@@ -1,0 +1,146 @@
+/* ================================
+   GLOBAL ALERT SYSTEM
+================================ */
+.account-alert {
+  position: fixed;
+  top: 90px;               /* navbar altı */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  max-width: 90%;
+  width: max-content;
+
+  padding: 14px 18px;
+  border-radius: 12px;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.35s ease;
+}
+
+/* METİN */
+.account-alert .text {
+  line-height: 1.4;
+}
+
+/* KAPAT */
+.account-alert .close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.account-alert .close:hover {
+  opacity: 1;
+}
+
+/* SUCCESS */
+.account-alert.success {
+  background: #e8f9f0;
+  color: #0f5132;
+}
+
+/* ERROR */
+.account-alert.error {
+  background: #fdecea;
+  color: #842029;
+}
+
+/* ANİMASYON */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ================================
+   MOBILE TUNING
+================================ */
+@media (max-width: 600px) {
+  .account-alert {
+    top: 70px;
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+}
+
+/* ================================
+   ALERT TRANSITION STATES
+================================ */
+.account-alert {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition: all 0.35s ease;
+}
+
+.account-alert.hide {
+  opacity: 0;
+  transform: translate(-50%, -10px);
+  pointer-events: none;
+}
+
+/* ================================
+   ICON ANIMATIONS
+================================ */
+
+.account-alert .icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* ✅ SUCCESS – soft pop */
+.account-alert.success .icon {
+  animation: successPop 0.5s ease;
+}
+
+/* ❌ ERROR – subtle shake */
+.account-alert.error .icon {
+  animation: errorShake 0.5s ease;
+}
+
+@keyframes successPop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  80% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes errorShake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}

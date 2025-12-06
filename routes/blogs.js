@@ -201,6 +201,7 @@ blogs.get("/:id", async (req, res) => {
     isAuth,
     isOwner,
     isAdmin,
+    currentUsername: req.user?.username || null,
     csrfToken: req.csrfToken(),
   });
 });
@@ -234,6 +235,51 @@ blogs.post("/:postId/yorum/:commentId/sil", auth, async (req, res) => {
   }
 
   await Comment.findByIdAndDelete(req.params.commentId);
+  res.redirect(`/blog/${req.params.postId}`);
+});
+
+/* ============================================================
+   YORUM DÜZENLE (GET)
+============================================================ */
+blogs.get("/:postId/yorum/:commentId/duzenle", auth, async (req, res) => {
+  const comment = await Comment.findById(req.params.commentId).lean();
+  if (!comment) {
+    return res.redirect(`/blog/${req.params.postId}`);
+  }
+
+  if (
+    comment.user_id.toString() !== req.user.id &&
+    req.user.role !== "admin"
+  ) {
+    return res.redirect(`/blog/${req.params.postId}`);
+  }
+
+  res.render("pages/yorumDuzenle", {
+    comment,
+    postId: req.params.postId,
+    csrfToken: req.csrfToken(),
+  });
+});
+
+/* ============================================================
+   YORUM DÜZENLE (POST)
+============================================================ */
+blogs.post("/:postId/yorum/:commentId/duzenle", auth, async (req, res) => {
+  const comment = await Comment.findById(req.params.commentId);
+  if (!comment) {
+    return res.redirect(`/blog/${req.params.postId}`);
+  }
+
+  if (
+    comment.user_id.toString() !== req.user.id &&
+    req.user.role !== "admin"
+  ) {
+    return res.redirect(`/blog/${req.params.postId}`);
+  }
+
+  comment.content = req.body.content.trim();
+  await comment.save();
+
   res.redirect(`/blog/${req.params.postId}`);
 });
 

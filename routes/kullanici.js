@@ -3,10 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-import {
-  loginLimiter,
-  registerLimiter,
-} from "../middlewares/rateLimiter.js";
+import { loginLimiter, registerLimiter } from "../middlewares/rateLimiter.js";
 
 import {
   registerValidation,
@@ -44,7 +41,13 @@ function setAuthCookie(res, user) {
    KAYIT OL GET
 ================================ */
 userRouter.get("/kayitOl", (req, res) => {
-  res.render("pages/kayitOl", { error: null });
+  res.render("pages/kayitOl", {
+    error: null,
+    username: "",
+    email: "",
+    name: "",
+    surname: "",
+  });
 });
 
 /* ================================
@@ -90,6 +93,12 @@ userRouter.post(
         password: hashed,
         name,
         surname,
+
+        // ✅ KVKK ve izinler
+        serviceDataUsage: true,
+        analyticsCookies: true,
+        personalizationCookies: true,
+        personalizedContent: true,
       });
 
       setAuthCookie(res, user);

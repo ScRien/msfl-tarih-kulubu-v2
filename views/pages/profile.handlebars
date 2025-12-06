@@ -4,21 +4,20 @@
 
   {{!-- ================= KAPAK FOTOĞRAFı ================= --}}
   <div class="profile-cover">
-    <img 
-      src="{{#if user.coverImage.url}}{{user.coverImage.url}}{{else}}/img/default-cover.png{{/if}}" 
-      class="cover-img" 
-      alt="Kapak Fotoğrafı"
-    />
+    <img
+  src="{{#if user.coverImage.url}}{{user.coverImage.url}}{{else}}/img/default-cover.png{{/if}}"
+  class="cover-img"
+/>
   </div>
 
   {{!-- ================= PROFIL BILGI ALANI ================= --}}
   <div class="profile-info">
 
     <div class="profile-avatar">
-      <img 
-        src="{{#if user.avatar.url}}{{user.avatar.url}}{{else}}/img/default-avatar.png{{/if}}" 
-        alt="Avatar"
-      />
+      <img
+  src="{{#if user.avatar.url}}{{user.avatar.url}}{{else}}/img/default-avatar.png{{/if}}"
+  alt="Avatar"
+/>
     </div>
 
     <div class="profile-text">

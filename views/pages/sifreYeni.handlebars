@@ -10,14 +10,26 @@
 
     <form action="/hesap/sifre-yeni" method="POST">
 
+      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
       <div class="form-group">
         <label>Yeni Şifre</label>
-        <input type="password" name="password1" required placeholder="Yeni şifre">
+        <input
+          type="password"
+          name="password1"
+          required
+          placeholder="Yeni şifre"
+        />
       </div>
 
       <div class="form-group">
         <label>Yeni Şifre (Tekrar)</label>
-        <input type="password" name="password2" required placeholder="Yeni şifre tekrar">
+        <input
+          type="password"
+          name="password2"
+          required
+          placeholder="Yeni şifre tekrar"
+        />
       </div>
 
       <button type="submit" class="btn save">Şifreyi Güncelle</button>
