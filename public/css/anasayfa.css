@@ -657,3 +657,270 @@ section button {
   margin: 0 auto !important;
   text-align: center !important;
 }
+
+.home-button {
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+}
+
+/* =======================
+   ORTAK – A TAG FIX
+======================= */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* =======================
+   ANA METİN
+======================= */
+.texts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url("/img/texts-background.png") center/cover no-repeat;
+  height: 620px;
+  padding: 25px 120px 0;
+  gap: 50px;
+}
+
+/* Sol */
+.texts-left {
+  flex: 1.75;
+  text-align: left;
+}
+
+.texts-left h3 {
+  font-family: "Cardo", serif;
+  font-size: 46px;
+}
+
+.signature {
+  width: 240px;
+  margin: 10px 0 40px 220px;
+}
+
+.sub-quote {
+  font-family: "Cardo", serif;
+  font-size: 46px;
+  font-weight: 600;
+}
+
+.tughra {
+  width: 190px;
+  margin-left: 220px;
+}
+
+/* Orta */
+.texts-middle {
+  flex: 0 0 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.divider {
+  height: 520px;
+  opacity: .9;
+}
+
+.divider-mobile {
+  display: none;
+}
+
+/* Sağ */
+.texts-right {
+  flex: 1;
+  text-align: right;
+  font-family: "Cardo", serif;
+  font-size: 20px;
+  line-height: 1.6;
+  color: #5b0000;
+}
+
+/* HOME BUTTON */
+.home-button {
+  margin-top: 20px;
+  display: inline-block;
+  background: radial-gradient(circle at top left, #444, #2a2a2a);
+  color: white;
+  font-size: 15px;
+  border-radius: 25px;
+  padding: 5px 15px;
+  font-family: "Arimo", sans-serif;
+  transition: .3s;
+}
+
+.home-button:hover {
+  background: #731919;
+  transform: translateY(-2px);
+}
+
+/* =======================
+   TARİHİN SATIR ARALARI
+======================= */
+.tarih-aralari {
+  display: flex;
+  justify-content: space-between;
+  background: url("/img/tarih-aralari_background.png") center/cover no-repeat;
+  height: 788px;
+  padding: 0 120px;
+}
+
+.title {
+  font-family: "Cardo", serif;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 24px;
+  margin-bottom: 40px;
+}
+
+.highlight {
+  font-size: 28px;
+  background: linear-gradient(to right, #731919, #e52b2b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.featured-posts {
+  display: flex;
+  gap: 30px;
+}
+
+.post {
+  background: rgba(255,255,255,.6);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 290px;
+}
+
+/* POST BUTTON */
+.post-button {
+  display: inline-block;
+  background: linear-gradient(to right, #6d7486, #0a0d13);
+  color: white;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 700;
+  transition: .3s;
+}
+
+.post-button:hover {
+  transform: scale(1.05);
+}
+
+/* Explore */
+.explore {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.explore-button {
+  display: inline-block;
+  background: linear-gradient(to right, #6d7486, #0a0d13);
+  color: white;
+  padding: 10px 25px;
+  border-radius: 25px;
+}
+
+/* =======================
+   ETKİNLİK
+======================= */
+.tarihle-bulusuyoruz {
+  display: flex;
+  justify-content: center;
+  background: url("/img/tarihle-bulusuyoruz_background.png") center/cover;
+  height: 788px;
+}
+
+.etkinlik-content {
+  max-width: 900px;
+  text-align: center;
+  margin-left: 550px;
+}
+
+.etkinlik-bottom {
+  margin-top: 350px;
+}
+
+.etkinlik-button {
+  display: inline-block;
+  background: linear-gradient(135deg, #4a5568, #1a202c);
+  color: white;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-weight: 700;
+  transition: .3s;
+}
+
+/* =======================
+   TARİHTE BUGÜN
+======================= */
+.tarihte-bugun {
+  display: flex;
+  background: url("/img/tarihtebugun_background.png") center/cover;
+  height: 600px;
+  padding: 0 120px;
+}
+
+.bugun-left {
+  margin-right: 50%;
+}
+
+.bugun-button {
+  display: inline-block;
+  background: linear-gradient(to right, #6d7486, #0a0d13);
+  color: white;
+  padding: 12px 30px;
+  border-radius: 25px;
+}
+
+/* =======================
+   ARAMIZA KATIL
+======================= */
+.aramiza-katil {
+  display: flex;
+  justify-content: center;
+  background: url("/img/aramizakatil_bg.png") center/cover;
+  height: 480px;
+}
+
+.katil-button {
+  display: inline-block;
+  background: linear-gradient(to right, #6d7486, #0a0d13);
+  color: white;
+  padding: 14px 40px;
+  border-radius: 25px;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+/* =======================
+   RESPONSIVE
+======================= */
+@media (max-width: 992px) {
+  .texts,
+  .tarih-aralari,
+  .tarihte-bugun {
+    flex-direction: column;
+    padding: 60px 40px;
+    height: auto;
+    text-align: center;
+  }
+
+  .featured-posts {
+    flex-direction: column;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .divider-mobile {
+    display: block;
+  }
+}

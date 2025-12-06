@@ -49,3 +49,7 @@ body {
   to { transform: rotate(360deg); }
 }
 
+.link-btn {
+  text-decoration: none !important;
+  cursor: pointer;
+}
