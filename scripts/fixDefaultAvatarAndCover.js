@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import User from "./models/User.js"; // Gerekirse path'i düzelt
+import User from "../models/User.js"; // Gerekirse path'i düzelt
 
 dotenv.config();
 
