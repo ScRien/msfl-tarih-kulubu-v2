@@ -1,112 +1,131 @@
 /* ======================================================
-   HESAP – MODÜL UYUMLU / MODAL FIX ✅
+   HESAP – GÜNCEL VE SORUNSUZ ✅
 ====================================================== */
 
 import { uploadProfileImage } from "./uploadClient.js";
 
-/* ======================================================
-   GENEL ELEMENTLER
-====================================================== */
-const sidebarItems = document.querySelectorAll(".sidebar-item");
-const contentBoxes = document.querySelectorAll(".content-box");
+document.addEventListener("DOMContentLoaded", () => {
+  /* ======================================================
+     1. GENEL ELEMENTLER & SIDEBAR
+  ====================================================== */
+  const sidebarItems = document.querySelectorAll(".sidebar-item");
+  const contentBoxes = document.querySelectorAll(".content-box");
 
-const avatarInput = document.getElementById("avatarUpload");
-const coverInput = document.getElementById("coverUpload");
+  sidebarItems.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      sidebarItems.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
 
-const avatarPreview = document.getElementById("avatarPreview");
-const coverPreview = document.getElementById("coverPreview");
-
-/* ======================================================
-   SIDEBAR GEÇİŞLERİ
-====================================================== */
-sidebarItems.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    sidebarItems.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    contentBoxes.forEach((box) => (box.style.display = "none"));
-    const target = btn.dataset.target;
-    const box = document.getElementById(target);
-    if (box) box.style.display = "block";
-  });
-});
-
-/* ======================================================
-   AVATAR / COVER UPLOAD
-====================================================== */
-async function handleProfileUpload(file, type) {
-  try {
-    const { url, fileId } = await uploadProfileImage(file, type);
-
-    const res = await fetch("/profile-media", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, url, fileId }),
+      contentBoxes.forEach((box) => (box.style.display = "none"));
+      const target = btn.dataset.target;
+      const box = document.getElementById(target);
+      if (box) box.style.display = "block";
     });
+  });
 
-    if (!res.ok) throw new Error("Medya kaydedilemedi");
+  /* ======================================================
+     2. AVATAR & COVER UPLOAD (FORM SUBMIT YÖNTEMİ)
+  ====================================================== */
+  const avatarInput = document.getElementById("avatarUpload");
+  const coverInput = document.getElementById("coverUpload");
 
-    if (type === "avatar" && avatarPreview) avatarPreview.src = url;
-    if (type === "cover" && coverPreview) coverPreview.src = url;
-  } catch (err) {
-    alert("❌ Yükleme başarısız");
-    console.error(err);
-  }
-}
+  // Profil formunu bul
+  const profileForm =
+    document.querySelector("form[action='/hesap/profil']") ||
+    document.getElementById("profileForm");
 
-avatarInput?.addEventListener("change", (e) => {
-  if (e.target.files[0]) handleProfileUpload(e.target.files[0], "avatar");
-});
+  // Yükleme ve Kaydetme Fonksiyonu
+  async function handleFileUpload(file, type) {
+    if (!profileForm) {
+      alert("Profil formu bulunamadı!");
+      return;
+    }
 
-coverInput?.addEventListener("change", (e) => {
-  if (e.target.files[0]) handleProfileUpload(e.target.files[0], "cover");
-});
+    try {
+      document.body.style.cursor = "wait";
 
-/* ======================================================
-   HESAP SİLME MODALI — ASIL MESELE BURASI ✅
-====================================================== */
-const deleteModal = document.getElementById("deleteModal");
-const openDeleteBtn = document.querySelector(".danger-btn");
-const cancelBtn = deleteModal?.querySelector(".cancel-btn");
-const confirmBtn = deleteModal?.querySelector(".delete-btn");
+      // 1. ImageKit'e Yükle
+      const result = await uploadProfileImage(file, type); // { url, fileId } döner
 
-const confirmC = document.getElementById("confirmC");
-const deletePassword = document.getElementById("deletePassword");
-const deleteForm = document.getElementById("deleteForm");
-const modalError = document.getElementById("modalError");
+      // 2. Dönen veriyi (URL + FileID) JSON string olarak forma ekle
+      let hiddenInput = profileForm.querySelector(`input[name="${type}"]`);
 
-/* MODAL AÇ */
-openDeleteBtn?.addEventListener("click", () => {
-  if (deleteModal) deleteModal.style.display = "flex";
-});
+      if (!hiddenInput) {
+        hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = type; // "avatar" veya "cover"
+        profileForm.appendChild(hiddenInput);
+      }
 
-/* MODAL KAPAT */
-cancelBtn?.addEventListener("click", () => {
-  if (deleteModal) deleteModal.style.display = "none";
-});
+      // ✅ BURASI ÇOK ÖNEMLİ: Backend JSON bekliyor, Stringify yapıyoruz.
+      hiddenInput.value = JSON.stringify({
+        url: result.url,
+        fileId: result.fileId,
+      });
 
-/* HESABI SİL */
-confirmBtn?.addEventListener("click", () => {
-  modalError.innerText = "";
-
-  if (confirmC.value !== "sil") {
-    modalError.innerText = "Onay için sil yazmalısınız";
-    return;
-  }
-
-  if (!deletePassword.value) {
-    modalError.innerText = "Şifre boş bırakılamaz";
-    return;
+      // 3. Formu Otomatik Gönder
+      profileForm.submit();
+    } catch (err) {
+      console.error(err);
+      alert("Yükleme sırasında hata oluştu: " + err.message);
+      document.body.style.cursor = "default";
+    }
   }
 
-  deleteForm.submit();
-});
+  // Event Listener'lar
+  avatarInput?.addEventListener("change", (e) => {
+    if (e.target.files[0]) handleFileUpload(e.target.files[0], "avatar");
+  });
 
-/* ======================================================
-   ŞİFRE DOĞRULAMA GÖSTER
-====================================================== */
-const verifyBox = document.getElementById("verifyBox");
-if (verifyBox && verifyBox.dataset.show) {
-  verifyBox.style.display = "block";
-}
+  coverInput?.addEventListener("change", (e) => {
+    if (e.target.files[0]) handleFileUpload(e.target.files[0], "cover");
+  });
+
+  /* ======================================================
+     3. HESAP SİLME MODALI
+  ====================================================== */
+  const deleteModal = document.getElementById("deleteModal");
+  const openDeleteBtn = document.querySelector(".danger-btn");
+  const cancelBtn = deleteModal?.querySelector(".cancel-btn");
+  const confirmBtn = deleteModal?.querySelector(".delete-btn");
+
+  const confirmC = document.getElementById("confirmC");
+  const deletePassword = document.getElementById("deletePassword");
+  const deleteForm = document.getElementById("deleteForm");
+  const modalError = document.getElementById("modalError");
+
+  /* MODAL AÇ */
+  openDeleteBtn?.addEventListener("click", () => {
+    if (deleteModal) deleteModal.style.display = "flex";
+  });
+
+  /* MODAL KAPAT */
+  cancelBtn?.addEventListener("click", () => {
+    if (deleteModal) deleteModal.style.display = "none";
+  });
+
+  /* HESABI SİL */
+  confirmBtn?.addEventListener("click", () => {
+    if (modalError) modalError.innerText = "";
+
+    if (confirmC.value !== "sil") {
+      if (modalError) modalError.innerText = "Onay için sil yazmalısınız";
+      return;
+    }
+
+    if (!deletePassword.value) {
+      if (modalError) modalError.innerText = "Şifre boş bırakılamaz";
+      return;
+    }
+
+    deleteForm.submit();
+  });
+
+  /* ======================================================
+     4. ŞİFRE DOĞRULAMA KUTUSU
+  ====================================================== */
+  const verifyBox = document.getElementById("verifyBox");
+  if (verifyBox && verifyBox.dataset.show) {
+    verifyBox.style.display = "block";
+  }
+});

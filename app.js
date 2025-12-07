@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import path from "path";
 import { fileURLToPath } from "url";
-import exphbs from "express-handlebars";
+import { engine } from "express-handlebars";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import helmet from "helmet";
@@ -17,7 +17,7 @@ import logger from "./helpers/logger.js";
 import toString from "./helpers/toString.js";
 
 import mainRoute from "./routes/main.js";
-import blogsRoute from "./routes/blogs.js";
+import blogRoute from "./routes/blog.js";
 import kullaniciRoute from "./routes/kullanici.js";
 import legalRoute from "./routes/legal.js";
 import hesapRoute from "./routes/hesap.js";
@@ -36,9 +36,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.set("trust proxy", 1);
 
-/* DB */
+/* DB BAĞLANTISI */
 let serverReady = false;
-await mongoose
+mongoose
   .connect(process.env.MONGO_URL, { dbName: "tarihKulubu" })
   .then(() => (serverReady = true))
   .catch((e) => logger.error(e));
@@ -48,7 +48,7 @@ app.use((req, res, next) => {
   next();
 });
 
-/* CSP */
+/* CSP - GÜVENLİK AYARLARI */
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -67,41 +67,45 @@ app.use(
           "https://cdnjs.cloudflare.com",
         ],
         scriptSrc: ["'self'", "'unsafe-inline'", "https://vercel.com"],
-        connectSrc: ["'self'", "https://vercel.com"],
+
+        // ✅ DÜZELTME 1: HTML içindeki onerror="..." kodlarının çalışması için bu satır şart:
+        scriptSrcAttr: ["'unsafe-inline'"],
+
+        connectSrc: ["'self'", "https://vercel.com", "ws://localhost:*"],
       },
     },
     crossOriginResourcePolicy: false,
   })
 );
 
-/* BODY */
+/* BODY PARSER */
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/* STATIC — CSRF ÖNCESİ */
+/* STATIC DOSYALAR */
 app.use(express.static(path.join(__dirname, "public")));
 
-/* AUTH */
+/* AUTH MIDDLEWARE */
 app.use(jwtAuth);
 
-/* CSRF DIŞI */
-app.use("/api/profile-media", profileMediaRouter);
+/* CSRF'TEN MUAF ROUTE'LAR */
 app.use("/upload", uploadRoutes);
+app.use("/api/profile-media", profileMediaRouter);
 app.use("/admin", adminRoute);
 
-/* HBS */
+/* HBS SETUP (VIEW ENGINE) */
 app.engine(
   "handlebars",
-  exphbs.create({
+  engine({
     defaultLayout: "main",
     helpers: { eq, generateDate, toString, ...handlebarsHelpers },
-  }).engine
+  })
 );
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "views"));
 
-/* CSRF */
+/* CSRF KORUMASI */
 app.use(csrfProtection);
 app.use(addCsrfToken);
 
@@ -111,9 +115,9 @@ app.use((req, res, next) => {
   next();
 });
 
-/* ROUTES */
+/* NORMAL ROUTE'LAR */
 app.use("/", mainRoute);
-app.use("/blog", blogsRoute);
+app.use("/blog", blogRoute);
 app.use("/kullanici", kullaniciRoute);
 app.use("/legal", legalRoute);
 app.use("/hesap", hesapRoute);
@@ -121,7 +125,7 @@ app.use("/profile", profileRoute);
 app.use("/sifre-unuttum", sifreUnuttumRoute);
 app.use("/u", publicProfileRoute);
 
-/* 404 */
+/* 404 HANDLER */
 app.use((req, res) => res.status(404).render("pages/404"));
 
 const PORT = process.env.PORT || 3000;

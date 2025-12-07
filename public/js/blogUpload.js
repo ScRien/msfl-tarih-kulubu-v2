@@ -1,48 +1,66 @@
 import { uploadBlogImage } from "./uploadClient.js";
 
-const input = document.getElementById("blogImages");
-const preview = document.getElementById("previewBox");
-const hidden = document.getElementById("imageUrls");
-const fileCount = document.getElementById("fileCount");
-const loader = document.getElementById("blogUploadLoading");
-const openBtn = document.getElementById("openImagePicker");
+document.addEventListener("DOMContentLoaded", () => {
+  const fileInput = document.getElementById("blogImages");
+  const openBtn = document.getElementById("openImagePicker");
+  const previewBox = document.getElementById("previewBox");
+  const hiddenInput = document.getElementById("imageUrls");
+  const loader = document.getElementById("blogUploadLoading");
+  const fileCountSpan = document.getElementById("fileCount");
 
-let images = [];
+  // Butona basınca dosya seçiciyi aç
+  openBtn?.addEventListener("click", () => fileInput?.click());
 
-openBtn?.addEventListener("click", () => input?.click());
+  // Dosya seçilince çalışır
+  fileInput?.addEventListener("change", async () => {
+    const files = Array.from(fileInput.files || []);
+    
+    // Temizlik
+    previewBox.innerHTML = "";
+    hiddenInput.value = "[]";
+    fileCountSpan.textContent = files.length > 0 ? `${files.length} dosya seçildi` : "Seçili dosya yok";
 
-input?.addEventListener("change", async () => {
-  preview.innerHTML = "";
-  images = [];
+    if (files.length === 0) return;
 
-  const files = Array.from(input.files || []);
-  if (!files.length) return;
-
-  if (files.length > 5) {
-    alert("En fazla 5 görsel seçebilirsiniz.");
-    return;
-  }
-
-  fileCount.textContent = `${files.length} görsel seçildi`;
-  loader.style.display = "flex";
-
-  try {
-    for (const file of files) {
-      const img = await await uploadBlogImage(file);
-      images.push(img);
-
-      preview.innerHTML += `
-        <div class="preview-item">
-          <img src="${img.url}" class="preview-img"/>
-        </div>
-      `;
+    if (files.length > 5) {
+      alert("En fazla 5 görsel yükleyebilirsiniz.");
+      fileInput.value = "";
+      fileCountSpan.textContent = "Seçili dosya yok";
+      return;
     }
 
-    hidden.value = JSON.stringify(images);
-  } catch {
-    alert("Görseller yüklenirken hata oluştu");
-    hidden.value = "[]";
-  } finally {
-    loader.style.display = "none";
-  }
+    // Loader Göster
+    if (loader) loader.style.display = "flex";
+
+    const uploadedImages = [];
+
+    try {
+      for (const file of files) {
+        try {
+          // Upload işlemi
+          const result = await uploadBlogImage(file);
+          uploadedImages.push(result);
+
+          // Önizleme Ekle
+          const imgDiv = document.createElement("div");
+          imgDiv.className = "preview-item";
+          imgDiv.innerHTML = `<img src="${result.url}" alt="Önizleme" />`;
+          previewBox.appendChild(imgDiv);
+
+        } catch (err) {
+          console.error(err);
+          alert(`Hata: ${file.name} yüklenemedi. ${err.message}`);
+        }
+      }
+
+      // Sonuçları gizli inputa yaz (Backend bunu okuyacak)
+      hiddenInput.value = JSON.stringify(uploadedImages);
+
+    } catch (generalErr) {
+      alert("Yükleme işlemi sırasında bir hata oluştu.");
+    } finally {
+      // Loader Gizle
+      if (loader) loader.style.display = "none";
+    }
+  });
 });

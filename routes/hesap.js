@@ -1,22 +1,22 @@
-// routes/hesap.js
 import express from "express";
 import auth from "../middlewares/auth.js";
 import User from "../models/User.js";
 import Post from "../models/Post.js";
 import Comment from "../models/Comment.js";
 import { sendMail } from "../helpers/mail.js";
-import {
-  accountDeletedMailTemplate,
-  verificationMailTemplate,
-} from "../helpers/mailTemplates.js";
-import {
-  profileValidation,
-  socialValidation,
-} from "../middlewares/hesapValidators.js";
+import { verificationMailTemplate } from "../helpers/mailTemplates.js";
+import { socialValidation } from "../middlewares/hesapValidators.js";
 import Backup from "../models/Backup.js";
 import bcrypt from "bcrypt";
+import ImageKit from "imagekit";
 
 const router = express.Router();
+
+const imagekit = new ImageKit({
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+});
 
 /* ============================================================
    HESAP SAYFASI
@@ -28,142 +28,190 @@ router.get("/", auth, async (req, res) => {
     username: user.username,
     showVerify: req.query.showVerify || null,
     showNewPasswordBox: req.query.showNewPasswordBox || false,
+    error: req.query.error,
+    success: req.query.success,
   });
 });
 
-/* ================= PROFİL ================= */
+/* ================= PROFİL GÜNCELLEME ================= */
 router.post("/profil", auth, async (req, res) => {
-  const updateData = {};
+  try {
+    const updateData = {};
+    const currentUser = await User.findById(req.user.id);
 
-  if (req.body.email) {
-    const email = req.body.email.trim().toLowerCase();
-
-    const existing = await User.findOne({
-      email,
-      _id: { $ne: req.user.id },
-    });
-
-    if (existing) {
-      return res.redirect(
-        "/hesap?error=Bu%20e-posta%20başka%20bir%20hesapta%20kayıtlı"
-      );
+    if (req.body.email) {
+      const email = req.body.email.trim().toLowerCase();
+      if (currentUser.email !== email) {
+        const existing = await User.findOne({
+          email,
+          _id: { $ne: req.user.id },
+        });
+        if (existing) {
+          return res.redirect("/hesap?error=Bu+e-posta+kullanımda");
+        }
+        updateData.email = email;
+      }
     }
 
-    updateData.email = email;
-  }
+    if (typeof req.body.bio === "string") {
+      updateData.bio = req.body.bio.trim();
+    }
 
-  if (typeof req.body.bio === "string") {
-    updateData.bio = req.body.bio.trim();
-  }
+    // --- AVATAR GÜNCELLEME (GÜVENLİ PARSE EKLENDİ) ---
+    if (req.body.avatar) {
+      let avatarData = {};
+      try {
+        // Önce JSON olarak çözmeyi dene
+        avatarData = JSON.parse(req.body.avatar);
+      } catch (e) {
+        // JSON değilse (Düz URL ise) manuel obje oluştur
+        avatarData = { url: req.body.avatar, fileId: "" };
+      }
 
-  await User.findByIdAndUpdate(req.user.id, updateData);
-  res.redirect("/hesap?success=Profil%20bilgileri%20güncellendi");
+      if (avatarData.url) {
+        // Eski avatarı sil (Sadece fileId varsa)
+        if (
+          currentUser.avatar &&
+          currentUser.avatar.fileId &&
+          avatarData.fileId
+        ) {
+          await imagekit
+            .deleteFile(currentUser.avatar.fileId)
+            .catch((e) => console.log("Silme hatası:", e.message));
+        }
+
+        updateData.avatar = {
+          url: avatarData.url,
+          fileId: avatarData.fileId || "",
+          provider: "imagekit",
+        };
+      }
+    }
+
+    // --- KAPAK FOTOĞRAFI GÜNCELLEME (GÜVENLİ PARSE EKLENDİ) ---
+    if (req.body.cover) {
+      let coverData = {};
+      try {
+        coverData = JSON.parse(req.body.cover);
+      } catch (e) {
+        coverData = { url: req.body.cover, fileId: "" };
+      }
+
+      if (coverData.url) {
+        // Eski cover'ı sil
+        if (
+          currentUser.coverImage &&
+          currentUser.coverImage.fileId &&
+          coverData.fileId
+        ) {
+          await imagekit
+            .deleteFile(currentUser.coverImage.fileId)
+            .catch((e) => console.log("Silme hatası:", e.message));
+        }
+
+        // Veritabanı alan adı: 'coverImage'
+        updateData.coverImage = {
+          url: coverData.url,
+          fileId: coverData.fileId || "",
+          provider: "imagekit",
+        };
+      }
+    }
+
+    await User.findByIdAndUpdate(req.user.id, updateData);
+    res.redirect("/hesap?success=Profil+bilgileri+güncellendi");
+  } catch (error) {
+    console.error("Profil Güncelleme Hatası:", error);
+    res.redirect("/hesap?error=Bir+hata+oluştu");
+  }
 });
 
-/* ================= SOSYAL ================= */
+/* ... Diğer route'lar aynı ... */
 router.post("/social", auth, socialValidation, async (req, res) => {
-  await User.findByIdAndUpdate(req.user.id, {
-    social: req.body,
-  });
-
-  res.redirect("/hesap?success=Sosyal%20medya%20bilgileri%20güncellendi");
+  try {
+    await User.findByIdAndUpdate(req.user.id, { social: req.body });
+    res.redirect("/hesap?success=Sosyal+medya+güncellendi");
+  } catch (error) {
+    res.redirect("/hesap?error=Hata");
+  }
 });
 
-/* ================= ÇEREZ ================= */
 router.post("/cookies", auth, async (req, res) => {
-  await User.findByIdAndUpdate(req.user.id, {
-    analyticsCookies: !!req.body.analyticsCookies,
-    personalizationCookies: !!req.body.personalizationCookies,
-  });
-  res.redirect("/hesap?success=Çerez%20tercihleri%20güncellendi");
+  try {
+    await User.findByIdAndUpdate(req.user.id, {
+      analyticsCookies: !!req.body.analyticsCookies,
+      personalizationCookies: !!req.body.personalizationCookies,
+    });
+    res.redirect("/hesap?success=Çerezler+güncellendi");
+  } catch (error) {
+    res.redirect("/hesap?error=Hata");
+  }
 });
 
-/* ================= VERİ ================= */
 router.post("/data-usage", auth, async (req, res) => {
-  await User.findByIdAndUpdate(req.user.id, {
-    serviceDataUsage: !!req.body.serviceDataUsage,
-    personalizedContent: !!req.body.personalizedContent,
-  });
-  res.redirect("/hesap?success=Veri%20kullanım%20ayarları%20güncellendi");
+  try {
+    await User.findByIdAndUpdate(req.user.id, {
+      serviceDataUsage: !!req.body.serviceDataUsage,
+      personalizedContent: !!req.body.personalizedContent,
+    });
+    res.redirect("/hesap?success=Ayarlar+güncellendi");
+  } catch (error) {
+    res.redirect("/hesap?error=Hata");
+  }
 });
 
-router.get("/sifre-yeni", auth, (req, res) => {
-  res.render("pages/sifreYeni");
-});
-
-/* ================= KOD DOĞRULA ================= */
+router.get("/sifre-yeni", auth, (req, res) => res.render("pages/sifreYeni"));
 router.post("/sifre-dogrula", auth, async (req, res) => {
   const user = await User.findById(req.user.id);
-
   if (
     !user.resetCode ||
     user.resetCode !== req.body.code ||
     user.resetCodeExpires < Date.now()
-  ) {
-    return res.redirect("/hesap?error=Kod%20geçersiz%20veya%20süresi%20dolmuş");
-  }
-
+  )
+    return res.redirect("/hesap?error=Kod+geçersiz");
   res.redirect("/hesap/sifre-yeni");
 });
-
 router.post("/sifre-yeni", auth, async (req, res) => {
-  const { password1, password2 } = req.body;
-
-  if (!password1 || password1 !== password2) {
-    return res.redirect("/hesap/sifre-yeni?error=Şifreler%20uyuşmuyor");
-  }
-
+  const { password1: p1, password2: p2 } = req.body;
+  if (!p1 || p1 !== p2)
+    return res.redirect("/hesap/sifre-yeni?error=Uyuşmuyor");
   const user = await User.findById(req.user.id);
-  const hashed = await bcrypt.hash(password1, 10);
-
-  user.password = hashed;
+  user.password = await bcrypt.hash(p1, 10);
   user.resetCode = undefined;
   user.resetCodeExpires = undefined;
-
   await user.save();
-
-  res.redirect("/hesap?success=Şifre%20başarıyla%20güncellendi");
+  res.redirect("/hesap?success=Şifre+değişti");
 });
-
-
-/* ================= ŞİFRE ================= */
 router.post("/sifre-kod", auth, async (req, res) => {
   const user = await User.findById(req.user.id);
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   user.resetCode = code;
   user.resetCodeExpires = Date.now() + 600000;
   await user.save();
-
-  await sendMail(
-    user.email,
-    "Doğrulama Kodunuz",
-    verificationMailTemplate(user.name, code)
-  );
-  res.redirect(
-    "/hesap?success=Doğrulama%20kodu%20mailinize%20gönderildi&showVerify=1"
-  );
+  await sendMail(user.email, "Kod", verificationMailTemplate(user.name, code));
+  res.redirect("/hesap?success=Kod+gönderildi&showVerify=1");
 });
-
-/* ================= SİL ================= */
 router.post("/sil", auth, async (req, res) => {
   const user = await User.findById(req.user.id);
   const valid = await bcrypt.compare(req.body.password, user.password);
-  if (!valid) return res.redirect("/hesap?error=Şifre%20hatalı");
+  if (!valid) return res.redirect("/hesap?error=Şifre+hatalı");
+
+  if (user.avatar?.fileId)
+    await imagekit.deleteFile(user.avatar.fileId).catch(() => {});
+  if (user.coverImage?.fileId)
+    await imagekit.deleteFile(user.coverImage.fileId).catch(() => {});
 
   const posts = await Post.find({ user_id: user._id }).lean();
   const comments = await Comment.find({ user_id: user._id }).lean();
-
   await Backup.create({
     userId: user._id,
     userData: { profile: user, posts, comments },
   });
-
   await User.findByIdAndDelete(user._id);
   await Post.deleteMany({ user_id: user._id });
   await Comment.deleteMany({ user_id: user._id });
-
   res.clearCookie("auth_token");
-  res.redirect("/?success=Hesabınız%20başarıyla%20silindi");
+  res.redirect("/?success=Hesap+silindi");
 });
 
 export default router;

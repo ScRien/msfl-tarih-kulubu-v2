@@ -1,78 +1,68 @@
-// public/js/blogEditUpload.js
 import { uploadBlogImage } from "./uploadClient.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const deleteInput = document.getElementById("deleteImages");
   const deleteCheckboxes = document.querySelectorAll(".deleteImageCheck");
 
-  const input = document.getElementById("newImages");
-  const preview = document.getElementById("editPreviewBox");
-  const hiddenNew = document.getElementById("newImagesJson");
-  const openBtn = document.getElementById("openEditImagePicker");
+  const newInput = document.getElementById("newImages");
+  const newPreview = document.getElementById("editPreviewBox");
+  const hiddenNewImages = document.getElementById("newImagesJson");
+  const openEditBtn = document.getElementById("openEditImagePicker");
   const loader = document.getElementById("blogEditLoading");
 
-  /* 📂 Dosya penceresini aç */
-  openBtn?.addEventListener("click", () => {
-    input?.click();
-  });
-
-  /* 🗑️ Mevcut görsel silme */
+  /* --- 1. MEVCUT GÖRSEL SİLME MANTIĞI --- */
+  // Kullanıcı "Sil" kutucuğunu işaretlerse ID'yi listeye ekleriz
   deleteCheckboxes.forEach((chk) => {
     chk.addEventListener("change", () => {
-      const selected = Array.from(deleteCheckboxes)
+      const selectedIds = Array.from(deleteCheckboxes)
         .filter((c) => c.checked)
         .map((c) => c.dataset.fileid)
-        .filter(Boolean); // undefined olanları at
+        .filter(Boolean);
 
-      deleteInput.value = JSON.stringify(selected);
+      deleteInput.value = JSON.stringify(selectedIds);
     });
   });
 
-  /* 🆕 Yeni görsel yükleme */
-  input?.addEventListener("change", async () => {
-    preview.innerHTML = "";
-    hiddenNew.value = "[]";
+  /* --- 2. YENİ GÖRSEL YÜKLEME --- */
+  openEditBtn?.addEventListener("click", () => newInput?.click());
 
-    const files = Array.from(input.files || []);
+  newInput?.addEventListener("change", async () => {
+    newPreview.innerHTML = "";
+    hiddenNewImages.value = "[]";
+
+    const files = Array.from(newInput.files || []);
     if (!files.length) return;
 
     if (files.length > 5) {
-      alert("En fazla 5 görsel yükleyebilirsiniz.");
-      input.value = "";
+      alert("Tek seferde en fazla 5 yeni görsel ekleyebilirsiniz.");
+      newInput.value = "";
       return;
     }
 
-    const uploads = [];
     if (loader) loader.style.display = "flex";
+    const uploaded = [];
 
     try {
       for (const file of files) {
-        if (!file.type.startsWith("image/")) {
-          alert(`'${file.name}' görsel değil, atlandı.`);
-          continue;
+        try {
+          const result = await uploadBlogImage(file);
+          uploaded.push(result);
+
+          // Önizleme
+          const div = document.createElement("div");
+          div.className = "preview-item";
+          div.innerHTML = `<img src="${result.url}" class="preview-img" />`;
+          newPreview.appendChild(div);
+        } catch (err) {
+          alert(`Hata (${file.name}): ${err.message}`);
         }
-
-        // 🔹 Backend limiti ile aynı: 2MB
-        if (file.size > 2 * 1024 * 1024) {
-          alert(`'${file.name}' 2MB sınırını aşıyor, yüklenmedi.`);
-          continue;
-        }
-
-        // 🔹 ImageKit'e upload (folder: blogs)
-        const img = await uploadBlogImage(file, "blogs");
-        uploads.push(img);
-
-        const div = document.createElement("div");
-        div.className = "preview-item";
-        div.innerHTML = `<img src="${img.url}" class="preview-img" />`;
-        preview.appendChild(div);
       }
 
-      hiddenNew.value = JSON.stringify(uploads);
+      // Başarılı yüklemeleri input'a yaz
+      hiddenNewImages.value = JSON.stringify(uploaded);
+
     } catch (err) {
-      console.error("UPLOAD ERROR:", err);
-      hiddenNew.value = "[]";
-      alert("Görseller yüklenirken bir hata oluştu.");
+      console.error(err);
     } finally {
       if (loader) loader.style.display = "none";
     }

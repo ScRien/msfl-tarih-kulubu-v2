@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/hesap.css?v=3" />
+<link rel="stylesheet" href="/css/hesap.css?v=4" />
 
 <section class="account-wrapper">
 
@@ -50,7 +50,7 @@
       <h2 class="title">Profil Bilgileri</h2>
       <p class="desc">Bilgilerinizi buradan güncelleyebilirsiniz.</p>
 
-      <form action="/hesap/profil" method="POST">
+      <form id="profileForm" action="/hesap/profil" method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
         <div class="form-group">
@@ -97,17 +97,17 @@
 
         <div class="form-group">
           <label>Instagram</label>
-          <input name="instagram" value="{{user.social.instagram}}" />
+          <input name="instagram" value="{{user.social.instagram}}" placeholder="@kullaniciadi" />
         </div>
 
         <div class="form-group">
           <label>X (Twitter)</label>
-          <input name="x" value="{{user.social.x}}" />
+          <input name="x" value="{{user.social.x}}" placeholder="@kullaniciadi" />
         </div>
 
         <div class="form-group">
           <label>GitHub</label>
-          <input name="github" value="{{user.social.github}}" />
+          <input name="github" value="{{user.social.github}}" placeholder="kullaniciadi" />
         </div>
 
         <div class="btn-group">
@@ -120,7 +120,9 @@
     <!-- ========== MEDYA ========== -->
     <div class="content-box" id="media">
       <h2 class="title">Profil Medyası</h2>
-      <span class="img-hint">Maksimum 5MB (JPEG / PNG)</span>
+      <span class="img-hint">
+        Maks. 5MB (JPEG/PNG) • Önerilen: Avatar 400x400, Kapak 800x400
+      </span>
 
       <div class="profile-section">
         <h3>Profil Fotoğrafı</h3>
@@ -128,8 +130,9 @@
         <div class="avatar-box">
           <img
             id="avatarPreview"
-            src="{{user.avatar.url}}"
+            src="{{#if user.avatar.url}}{{user.avatar.url}}{{else}}/img/default-avatar.png{{/if}}"
             class="avatar-img"
+            onerror="this.src='/img/default-avatar.png'"
           />
         </div>
 
@@ -148,8 +151,9 @@
         <div class="cover-box">
           <img
             id="coverPreview"
-            src="{{user.coverImage.url}}"
+            src="{{#if user.coverImage.url}}{{user.coverImage.url}}{{else}}/img/default-cover.png{{/if}}"
             class="cover-img"
+            onerror="this.src='/img/default-cover.png'"
           />
         </div>
 
@@ -174,12 +178,15 @@
       </form>
 
       <div id="verifyBox" style="display:none;" data-show="{{showVerify}}">
+        <br>
+        <hr>
+        <br>
         <form action="/hesap/sifre-dogrula" method="POST">
           <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
           <div class="form-group">
             <label>Mail ile gelen kod</label>
-            <input name="code" maxlength="6" required />
+            <input name="code" maxlength="6" required placeholder="123456" />
           </div>
 
           <button class="btn save">Kodu Doğrula</button>
@@ -190,9 +197,9 @@
     <!-- ========== HESAP SİL ========== -->
     <div class="content-box" id="delete">
       <h2 class="title danger">Hesabı Sil</h2>
-      <p class="desc">Bu işlem geri alınamaz.</p>
+      <p class="desc">Bu işlem geri alınamaz. Tüm verileriniz silinecektir.</p>
 
-      <button type="button" class="danger-btn" >
+      <button type="button" class="danger-btn">
         Hesabımı Kalıcı Olarak Sil
       </button>
     </div>
@@ -209,7 +216,7 @@
       <input type="hidden" name="_csrf" value="{{csrfToken}}" />
 
       <label class="modal-label">Onay için "sil" yazınız.</label>
-      <input id="confirmC" class="modal-input" maxlength="3" />
+      <input id="confirmC" class="modal-input" maxlength="3" autocomplete="off" />
 
       <label class="modal-label">Şifre</label>
       <input
@@ -217,9 +224,10 @@
         id="deletePassword"
         name="password"
         class="modal-input"
+        required
       />
 
-      <p id="modalError"></p>
+      <p id="modalError" style="color: red; margin-top: 10px; font-size: 0.9rem;"></p>
 
       <div class="modal-buttons">
         <button
