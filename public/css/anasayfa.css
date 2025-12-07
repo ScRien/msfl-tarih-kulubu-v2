@@ -12,7 +12,7 @@
 .tarihte-bugun a,
 .aramiza-katil a {
   text-decoration: none;
-  color: inherit;
+  color: #fff;
 }
 
 .home-button,
@@ -122,15 +122,16 @@
 /* ✅ button -> a dönüşümü */
 .home-button {
   margin-top: 20px;
-  background: radial-gradient(circle at top left, #444, #2a2a2a);
-  color: white;
   border-radius: 25px;
   padding: 10px 25px;
+  background: linear-gradient(180deg, #6d7486, #0a0d13);
+  color: #fff;
   font-family: "Arimo", sans-serif;
 }
 
 .home-button:hover {
-  background: #731919;
+  transform: translateY(-2px);
+  filter: brightness(1.08);
   transform: translateY(-2px);
 }
 
@@ -214,8 +215,8 @@
 
 /* ✅ button -> a dönüşümü */
 .post-button {
-  background: linear-gradient(to right, #6d7486, #0a0d13);
-  color: white;
+  background: linear-gradient(180deg, #6d7486, #0a0d13);
+  color: #fff;
   border-radius: 10px;
   padding: 10px 20px;
   font-family: "Aileron", sans-serif;
@@ -231,7 +232,8 @@
 }
 
 .post-button:hover {
-  transform: scale(1.05);
+  filter: brightness(1.08);
+  transform: scale(1.03);
 }
 
 .explore {
@@ -251,8 +253,9 @@
 
 /* ✅ button -> a dönüşümü */
 .explore-button {
-  background: linear-gradient(to right, #6d7486, #0a0d13);
-  color: white;
+  background: linear-gradient(180deg, #6d7486, #0a0d13);
+  color: #fff;
+
   border-radius: 25px;
   padding: 10px 25px;
   font-family: "Arimo", sans-serif;
@@ -260,6 +263,7 @@
 }
 
 .explore-button:hover {
+  filter: brightness(1.08);
   transform: translateY(-2px);
 }
 
@@ -341,8 +345,8 @@
 
 /* ✅ button -> a dönüşümü */
 .etkinlik-button {
-  background: linear-gradient(135deg, #4a5568, #1a202c);
-  color: white;
+  background: linear-gradient(180deg, #6d7486, #0a0d13);
+  color: #fff;
   border-radius: 25px;
   padding: 12px 30px;
   font-family: "Arimo", sans-serif;
@@ -352,8 +356,8 @@
 }
 
 .etkinlik-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.08);
+  transform: translateY(-2px);
 }
 
 /* =========================================================
@@ -458,8 +462,8 @@
 
 /* ✅ button -> a dönüşümü */
 .bugun-button {
-  background: linear-gradient(to right, #6d7486, #0a0d13);
-  color: white;
+  background: linear-gradient(180deg, #6d7486, #0a0d13);
+  color: #fff;
   border-radius: 25px;
   padding: 12px 30px;
   font-family: "Arimo", sans-serif;
@@ -469,8 +473,8 @@
 }
 
 .bugun-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.08);
+  transform: translateY(-2px);
 }
 
 /* =========================================================
@@ -516,8 +520,8 @@
 
 /* ✅ button -> a dönüşümü */
 .katil-button {
-  background: linear-gradient(to right, #6d7486, #0a0d13);
-  color: white;
+  background: linear-gradient(180deg, #6d7486, #0a0d13);
+  color: #fff;
   border-radius: 25px;
   padding: 14px 40px;
   font-family: "Cardo", serif;
@@ -528,8 +532,8 @@
 }
 
 .katil-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  filter: brightness(1.08);
+  transform: translateY(-2px);
 }
 
 /* =========================================================
@@ -709,4 +713,23 @@
     width: 100%;
     text-align: center;
   }
+}
+
+.home-button,
+.post-button,
+.explore-button,
+.etkinlik-button,
+.bugun-button,
+.katil-button {
+  background: linear-gradient(180deg, #6d7486, #0a0d13);
+  color: #fff;
+}
+.home-button:hover,
+.post-button:hover,
+.explore-button:hover,
+.etkinlik-button:hover,
+.bugun-button:hover,
+.katil-button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
 }

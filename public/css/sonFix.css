@@ -107,12 +107,21 @@ main,
 
 /* =========================================
    5) ETKİNLİKLER SAYFASI BAŞLIK
+   (Desktop'ta tam ortalama fix)
 ========================================= */
 
 .plan-title {
   font-size: clamp(32px, 6vw, 48px);
-  margin: 20px 0 40px;
   text-align: center;
   position: relative;
   z-index: 2;
+}
+
+/* ✅ SADECE PC */
+@media (min-width: 769px) {
+  .plan-title {
+    margin: 20px auto 40px; /* ortala */
+    width: fit-content; /* içerik kadar küçül */
+    transform: none !important; /* eski translateX'i iptal et */
+  }
 }
