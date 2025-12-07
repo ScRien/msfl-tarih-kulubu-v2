@@ -36,19 +36,56 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.set("trust proxy", 1);
 
-/* DB BAĞLANTISI */
+/* ========================================================
+   1. VIEW ENGINE & STATIC FILES (EN BAŞA TAŞINDI)
+   Loading sayfasının düzgün çalışması için bunlar
+   DB bağlantısından önce tanımlanmalı.
+======================================================== */
+
+// Handlebars Kurulumu
+app.engine(
+  "handlebars",
+  engine({
+    defaultLayout: "main",
+    helpers: { eq, generateDate, toString, ...handlebarsHelpers },
+  })
+);
+app.set("view engine", "handlebars");
+app.set("views", path.join(__dirname, "views"));
+
+// Statik Dosyalar (CSS, JS, IMG)
+app.use(express.static(path.join(__dirname, "public")));
+
+/* ========================================================
+   2. DB BAĞLANTISI VE LOADING EKRANI KONTROLÜ
+======================================================== */
 let serverReady = false;
 mongoose
   .connect(process.env.MONGO_URL, { dbName: "tarihKulubu" })
   .then(() => (serverReady = true))
   .catch((e) => logger.error(e));
 
+// Server Hazırlanıyor Middleware'i
 app.use((req, res, next) => {
-  if (!serverReady) return res.send("Hazırlanıyor");
+  if (!serverReady) {
+    // API veya Upload isteği ise JSON hata dön
+    if (req.path.startsWith("/upload") || req.path.startsWith("/api")) {
+      return res
+        .status(503)
+        .json({ error: "Sunucu hazırlanıyor, lütfen bekleyin." });
+    }
+
+    // Sayfa isteği ise SİZİN TASARIMINIZI (db-loading) render et
+    // layout: false diyerek sadece loading içeriğini basıyoruz (Navbar vs. gelmesin diye)
+    // Eğer navbar da görünsün istersen { layout: false } kısmını silebilirsin.
+    return res.status(503).render("pages/db-loading", { layout: false });
+  }
   next();
 });
 
-/* CSP - GÜVENLİK AYARLARI */
+/* ========================================================
+   3. GÜVENLİK VE DİĞER AYARLAR
+======================================================== */
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -67,10 +104,7 @@ app.use(
           "https://cdnjs.cloudflare.com",
         ],
         scriptSrc: ["'self'", "'unsafe-inline'", "https://vercel.com"],
-
-        // ✅ DÜZELTME 1: HTML içindeki onerror="..." kodlarının çalışması için bu satır şart:
         scriptSrcAttr: ["'unsafe-inline'"],
-
         connectSrc: ["'self'", "https://vercel.com", "ws://localhost:*"],
       },
     },
@@ -78,32 +112,17 @@ app.use(
   })
 );
 
-/* BODY PARSER */
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/* STATIC DOSYALAR */
-app.use(express.static(path.join(__dirname, "public")));
-
-/* AUTH MIDDLEWARE */
+/* AUTH */
 app.use(jwtAuth);
 
 /* CSRF'TEN MUAF ROUTE'LAR */
 app.use("/upload", uploadRoutes);
 app.use("/api/profile-media", profileMediaRouter);
 app.use("/admin", adminRoute);
-
-/* HBS SETUP (VIEW ENGINE) */
-app.engine(
-  "handlebars",
-  engine({
-    defaultLayout: "main",
-    helpers: { eq, generateDate, toString, ...handlebarsHelpers },
-  })
-);
-app.set("view engine", "handlebars");
-app.set("views", path.join(__dirname, "views"));
 
 /* CSRF KORUMASI */
 app.use(csrfProtection);
