@@ -38,11 +38,7 @@ app.set("trust proxy", 1);
 
 /* ========================================================
    1. VIEW ENGINE & STATIC FILES (EN BAŞA TAŞINDI)
-   Loading sayfasının düzgün çalışması için bunlar
-   DB bağlantısından önce tanımlanmalı.
 ======================================================== */
-
-// Handlebars Kurulumu
 app.engine(
   "handlebars",
   engine({
@@ -53,34 +49,78 @@ app.engine(
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "views"));
 
-// Statik Dosyalar (CSS, JS, IMG)
 app.use(express.static(path.join(__dirname, "public")));
 
 /* ========================================================
-   2. DB BAĞLANTISI VE LOADING EKRANI KONTROLÜ
+   2. DB BAĞLANTISI (VERCEL OPTİMİZASYONU)
+   Global değişken kullanarak bağlantıyı önbelleğe alıyoruz.
 ======================================================== */
-let serverReady = false;
-mongoose
-  .connect(process.env.MONGO_URL, { dbName: "tarihKulubu" })
-  .then(() => (serverReady = true))
-  .catch((e) => logger.error(e));
+let cached = global.mongoose;
 
-// Server Hazırlanıyor Middleware'i
-app.use((req, res, next) => {
-  if (!serverReady) {
-    // API veya Upload isteği ise JSON hata dön
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectToDatabase() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      dbName: "tarihKulubu",
+      bufferCommands: false,
+    };
+
+    cached.promise = mongoose
+      .connect(process.env.MONGO_URL, opts)
+      .then((mongoose) => {
+        console.log("✅ DB Bağlantısı Başarılı");
+        return mongoose;
+      });
+  }
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    console.error("❌ DB Bağlantı Hatası:", e);
+    throw e;
+  }
+
+  return cached.conn;
+}
+
+// ✅ DÜZELTME: Middleware artık bağlantıyı BEKLİYOR.
+// Bağlantı varsa next() ile sayfayı açar.
+// Bağlantı kopuksa veya hata varsa loading/hata ekranı basar.
+app.use(async (req, res, next) => {
+  // Statik dosyalar için DB beklemeye gerek yok (CSS, JS, Resimler hızlı yüklensin)
+  if (
+    req.path.startsWith("/css") ||
+    req.path.startsWith("/js") ||
+    req.path.startsWith("/img") ||
+    req.path.startsWith("/fonts")
+  ) {
+    return next();
+  }
+
+  try {
+    await connectToDatabase();
+    next(); // Bağlantı başarılı, sayfayı göster
+  } catch (error) {
+    console.error("DB Middleware Hatası:", error);
+
+    // API isteği ise JSON dön
     if (req.path.startsWith("/upload") || req.path.startsWith("/api")) {
       return res
         .status(503)
         .json({ error: "Sunucu hazırlanıyor, lütfen bekleyin." });
     }
 
-    // Sayfa isteği ise SİZİN TASARIMINIZI (db-loading) render et
-    // layout: false diyerek sadece loading içeriğini basıyoruz (Navbar vs. gelmesin diye)
-    // Eğer navbar da görünsün istersen { layout: false } kısmını silebilirsin.
+    // Sayfa isteği ise Loading ekranını render et
     return res.status(503).render("pages/db-loading", { layout: false });
   }
-  next();
 });
 
 /* ========================================================

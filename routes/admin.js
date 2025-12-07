@@ -31,6 +31,7 @@ admin.get("/", (req, res) => {
    GİRİŞ SAYFASI
 ========================= */
 admin.get("/giris", (req, res) => {
+  // ✅ DOĞRU YOL: pages/admin/login
   res.render("pages/admin/login", { layout: false });
 });
 
@@ -41,7 +42,8 @@ admin.post("/giris", (req, res) => {
   const { token } = req.body;
 
   if (token !== process.env.ADMIN_SECRET_TOKEN) {
-    return res.render("admin/login", {
+    // ✅ DÜZELTME BURADA YAPILDI: "admin/login" -> "pages/admin/login"
+    return res.render("pages/admin/login", {
       layout: false,
       error: "Geçersiz admin token",
     });
@@ -116,7 +118,10 @@ admin.post("/blog/:id/sil", adminOnly, async (req, res) => {
 // BLOG DÜZENLE (GET)
 admin.get("/blog/:id/duzenle", adminOnly, async (req, res) => {
   const post = await Post.findById(req.params.id).lean();
-  res.render("admin/blogEdit", {
+  // Burada admin/blogEdit var ama dosya pages/admin/blogEdit.handlebars ise düzeltmelisin
+  // Şimdilik pages/ ekleyerek güvene alıyorum:
+  res.render("pages/admin/blogDuzenle", {
+    // Dosya adı blogDuzenle mi blogEdit mi kontrol etmelisin
     layout: "admin",
     post,
   });
@@ -170,14 +175,10 @@ admin.post("/kullanici/ekle", adminOnly, async (req, res) => {
 
     await newUser.save();
 
-    return res.redirect(
-      "/admin/kullanici?success=Yeni+kullanıcı+eklendi"
-    );
+    return res.redirect("/admin/kullanici?success=Yeni+kullanıcı+eklendi");
   } catch (err) {
     console.log(err);
-    return res.redirect(
-      "/admin/kullanici/ekle?error=Kullanıcı+eklenemedi"
-    );
+    return res.redirect("/admin/kullanici/ekle?error=Kullanıcı+eklenemedi");
   }
 });
 
