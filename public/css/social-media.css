@@ -1,0 +1,80 @@
+/* ============================================
+   SOSYAL MEDYA BAR (NET GÖRÜNÜM)
+============================================ */
+.social-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+  border-bottom: 1px solid #eee;
+
+  padding: 0 20px;
+  height: 40px;
+  gap: 40px;
+
+  /* Navbar'ın altında başlaması için margin-top */
+  /* ✅ İSTEK: İçeriğin üstüne binmemesi için margin-bottom eklendi */
+  margin-bottom: 30px;
+
+  position: relative;
+  width: 100%;
+  z-index: 990;
+}
+
+/* PC İçin Konumlandırma */
+@media (min-width: 900px) {
+  .social-media {
+    margin-top: 70px; /* Navbar yüksekliği kadar aşağı it */
+  }
+}
+
+/* Mobil İçin Konumlandırma */
+@media (max-width: 900px) {
+  .social-media {
+    margin-top: 60px; /* Mobil navbar yüksekliği */
+    height: auto;
+    padding: 10px;
+    gap: 15px;
+    flex-wrap: wrap;
+    background: #f9f9f9;
+  }
+}
+
+/* ============================================
+   LİNKLER VE İKONLAR
+============================================ */
+.social-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+
+  /* ✅ İSTEK: Renk solması/opacity kaldırıldı, her zaman net */
+  opacity: 1;
+  transition: transform 0.2s ease;
+}
+
+.social-group:hover {
+  transform: translateY(-1px);
+}
+
+/* İkonlar - Orijinal renkleri koru veya Siyah yap */
+/* Eğer renkli kalmalarını istiyorsan filter satırını sil */
+.media-icon {
+  width: 18px;
+  height: 18px;
+  /* filter: grayscale(100%);  <-- BU SATIRI KALDIRDIM (İstek üzerine) */
+  /* Artık ikonlar orijinal renklerinde görünecek */
+}
+
+.media-link {
+  font-family: "Glacial", sans-serif;
+  color: #333; /* Koyu gri, okunaklı */
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.social-group:hover .media-link {
+  color: #b71c1c;
+}

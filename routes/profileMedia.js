@@ -11,7 +11,7 @@ router.post("/", authApi, async (req, res) => {
 
     if (!["avatar", "cover"].includes(type))
       return res.status(400).json({ error: "Geçersiz" });
-
+    
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ error: "Yok" });
 

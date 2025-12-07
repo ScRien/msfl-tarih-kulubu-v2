@@ -5,55 +5,74 @@
 .db-loading-screen {
   position: fixed;
   inset: 0;
-  background: #111;
-  background: linear-gradient(145deg, #000000, #2b0000, #5a0a0a);
-  animation: bgShift 6s ease infinite;
+  /* Daha modern, koyu kırmızımsı bir gradient */
+  background: linear-gradient(135deg, #1a0505 0%, #3d0000 50%, #1a0505 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999999999;
 }
 
-@keyframes bgShift {
-  0% { filter: brightness(0.7); }
-  50% { filter: brightness(1); }
-  100% { filter: brightness(0.7); }
+/* Arka planın hafifçe hareket etmesi için animasyon */
+.db-loading-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255, 59, 59, 0.1) 0%, transparent 70%);
+  animation: pulseBg 4s ease-in-out infinite alternate;
+}
+
+@keyframes pulseBg {
+  0% { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.1); }
 }
 
 .db-loading-box {
+  position: relative; /* Before elementi için */
   text-align: center;
   color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
+  z-index: 1; /* Arka planın üstünde kalması için */
 }
 
 .db-loading-logo {
-  width: 95px;
-  opacity: 0.9;
-  margin-bottom: 10px;
+  width: 110px;
+  height: auto;
+  opacity: 0.95;
+  margin-bottom: 15px;
+  filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
 }
 
 /* Spinner */
 .loader {
-  width: 42px;
-  height: 42px;
-  border: 5px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ff3b3b;
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ff4d4d; /* Daha canlı bir kırmızı */
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  margin-top: 5px;
+  animation: spin 1s cubic-bezier(0.55, 0.055, 0.675, 0.19) infinite;
+  margin-bottom: 5px;
 }
 
 @keyframes spin {
+  0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
 .db-loading-text {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 500;
-  opacity: 0.9;
-  letter-spacing: 0.4px;
+  color: #e0e0e0;
+  letter-spacing: 0.5px;
   font-family: "Cardo", serif;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  animation: fadeText 2s ease-in-out infinite alternate;
+}
+
+@keyframes fadeText {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
 }

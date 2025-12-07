@@ -1,49 +1,43 @@
 /* ============================================
-   GLOBAL PADDING (NAVBAR + SOSYAL MEDYA BAR)
-============================================ */
-body {
-  padding-top: 150px; /* 100px navbar + 50px sosyal medya bar */
-}
-
-/* ============================================
-   NAVBAR (MODERN & RESPONSIVE)
+   NAVBAR (SABİT & MODERN)
 ============================================ */
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100px;
+  height: 70px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  background: linear-gradient(to right, #731919, #e52b2b);
-  padding: 10px 40px;
+  /* Düz Kırmızı Arka Plan */
+  background-color: #8b0000;
 
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 0 30px;
   z-index: 1000;
   color: white;
-
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
-
-  backface-visibility: hidden;
-  transform: translateZ(0);
 }
 
-/* Sol Logo Bölümü */
+/* Sol Logo */
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 }
 
 .logo {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%; /* Resmin kendisi yuvarlak kalabilir */
   object-fit: contain;
   user-select: none;
+
+  /* ✅ İSTEK: Beyaz arka plan/border kaldırıldı */
+  background: transparent;
+  padding: 0;
 }
 
 /* Orta Başlık */
@@ -54,18 +48,12 @@ body {
 
 .nav-center a {
   text-decoration: none;
-  font-size: 26px;
-  font-family: glacial, sans-serif;
+  font-size: 20px;
+  font-family: "Glacial", sans-serif;
   font-weight: 700;
   color: #fff;
-  letter-spacing: 1px;
-
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
-  transition: 0.25s ease;
-}
-
-.nav-center a:hover {
-  opacity: 0.9;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Sağ Menü */
@@ -77,192 +65,62 @@ body {
 
 .nav-right a {
   text-decoration: none;
+  padding: 10px 18px; /* Biraz daha geniş */
 
-  padding: 8px 18px;
-  border-radius: 25px;
+  /* ✅ İSTEK: Tam yuvarlak yerine hafif köşeli dikdörtgen */
+  border-radius: 8px;
 
   font-size: 14px;
   color: white;
-  border: 1px solid transparent;
 
-  background: radial-gradient(circle at top, #4b4b4b, #2d2d2d);
+  /* ✅ İSTEK: Solukluk yok, net renk */
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
-  transition: 0.25s ease;
+  transition: background 0.2s ease;
+  font-weight: 500;
 }
 
 .nav-right a:hover {
-  transform: translateY(-1px);
-  background: #555;
-  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* Özel Buton Renkleri */
-.login-btn {
-  background: linear-gradient(to right, #444, #222);
-}
-
-.register-btn {
-  background: linear-gradient(to right, #ff7a7a, #e52b2b);
-}
-
-.account-btn {
-  background: linear-gradient(to right, #214421, #1b321b);
-}
-
-.logout-btn {
-  background: linear-gradient(to right, #7c0000, #400000);
-}
-
-/* ============================================
-   SOSYAL MEDYA BAR (NAVBAR ALTINA SABİT)
-============================================ */
-.social-media {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: linear-gradient(to right, #dfdcda, #858176);
-  padding: 10px 40px;
-
-  height: 50px;
-  gap: 80px;
-
-  position: absolute;
-  top: 100px;
-  left: 0;
-
-  width: 100%;
-  z-index: 999;
-
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-}
-
-.social-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  text-decoration: none;
-  transition: 0.25s ease;
-}
-
-.social-group:hover {
-  transform: scale(1.05);
-  filter: brightness(1.1);
-}
-
-.media-icon {
-  width: 22px;
-  height: 22px;
-  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.2));
-}
-
-.media-link {
-  font-family: "Glacial", sans-serif;
-  color: #2d2d2d;
-  font-size: 14px;
-  transition: color 0.25s ease;
-}
-
-.social-group:hover .media-link {
-  color: #731919;
-}
-
-/* ============================================
-   RESPONSIVE (MOBİL)
-============================================ */
-@media (max-width: 900px) {
-  .nav-center a {
-    font-size: 20px;
-  }
-
-  .nav-right {
-    gap: 6px;
-  }
-
-  .logo {
-    width: 55px;
-    height: 55px;
-  }
-
-  .navbar {
-    height: 90px;
-    padding: 10px 20px;
-  }
-
-  .social-media {
-    flex-wrap: wrap;
-    height: auto;
-    gap: 25px;
-    padding: 12px;
-    top: 90px;
-  }
-
-  body {
-    padding-top: 140px;
-  }
-}
-
-@media (max-width: 600px) {
-  .nav-center a {
-    font-size: 17px;
-    line-height: 20px;
-  }
-
-  .nav-left img.logo {
-    width: 48px;
-    height: 48px;
-  }
-
-  .nav-right a {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-
-  .navbar {
-    height: 85px;
-  }
-
-  .social-media {
-    gap: 16px;
-    padding: 8px;
-    top: 85px;
-  }
-
-  body {
-    padding-top: 135px;
-  }
-}
-
-/* ===========================================
-   MOBİL HAMBURGER MENÜ
-=========================================== */
+/* Hamburger Menü (Mobil) */
 .hamburger {
   display: none;
-  font-size: 30px;
+  font-size: 24px;
   cursor: pointer;
   color: white;
 }
 
-/* Mobil görünüm */
-@media (max-width: 850px) {
+/* Mobil Görünüm */
+@media (max-width: 900px) {
+  .navbar {
+    height: 60px;
+    padding: 0 15px;
+  }
+
+  .logo {
+    width: 38px;
+    height: 38px;
+  }
+
+  .nav-center a {
+    font-size: 16px;
+  }
+
   .nav-right {
     position: fixed;
     top: 0;
-    right: -260px;
+    right: -100%;
     height: 100vh;
     width: 260px;
-
-    background: linear-gradient(to bottom, #731919, #e52b2b);
-    box-shadow: -3px 0 12px rgba(0, 0, 0, 0.3);
-
+    background: #8b0000;
     flex-direction: column;
-    justify-content: flex-start;
-    padding-top: 120px;
-    gap: 20px;
-
-    transition: 0.35s ease;
+    padding-top: 80px;
+    transition: 0.3s ease;
     z-index: 9999;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
   }
 
   .nav-right.active {
@@ -274,24 +132,24 @@ body {
   }
 
   .nav-right a {
-    width: 70%;
+    width: 85%;
     text-align: center;
-    font-size: 16px;
+    background: rgba(255, 255, 255, 0.05);
   }
 }
 
 .close-menu {
   position: absolute;
-  top: 25px;
-  right: 25px;
-  font-size: 32px;
+  top: 20px;
+  right: 20px;
+  font-size: 28px;
   cursor: pointer;
   color: #fff;
   display: none;
   z-index: 10000;
 }
 
-@media (max-width: 850px) {
+@media (max-width: 900px) {
   .close-menu {
     display: block;
   }
