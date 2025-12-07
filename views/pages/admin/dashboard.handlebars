@@ -1,92 +1,89 @@
-<h1 class="admin-title">📊 Admin Dashboard</h1>
+<h1 style="margin-bottom: 25px;">Hoşgeldin, Admin 👋</h1>
 
+<!-- İSTATİSTİK KARTLARI -->
 <div class="stats-grid">
   <div class="stat-card">
-    <span>Toplam Blog</span>
-    <strong>{{stats.blogs}}</strong>
+    <div class="stat-info">
+      <span>Toplam Blog</span>
+      <strong>{{stats.blogCount}}</strong>
+    </div>
+    <div class="stat-icon"><i class="fa-solid fa-feather"></i></div>
   </div>
 
   <div class="stat-card">
-    <span>Toplam Kullanıcı</span>
-    <strong>{{stats.users}}</strong>
+    <div class="stat-info">
+      <span>Kayıtlı Üye</span>
+      <strong>{{stats.userCount}}</strong>
+    </div>
+    <div class="stat-icon" style="color:#2ecc71; background:#e8f8f5"><i class="fa-solid fa-users"></i></div>
   </div>
 
   <div class="stat-card">
-    <span>Toplam Yorum</span>
-    <strong>{{stats.comments}}</strong>
+    <div class="stat-info">
+      <span>Toplam Yorum</span>
+      <strong>{{stats.commentCount}}</strong>
+    </div>
+    <div class="stat-icon" style="color:#3498db; background:#eef7fb"><i class="fa-solid fa-comment-dots"></i></div>
   </div>
 </div>
 
-<!-- GRAFİKLER -->
 <div class="stats-grid">
-
-  <div class="chart-card">
-    <div class="chart-title">📈 Aylara Göre Blog Sayısı</div>
-    <canvas id="blogChart"></canvas>
+  <!-- SON KULLANICILAR -->
+  <div class="table-container">
+    <h3>Son Katılanlar</h3>
+    <br>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Kullanıcı</th>
+          <th>Tarih</th>
+          <th>İşlem</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each recentUsers}}
+        <tr>
+          <td style="display:flex; align-items:center; gap:10px;">
+            <img src="{{#if this.avatar.url}}{{this.avatar.url}}{{else}}/img/default-avatar.png{{/if}}" class="table-img">
+            {{this.username}}
+          </td>
+          <!-- Yeni Helper Kullanıldı -->
+          <td>{{generateDateTime this.date}}</td>
+          <td>
+            <a href="/admin/kullanici/{{this._id}}" class="action-btn btn-view">Detay</a>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
   </div>
 
-  <div class="chart-card">
-    <div class="chart-title">🥧 Genel Dağılım</div>
-    <canvas id="summaryChart"></canvas>
+  <!-- SON BLOGLAR -->
+  <div class="table-container">
+    <h3>Son Bloglar</h3>
+    <br>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Başlık</th>
+          <th>Yazar</th>
+          <th style="text-align:right;">İşlem</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each recentBlogs}}
+        <tr>
+          <td>{{this.title}}</td>
+          <td>{{this.username}}</td>
+          <td style="text-align:right;">
+            <!-- Tarih yerine Bloğa Git -->
+            <a href="/blog/{{this._id}}" target="_blank" class="action-btn btn-view" style="width:auto; padding:6px 12px;">
+              <i class="fa-solid fa-external-link-alt"></i> Bloğa Git
+            </a>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
   </div>
-
 </div>
-
-
-<script>
-  const blogsPerMonth = {{{blogsPerMonth}}};
-
-  Chart.defaults.color = "#cfcfcf";            // 🔥 yazılar görünür
-  Chart.defaults.borderColor = "rgba(255,255,255,0.1)";
-
-  // LINE CHART
-  new Chart(document.getElementById("blogChart"), {
-    type: "line",
-    data: {
-      labels: [
-        "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
-        "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"
-      ],
-      datasets: [{
-        label: "Blog",
-        data: blogsPerMonth,
-        fill: true,
-        tension: 0.35,
-        borderColor: "#c9a752",
-        backgroundColor: "rgba(201,167,82,0.2)",
-        pointBackgroundColor: "#c9a752"
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false, // 🔥 ŞART
-      plugins: {
-        legend: { display: false }
-      }
-    }
-  });
-
-  // PIE CHART
-  new Chart(document.getElementById("summaryChart"), {
-    type: "pie",
-    data: {
-      labels: ["Bloglar", "Kullanıcılar", "Yorumlar"],
-      datasets: [{
-        data: [
-          {{stats.blogs}},
-          {{stats.users}},
-          {{stats.comments}}
-        ],
-        backgroundColor: [
-          "#c9a752",
-          "#4cd964",
-          "#ff5f5f"
-        ],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      maintainAspectRatio: false
-    }
-  });
-</script>

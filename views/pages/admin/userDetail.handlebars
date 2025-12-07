@@ -1,0 +1,76 @@
+<div style="display:flex; gap:20px; align-items:flex-start;">
+  
+  <!-- SOL: KULLANICI BİLGİLERİ -->
+  <div class="table-container" style="flex:1;">
+    <h3>Profil</h3>
+    <br>
+    <div style="text-align:center; margin-bottom:20px;">
+      <img src="{{#if targetUser.avatar.url}}{{targetUser.avatar.url}}{{else}}/img/default-avatar.png{{/if}}" 
+           style="width:100px; height:100px; border-radius:50%; border:3px solid #eee;">
+      <h2>{{targetUser.name}} {{targetUser.surname}}</h2>
+      <p style="color:#777;">@{{targetUser.username}}</p>
+    </div>
+
+    <table class="admin-table">
+      <tr><th>E-posta</th><td>{{targetUser.email}}</td></tr>
+      <tr><th>Rol</th><td>{{targetUser.role}}</td></tr>
+      <tr><th>Kayıt</th><td>{{generateDate targetUser.date}}</td></tr>
+    </table>
+
+    <div style="margin-top:20px; display:flex; gap:10px;">
+      <form action="/admin/kullanici/{{targetUser._id}}/rol" method="POST" style="flex:1;">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <button class="action-btn btn-edit" style="width:100%;">
+          {{#if (eq targetUser.role 'admin')}}Üye Yap{{else}}Admin Yap{{/if}}
+        </button>
+      </form>
+
+      <form action="/admin/kullanici/{{targetUser._id}}/sil" method="POST" onsubmit="return confirm('Kullanıcıyı silmek istediğine emin misin?');" style="flex:1;">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <button class="action-btn btn-delete" style="width:100%;">Sil</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SAĞ: İÇERİKLER -->
+  <div style="flex:2; display:flex; flex-direction:column; gap:20px;">
+    
+    <div class="table-container">
+      <h3>Bloglar ({{userBlogs.length}})</h3>
+      <table class="admin-table">
+        {{#each userBlogs}}
+        <tr>
+          <td>{{this.title}}</td>
+          <td>{{generateDate this.date}}</td>
+          <td>
+             <a href="/blog/{{this._id}}" target="_blank" class="action-btn btn-view"><i class="fa-solid fa-eye"></i></a>
+          </td>
+        </tr>
+        {{else}}
+        <tr><td colspan="3">Blog yok.</td></tr>
+        {{/each}}
+      </table>
+    </div>
+
+    <div class="table-container">
+      <h3>Yorumlar ({{userComments.length}})</h3>
+      <table class="admin-table">
+        {{#each userComments}}
+        <tr>
+          <td style="font-size:13px; color:#555;">{{this.content}}</td>
+          <td>{{generateDate this.date}}</td>
+          <td>
+             <form action="/admin/yorum/{{this._id}}/sil" method="POST" style="display:inline;">
+                <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+                <button class="action-btn btn-delete"><i class="fa-solid fa-trash"></i></button>
+             </form>
+          </td>
+        </tr>
+        {{else}}
+        <tr><td colspan="3">Yorum yok.</td></tr>
+        {{/each}}
+      </table>
+    </div>
+
+  </div>
+</div>

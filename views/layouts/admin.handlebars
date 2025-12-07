@@ -1,33 +1,62 @@
+<!DOCTYPE html>
 <html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Admin Panel</title>
-    <style>
-      body { margin: 0; font-family: system-ui; background: #0b0b0f; color:
-      #fff; } .layout { display: flex; min-height: 100vh; } aside { width:
-      220px; background: #111; padding: 20px; } aside a { display: block; color:
-      #ddd; margin-bottom: 12px; text-decoration: none; } main { flex: 1;
-      padding: 24px; }
-    </style>
-    <link rel="stylesheet" href="/css/adminPanel.css" />
-    <link rel="stylesheet" href="/css/admin.css" />
-  </head>
-  <body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Paneli | MSFL Tarih Kulübü</title>
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Admin CSS -->
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
 
-    <div class="layout">
-      <aside>
-        <h3>MSFL Admin</h3>
-        <a href="/admin/dashboard">Dashboard</a>
-        <a href="/admin/bloglar">Bloglar</a>
-        {{!-- <a href="/admin/kullanici/ekle">➕ Kullanıcı Ekle</a> --}}
-        <a href="/admin/cikis">Çıkış</a>
-      </aside>
+  <div class="admin-layout">
+    
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+      <div class="admin-header">
+        <h2>MSFL ADMIN</h2>
+      </div>
 
-      <main>
-        {{{body}}}
-      </main>
-    </div>
+      <nav class="admin-nav">
+        <a href="/admin/dashboard" class="admin-link {{#if (eq active 'dashboard')}}active{{/if}}">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </a>
+        
+        <a href="/admin/kullanicilar" class="admin-link {{#if (eq active 'users')}}active{{/if}}">
+          <i class="fa-solid fa-users"></i>
+          <span>Kullanıcılar</span>
+        </a>
+        
+        <a href="/admin/bloglar" class="admin-link {{#if (eq active 'blogs')}}active{{/if}}">
+          <i class="fa-solid fa-file-pen"></i>
+          <span>Bloglar</span>
+        </a>
+        
+        <a href="/admin/yorumlar" class="admin-link {{#if (eq active 'comments')}}active{{/if}}">
+          <i class="fa-solid fa-comments"></i>
+          <span>Yorumlar</span>
+        </a>
+      </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </body>
+      <div class="admin-logout">
+        <a href="/admin/cikis" class="admin-link">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Çıkış Yap</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="admin-content">
+      {{{body}}}
+    </main>
+
+  </div>
+
+</body>
 </html>

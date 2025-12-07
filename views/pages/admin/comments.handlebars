@@ -1,0 +1,44 @@
+<div class="admin-search-bar">
+  <h1>Yorum Yönetimi</h1>
+</div>
+
+<div class="table-container">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th width="150">Kullanıcı</th>
+        <th>Yorum</th>
+        <th>Tarih</th>
+        <th>İşlem</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each comments}}
+      <tr>
+        <td><b>{{this.username}}</b></td>
+        <td style="font-size:13px; color:#555;">{{this.content}}</td>
+        <td>{{generateDateTime this.date}}</td>
+        <td>
+          <!-- Bloğa/Yoruma Git -->
+          <a href="/blog/{{this.post_id}}#comments" target="_blank" class="action-btn btn-view" title="Bloğa Git">
+            <i class="fa-solid fa-link"></i>
+          </a>
+
+          <!-- Düzenle -->
+          <a href="/admin/yorum/{{this._id}}/duzenle" class="action-btn btn-edit" title="Düzenle">
+            <i class="fa-solid fa-pen"></i>
+          </a>
+          
+          <!-- Sil -->
+          <form action="/admin/yorum/{{this._id}}/sil" method="POST" style="display:inline;" onsubmit="return confirm('Silinsin mi?');">
+            <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+            <button class="action-btn btn-delete" title="Sil">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>

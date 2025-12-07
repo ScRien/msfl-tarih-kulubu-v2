@@ -1,83 +1,82 @@
 import moment from "moment";
-import Handlebars from "handlebars";
+import Handlebars from "handlebars"; // SafeString için gerekli
 
-// ====== TARİH FORMATLAMA ======
-Handlebars.registerHelper(
-  "generateDate",
-  (date, format = "DD.MM.YYYY HH:mm") => {
+export default {
+  // --- TARİH FORMATLAMA ---
+  generateDate: (date, format = "DD.MM.YYYY HH:mm") => {
     try {
+      if (!date) return "-";
       return moment(date).format(format);
     } catch (err) {
       return "";
     }
-  }
-);
+  },
 
-// ====== METİN KISALTMA (BLOG ÖZETİ) ======
-Handlebars.registerHelper("truncate", (text, size) => {
-  if (!text) return "";
-  text = text.toString();
-  return text.length > size ? text.substring(0, size) + "..." : text;
-});
+  // Senin istediğin özel format (Admin paneli için)
+  generateDateTime: (date) => {
+    if (!date) return "-";
+    try {
+      return moment(date).format("DD/MM/YYYY HH:mm");
+    } catch (e) {
+      return "-";
+    }
+  },
 
-// ====== PAGINATION ======
-Handlebars.registerHelper("increment", (value) => value + 1);
-Handlebars.registerHelper("decrement", (value) => value - 1);
-Handlebars.registerHelper("gt", (a, b) => a > b);
-Handlebars.registerHelper("lt", (a, b) => a < b);
+  // --- EŞİTLİK VE MANTIKSAL OPERATÖRLER ---
+  eq: (a, b) => a == b,
+  gt: (a, b) => a > b,
+  lt: (a, b) => a < b,
 
-// ====== EŞİTLİK KONTROLÜ ======
-Handlebars.registerHelper("eq", (a, b) => a == b);
+  // --- MATEMATİKSEL İŞLEMLER (Pagination vb. için) ---
+  increment: (value) => parseInt(value) + 1,
+  decrement: (value) => parseInt(value) - 1,
 
-// ====== NOT-EMPTY ======
-Handlebars.registerHelper("notEmpty", (v) => {
-  return v && v.length > 0;
-});
+  // --- METİN İŞLEMLERİ ---
+  truncate: (text, size) => {
+    if (!text) return "";
+    text = text.toString();
+    return text.length > size ? text.substring(0, size) + "..." : text;
+  },
 
-// ====== UPPERCASE ======
-Handlebars.registerHelper("upper", (str) => {
-  return str ? str.toString().toUpperCase() : "";
-});
+  upper: (str) => (str ? str.toString().toUpperCase() : ""),
+  lower: (str) => (str ? str.toString().toLowerCase() : ""),
 
-// ====== LOWERCASE ======
-Handlebars.registerHelper("lower", (str) => {
-  return str ? str.toLowerCase() : "";
-});
+  // --- HTML İÇERİK (Güvenli şekilde HTML basmak için) ---
+  safe: (html) => {
+    return new Handlebars.SafeString(html);
+  },
 
-// ====== SAFE STRING ======
-Handlebars.registerHelper("safe", (html) => {
-  return new Handlebars.SafeString(html);
-});
+  formatParagraphs: (content) => {
+    if (!content) return "";
+    const cleaned = String(content).trim();
+    const paragraphs = cleaned
+      .split(/\r?\n\r?\n/)
+      .map((p) => `<p>${p.trim()}</p>`)
+      .join("");
+    return new Handlebars.SafeString(paragraphs);
+  },
 
-// ====== PARAGRAF FORMATLAYICI (BLOG İÇERİĞİ) ======
-Handlebars.registerHelper("formatParagraphs", (content) => {
-  if (!content) return "";
+  // --- DİĞER ---
+  notEmpty: (v) => v && v.length > 0,
 
-  // toString kullanmıyoruz → güvenlik hatası çıkmasın
-  const cleaned = String(content).trim();
+  length: (value) => {
+    if (!value) return 0;
+    if (Array.isArray(value) || typeof value === "string") return value.length;
+    if (typeof value === "object") return Object.keys(value).length;
+    return 0;
+  },
 
-  const paragraphs = cleaned
-    .split(/\r?\n\r?\n/)
-    .map((p) => `<p>${p.trim()}</p>`)
-    .join("");
+  // --- PROFİL RESMİ HELPERLARI (Hesap sayfasında kullanılıyor) ---
+  getAvatar: (user) => {
+    if (user && user.avatar && user.avatar.url) return user.avatar.url;
+    return "/img/default-avatar.png";
+  },
 
-  return new Handlebars.SafeString(paragraphs);
-});
-
-Handlebars.registerHelper("length", (value) => {
-  if (!value) return 0;
-
-  // Dizi veya string ise length döndür
-  if (Array.isArray(value) || typeof value === "string") {
-    return value.length;
-  }
-
-  // Object ise key sayısı döndür
-  if (typeof value === "object") {
-    return Object.keys(value).length;
-  }
-
-  return 0;
-});
-
-export default Handlebars;
+  getCover: (user) => {
+    // Veritabanında bazen cover, bazen coverImage olabilir, ikisine de bakalım
+    if (user && user.coverImage && user.coverImage.url)
+      return user.coverImage.url;
+    if (user && user.cover && user.cover.url) return user.cover.url;
+    return "/img/default-cover.png";
+  },
+};

@@ -1,0 +1,56 @@
+<div class="admin-search-bar">
+  <h1>Blog Yönetimi</h1>
+  <form action="/admin/bloglar" method="GET">
+    <input type="text" name="q" placeholder="Blog başlığı ara..." class="search-input" value="{{search}}">
+  </form>
+</div>
+
+<div class="table-container">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th width="60">Kapak</th>
+        <th>Başlık</th>
+        <th>Yazar</th>
+        <th>Tarih</th>
+        <th>İşlemler</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each blogs}}
+      <tr>
+        <td>
+          {{#if this.images.0.url}}
+            <img src="{{this.images.0.url}}" class="table-img" style="border-radius:4px;">
+          {{else}}
+            <div style="width:40px; height:40px; background:#eee; border-radius:4px;"></div>
+          {{/if}}
+        </td>
+        <td style="max-width:250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+          {{this.title}}
+        </td>
+        <td>{{this.username}}</td>
+        <!-- Yeni Helper -->
+        <td>{{generateDateTime this.date}}</td>
+        <td>
+          <!-- Bloğa Git Butonu -->
+          <a href="/blog/{{this._id}}" target="_blank" class="action-btn btn-view" title="Bloğu Görüntüle">
+            <i class="fa-solid fa-eye"></i> Git
+          </a>
+          
+          <a href="/admin/blog/{{this._id}}/duzenle" class="action-btn btn-edit" title="Düzenle">
+            <i class="fa-solid fa-pen"></i>
+          </a>
+          
+          <form action="/admin/blog/{{this._id}}/sil" method="POST" style="display:inline;" onsubmit="return confirm('Bu blogu silmek istediğine emin misin?');">
+            <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+            <button class="action-btn btn-delete" title="Sil">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>

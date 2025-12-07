@@ -3,12 +3,20 @@ import jwt from "jsonwebtoken";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
 import Comment from "../models/Comment.js";
+import ImageKit from "imagekit";
 
 const admin = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "jwt_secret";
 
+// ImageKit (Resim Silme İçin)
+const imagekit = new ImageKit({
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+});
+
 /* =========================
-   ADMIN KORUMA
+   MIDDLEWARE: ADMIN KORUMA
 ========================= */
 function adminOnly(req, res, next) {
   if (!req.user || req.user.role !== "admin") {
@@ -18,168 +26,267 @@ function adminOnly(req, res, next) {
 }
 
 /* =========================
-   /admin → yönlendirme
+   GİRİŞ & ÇIKIŞ
 ========================= */
 admin.get("/", (req, res) => {
-  if (req.user && req.user.role === "admin") {
+  if (req.user && req.user.role === "admin")
     return res.redirect("/admin/dashboard");
-  }
   return res.redirect("/admin/giris");
 });
 
-/* =========================
-   GİRİŞ SAYFASI
-========================= */
 admin.get("/giris", (req, res) => {
-  // ✅ DOĞRU YOL: pages/admin/login
   res.render("pages/admin/login", { layout: false });
 });
 
-/* =========================
-   GİRİŞ POST
-========================= */
 admin.post("/giris", (req, res) => {
   const { token } = req.body;
-
   if (token !== process.env.ADMIN_SECRET_TOKEN) {
-    // ✅ DÜZELTME BURADA YAPILDI: "admin/login" -> "pages/admin/login"
     return res.render("pages/admin/login", {
       layout: false,
-      error: "Geçersiz admin token",
+      error: "Geçersiz Token!",
     });
   }
-
-  const jwtToken = jwt.sign({ role: "admin", username: "admin" }, JWT_SECRET, {
-    expiresIn: "6h",
-  });
-
-  res.cookie("auth_token", jwtToken, {
-    httpOnly: true,
-    sameSite: "strict",
-  });
-
+  const jwtToken = jwt.sign(
+    { role: "admin", username: "admin", id: "admin_id" },
+    JWT_SECRET,
+    { expiresIn: "6h" }
+  );
+  res.cookie("auth_token", jwtToken, { httpOnly: true, sameSite: "strict" });
   res.redirect("/admin/dashboard");
 });
 
-/* =========================
-   ÇIKIŞ
-========================= */
 admin.get("/cikis", (req, res) => {
   res.clearCookie("auth_token");
-  res.redirect("/admin/giris");
+  res.redirect("/");
 });
 
 /* =========================
    DASHBOARD
 ========================= */
 admin.get("/dashboard", adminOnly, async (req, res) => {
-  const blogStats = await Post.aggregate([
-    {
-      $group: {
-        _id: { $month: "$date" },
-        count: { $sum: 1 },
-      },
-    },
-    { $sort: { _id: 1 } },
-  ]);
+  try {
+    const stats = {
+      blogCount: await Post.countDocuments(),
+      userCount: await User.countDocuments(),
+      commentCount: await Comment.countDocuments(),
+    };
+    // Son 5 kayıt
+    const recentBlogs = await Post.find().sort({ date: -1 }).limit(5).lean();
+    const recentUsers = await User.find().sort({ date: -1 }).limit(5).lean();
 
-  const blogsPerMonth = Array(12).fill(0);
-  blogStats.forEach((m) => {
-    blogsPerMonth[m._id - 1] = m.count;
-  });
+    res.render("pages/admin/dashboard", {
+      layout: "admin",
+      active: "dashboard",
+      stats,
+      recentBlogs,
+      recentUsers,
+      user: req.user,
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/");
+  }
+});
 
-  const stats = {
-    blogs: await Post.countDocuments(),
-    users: await User.countDocuments(),
-    comments: await Comment.countDocuments(),
-  };
+/* =========================
+   1) KULLANICI YÖNETİMİ
+========================= */
+// Liste
+admin.get("/kullanicilar", adminOnly, async (req, res) => {
+  try {
+    const search = req.query.q || "";
+    const query = search
+      ? {
+          $or: [
+            { username: new RegExp(search, "i") },
+            { email: new RegExp(search, "i") },
+          ],
+        }
+      : {};
+    const users = await User.find(query).sort({ date: -1 }).lean();
 
-  res.render("pages/admin/dashboard", {
-    layout: "admin",
-    stats,
-    blogsPerMonth: JSON.stringify(blogsPerMonth),
+    res.render("pages/admin/users", {
+      layout: "admin",
+      active: "users",
+      users,
+      search,
+      csrfToken: req.csrfToken ? req.csrfToken() : "",
+    });
+  } catch (err) {
+    res.redirect("/admin/dashboard");
+  }
+});
+
+// Detay (Blogları ve Yorumlarıyla)
+admin.get("/kullanici/:id", adminOnly, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).lean();
+    if (!user) return res.redirect("/admin/kullanicilar");
+
+    const userBlogs = await Post.find({ user_id: user._id })
+      .sort({ date: -1 })
+      .lean();
+    const userComments = await Comment.find({ user_id: user._id })
+      .sort({ date: -1 })
+      .lean();
+
+    res.render("pages/admin/userDetail", {
+      layout: "admin",
+      active: "users",
+      targetUser: user,
+      userBlogs,
+      userComments,
+      csrfToken: req.csrfToken ? req.csrfToken() : "",
+    });
+  } catch (err) {
+    res.redirect("/admin/kullanicilar");
+  }
+});
+
+// Sil (Tüm verileriyle)
+admin.post("/kullanici/:id/sil", adminOnly, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    if (user) {
+      // Profil resimlerini sil
+      if (user.avatar?.fileId)
+        await imagekit.deleteFile(user.avatar.fileId).catch(() => {});
+      if (user.coverImage?.fileId)
+        await imagekit.deleteFile(user.coverImage.fileId).catch(() => {});
+
+      // Kullanıcının bloglarını ve o blogların resimlerini sil
+      const userBlogs = await Post.find({ user_id: userId });
+      for (const blog of userBlogs) {
+        if (blog.images && blog.images.length > 0) {
+          for (const img of blog.images) {
+            if (img.fileId)
+              await imagekit.deleteFile(img.fileId).catch(() => {});
+          }
+        }
+      }
+
+      await User.findByIdAndDelete(userId);
+      await Post.deleteMany({ user_id: userId });
+      await Comment.deleteMany({ user_id: userId });
+    }
+    res.redirect("/admin/kullanicilar?success=Kullanıcı+silindi");
+  } catch (err) {
+    res.redirect("/admin/kullanicilar?error=Hata");
+  }
+});
+
+// Rol Değiştir
+admin.post("/kullanici/:id/rol", adminOnly, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    user.role = user.role === "admin" ? "user" : "admin";
+    await user.save();
+    res.redirect(`/admin/kullanici/${user._id}`);
+  } catch (err) {
+    res.redirect("/admin/kullanicilar");
+  }
+});
+
+/* =========================
+   2) BLOG YÖNETİMİ
+========================= */
+admin.get("/bloglar", adminOnly, async (req, res) => {
+  try {
+    const search = req.query.q || "";
+    const query = search ? { title: new RegExp(search, "i") } : {};
+    const blogs = await Post.find(query).sort({ date: -1 }).lean();
+
+    res.render("pages/admin/blogs", {
+      layout: "admin",
+      active: "blogs",
+      blogs,
+      search,
+      csrfToken: req.csrfToken ? req.csrfToken() : "",
+    });
+  } catch (err) {
+    res.redirect("/admin/dashboard");
+  }
+});
+
+admin.post("/blog/:id/sil", adminOnly, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (post) {
+      if (post.images && post.images.length > 0) {
+        for (const img of post.images) {
+          if (img.fileId) await imagekit.deleteFile(img.fileId).catch(() => {});
+        }
+      }
+      await Comment.deleteMany({ post_id: post._id });
+      await Post.findByIdAndDelete(req.params.id);
+    }
+    res.redirect("/admin/bloglar?success=Blog+silindi");
+  } catch (err) {
+    res.redirect("/admin/bloglar?error=Hata");
+  }
+});
+
+// Admin Blog Düzenleme Sayfası (Kendi Layout'umuzda değil, normal editörde açalım)
+admin.get("/blog/:id/duzenle", adminOnly, async (req, res) => {
+  const post = await Post.findById(req.params.id).lean();
+  res.render("pages/blogDuzenle", {
+    post,
+    layout: "main", // Normal site layout'u (Editör scriptleri için)
+    isAdminEdit: true,
+    csrfToken: req.csrfToken ? req.csrfToken() : "",
   });
 });
 
 /* =========================
-   BLOG PANEL
+   3) YORUM YÖNETİMİ
 ========================= */
-admin.get("/bloglar", adminOnly, async (req, res) => {
-  const posts = await Post.find().sort({ date: -1 }).lean();
-  res.render("pages/admin/bloglar", { layout: "admin", posts });
-});
-
-// BLOG SİL
-admin.post("/blog/:id/sil", adminOnly, async (req, res) => {
-  await Post.findByIdAndDelete(req.params.id);
-  res.redirect("/admin/bloglar");
-});
-
-// BLOG DÜZENLE (GET)
-admin.get("/blog/:id/duzenle", adminOnly, async (req, res) => {
-  const post = await Post.findById(req.params.id).lean();
-  // Burada admin/blogEdit var ama dosya pages/admin/blogEdit.handlebars ise düzeltmelisin
-  // Şimdilik pages/ ekleyerek güvene alıyorum:
-  res.render("pages/admin/blogDuzenle", {
-    // Dosya adı blogDuzenle mi blogEdit mi kontrol etmelisin
-    layout: "admin",
-    post,
-  });
-});
-
-// BLOG DÜZENLE (POST)
-admin.post("/blog/:id/duzenle", adminOnly, async (req, res) => {
-  await Post.findByIdAndUpdate(req.params.id, {
-    title: req.body.title,
-    content: req.body.content,
-  });
-  res.redirect("/admin/bloglar");
-});
-
-/* ============================================================
-   USER CREATE (GET)
-============================================================ */
-admin.get("/kullanici/ekle", adminOnly, (req, res) => {
-  res.render("pages/admin/adminUserCreate", {
-    error: req.query.error || null,
-    success: req.query.success || null,
-  });
-});
-
-/* ============================================================
-   USER CREATE (POST)
-============================================================ */
-admin.post("/kullanici/ekle", adminOnly, async (req, res) => {
+admin.get("/yorumlar", adminOnly, async (req, res) => {
   try {
-    const { username, email, name, surname } = req.body;
-
-    if (!username || !email) {
-      return res.redirect("/admin/kullanici/ekle?error=Zorunlu+alan+eksik");
-    }
-
-    const exists = await User.findOne({ $or: [{ email }, { username }] });
-    if (exists) {
-      return res.redirect("/admin/kullanici/ekle?error=Kullanıcı+zaten+var");
-    }
-
-    const password = Math.random().toString(36).slice(-8);
-
-    const newUser = new User({
-      username,
-      email,
-      name,
-      surname,
-      password,
-      role: "user",
+    const comments = await Comment.find().sort({ date: -1 }).limit(100).lean();
+    res.render("pages/admin/comments", {
+      layout: "admin",
+      active: "comments",
+      comments,
+      csrfToken: req.csrfToken ? req.csrfToken() : "",
     });
-
-    await newUser.save();
-
-    return res.redirect("/admin/kullanici?success=Yeni+kullanıcı+eklendi");
   } catch (err) {
-    console.log(err);
-    return res.redirect("/admin/kullanici/ekle?error=Kullanıcı+eklenemedi");
+    res.redirect("/admin/dashboard");
   }
+});
+
+// Yorum Düzenle (GET)
+admin.get("/yorum/:id/duzenle", adminOnly, async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.id).lean();
+    if (!comment) return res.redirect("/admin/yorumlar");
+    res.render("pages/admin/commentEdit", {
+      layout: "admin",
+      active: "comments",
+      comment,
+      csrfToken: req.csrfToken ? req.csrfToken() : "",
+    });
+  } catch (err) {
+    res.redirect("/admin/yorumlar");
+  }
+});
+
+// Yorum Düzenle (POST)
+admin.post("/yorum/:id/duzenle", adminOnly, async (req, res) => {
+  try {
+    await Comment.findByIdAndUpdate(req.params.id, {
+      content: req.body.content.trim(),
+    });
+    res.redirect("/admin/yorumlar?success=Güncellendi");
+  } catch (err) {
+    res.redirect("/admin/yorumlar?error=Hata");
+  }
+});
+
+// Yorum Sil
+admin.post("/yorum/:id/sil", adminOnly, async (req, res) => {
+  await Comment.findByIdAndDelete(req.params.id);
+  res.redirect("/admin/yorumlar?success=Silindi");
 });
 
 export default admin;

@@ -1,0 +1,45 @@
+<div class="admin-search-bar">
+  <h1>Kullanıcı Yönetimi</h1>
+  <form action="/admin/kullanicilar" method="GET">
+    <input type="text" name="q" placeholder="Kullanıcı adı veya email ara..." class="search-input" value="{{search}}">
+  </form>
+</div>
+
+<div class="table-container">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th width="50">Görsel</th>
+        <th>Kullanıcı Adı</th>
+        <th>Ad Soyad</th>
+        <th>E-posta</th>
+        <th>Rol</th>
+        <th>İşlemler</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each users}}
+      <tr>
+        <td>
+          <img src="{{#if this.avatar.url}}{{this.avatar.url}}{{else}}/img/default-avatar.png{{/if}}" class="table-img">
+        </td>
+        <td>{{this.username}}</td>
+        <td>{{this.name}} {{this.surname}}</td>
+        <td>{{this.email}}</td>
+        <td>
+          {{#if (eq this.role "admin")}}
+            <span style="color:red; font-weight:bold;">Admin</span>
+          {{else}}
+            <span style="color:green;">Üye</span>
+          {{/if}}
+        </td>
+        <td>
+          <a href="/admin/kullanici/{{this._id}}" class="action-btn btn-view">
+            <i class="fa-solid fa-eye"></i> Detay
+          </a>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
