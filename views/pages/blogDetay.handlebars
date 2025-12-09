@@ -1,10 +1,9 @@
 <section class="blog-detail">
-
-  {{! =========================================
+{{! =========================================
         DÜZENLE / SİL BUTONLARI (SADE - ŞIK)
     ========================================== }}
   {{#if isAuth}}
-    {{#if (eq currentUser post.username)}}
+    {{#if (eq currentUsername post.username)}}
       <div class="blog-detail-actions">
 
         <a href="/blog/duzenle/{{post._id}}" class="action-btn edit">
@@ -18,7 +17,7 @@
           onsubmit="return confirm('Silmek istediğine emin misin?');"
         >
           <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-          <button class="action-btn delete">
+          <button type="submit" class="action-btn delete">
             <i class="fa-solid fa-trash"></i>
             Sil
           </button>
