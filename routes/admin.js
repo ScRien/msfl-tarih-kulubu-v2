@@ -4,6 +4,7 @@ import Post from "../models/Post.js";
 import User from "../models/User.js";
 import Comment from "../models/Comment.js";
 import ImageKit from "imagekit";
+import SupportMessage from "../models/SupportMessage.js";
 
 const admin = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "jwt_secret";
@@ -94,26 +95,48 @@ admin.get("/dashboard", adminOnly, async (req, res) => {
 // Liste
 admin.get("/kullanicilar", adminOnly, async (req, res) => {
   try {
-    const search = req.query.q || "";
-    const query = search
-      ? {
-          $or: [
-            { username: new RegExp(search, "i") },
-            { email: new RegExp(search, "i") },
-          ],
-        }
-      : {};
-    const users = await User.find(query).sort({ date: -1 }).lean();
+    const { q, role, period, sort } = req.query;
+
+    const filter = {};
+
+    // 🔍 Çok alanlı arama
+    if (q) {
+      filter.$or = [
+        { username: new RegExp(q, "i") },
+        { email: new RegExp(q, "i") },
+        { name: new RegExp(q, "i") },
+        { surname: new RegExp(q, "i") },
+      ];
+    }
+
+    // 🎭 Rol filtresi
+    if (role) {
+      filter.role = role;
+    }
+
+    // 📅 Tarih filtresi
+    if (period) {
+      const fromDate = new Date();
+      fromDate.setDate(fromDate.getDate() - Number(period));
+      filter.date = { $gte: fromDate };
+    }
+
+    // 🔃 Sıralama
+    let sortQuery = { date: -1 };
+    if (sort === "old") sortQuery = { date: 1 };
+    if (sort === "name") sortQuery = { username: 1 };
+
+    const users = await User.find(filter).sort(sortQuery).lean();
 
     res.render("pages/admin/users", {
       layout: "admin",
       active: "users",
       users,
-      search,
-      csrfToken: req.csrfToken ? req.csrfToken() : "",
+      query: { q, role, period, sort },
     });
   } catch (err) {
-    res.redirect("/admin/dashboard");
+    console.error(err);
+    res.redirect("/admin/dashboard?error=Kullanıcı+listeleme+hatası");
   }
 });
 
@@ -193,19 +216,49 @@ admin.post("/kullanici/:id/rol", adminOnly, async (req, res) => {
 ========================= */
 admin.get("/bloglar", adminOnly, async (req, res) => {
   try {
-    const search = req.query.q || "";
-    const query = search ? { title: new RegExp(search, "i") } : {};
-    const blogs = await Post.find(query).sort({ date: -1 }).lean();
+    const { q, author, period, sort } = req.query;
+
+    const filter = {};
+
+    // 🔍 Başlık + içerik search
+    if (q) {
+      filter.$or = [
+        { title: new RegExp(q, "i") },
+        { content: new RegExp(q, "i") },
+      ];
+    }
+
+    // 👤 Yazar filtresi
+    if (author) {
+      filter.username = new RegExp(author, "i");
+    }
+
+    // 📅 Tarih filtresi
+    if (period) {
+      const fromDate = new Date();
+      fromDate.setDate(fromDate.getDate() - Number(period));
+      filter.date = { $gte: fromDate };
+    }
+
+    // 🔃 Sıralama
+    let sortQuery = { date: -1 };
+    if (sort === "old") sortQuery = { date: 1 };
+    if (sort === "title") sortQuery = { title: 1 };
+
+    const blogs = await Post.find(filter)
+      .sort(sortQuery)
+      .lean();
 
     res.render("pages/admin/blogs", {
       layout: "admin",
       active: "blogs",
       blogs,
-      search,
+      query: { q, author, period, sort },
       csrfToken: req.csrfToken ? req.csrfToken() : "",
     });
   } catch (err) {
-    res.redirect("/admin/dashboard");
+    console.error(err);
+    res.redirect("/admin/dashboard?error=Blog+listeleme+hatası");
   }
 });
 
@@ -243,15 +296,40 @@ admin.get("/blog/:id/duzenle", adminOnly, async (req, res) => {
 ========================= */
 admin.get("/yorumlar", adminOnly, async (req, res) => {
   try {
-    const comments = await Comment.find().sort({ date: -1 }).limit(100).lean();
+    const { q, period } = req.query;
+
+    const filter = {};
+
+    // 🔍 Kullanıcı adı veya yorum içeriği
+    if (q) {
+      filter.$or = [
+        { username: new RegExp(q, "i") },
+        { content: new RegExp(q, "i") },
+      ];
+    }
+
+    // 📅 Tarih filtresi
+    if (period) {
+      const fromDate = new Date();
+      fromDate.setDate(fromDate.getDate() - Number(period));
+      filter.date = { $gte: fromDate };
+    }
+
+    const comments = await Comment.find(filter)
+      .sort({ date: -1 })
+      .limit(200)
+      .lean();
+
     res.render("pages/admin/comments", {
       layout: "admin",
       active: "comments",
       comments,
+      query: { q, period },
       csrfToken: req.csrfToken ? req.csrfToken() : "",
     });
   } catch (err) {
-    res.redirect("/admin/dashboard");
+    console.error(err);
+    res.redirect("/admin/dashboard?error=Yorum+arama+hatası");
   }
 });
 
@@ -287,6 +365,79 @@ admin.post("/yorum/:id/duzenle", adminOnly, async (req, res) => {
 admin.post("/yorum/:id/sil", adminOnly, async (req, res) => {
   await Comment.findByIdAndDelete(req.params.id);
   res.redirect("/admin/yorumlar?success=Silindi");
+});
+
+/* ===============================
+   YARDIM & DESTEK LİSTESİ
+================================ */
+admin.get("/destek", adminOnly, async (req, res) => {
+  try {
+    const { q, topic, status } = req.query;
+
+    const filter = {};
+
+    // 🔍 Text search (isim, email, mesaj)
+    if (q) {
+      filter.$or = [
+        { name: new RegExp(q, "i") },
+        { email: new RegExp(q, "i") },
+        { message: new RegExp(q, "i") },
+      ];
+    }
+
+    // 🎯 Konu filtresi
+    if (topic) {
+      filter.topic = topic;
+    }
+
+    // 🆕 Durum filtresi
+    if (status) {
+      filter.status = status;
+    }
+
+    const messages = await SupportMessage.find(filter)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.render("pages/admin/destek", {
+      layout: "admin",
+      active: "destek",
+      messages,
+      query: { q, topic, status },
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/dashboard?error=Filtre+hatası");
+  }
+});
+
+/* ===============================
+   TEK MESAJ DETAYI
+================================ */
+admin.get("/destek/:id", adminOnly, async (req, res) => {
+  try {
+    const message = await SupportMessage.findById(req.params.id);
+
+    if (!message) {
+      return res.redirect("/admin/destek");
+    }
+
+    // okunmamışsa otomatik read yap
+    if (message.status === "new") {
+      message.status = "read";
+      await message.save();
+    }
+
+    res.render("pages/admin/destekDetay", {
+      layout: "admin",
+      active: "destek",
+      message: message.toObject(),
+      user: req.user,
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/destek");
+  }
 });
 
 export default admin;

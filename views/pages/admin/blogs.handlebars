@@ -1,7 +1,52 @@
 <div class="admin-search-bar">
   <h1>Blog Yönetimi</h1>
-  <form action="/admin/bloglar" method="GET">
-    <input type="text" name="q" placeholder="Blog başlığı ara..." class="search-input" value="{{search}}">
+
+  <form action="/admin/bloglar" method="GET" class="admin-filter-bar">
+
+    <!-- 🔍 Genel arama -->
+    <input
+      type="text"
+      name="q"
+      placeholder="Başlık, içerik veya yazar ara..."
+      class="search-input"
+      value="{{query.q}}"
+    />
+
+    <!-- 👤 Yazar filtresi -->
+    <input
+      type="text"
+      name="author"
+      placeholder="Yazar kullanıcı adı"
+      class="search-input"
+      value="{{query.author}}"
+      style="max-width:200px;"
+    />
+
+    <!-- 📅 Tarih filtresi -->
+    <select name="period">
+      <option value="">Tüm Zamanlar</option>
+      <option value="7"  {{#if (eq query.period "7")}}selected{{/if}}>Son 7 gün</option>
+      <option value="30" {{#if (eq query.period "30")}}selected{{/if}}>Son 30 gün</option>
+      <option value="90" {{#if (eq query.period "90")}}selected{{/if}}>Son 90 gün</option>
+    </select>
+
+    <!-- 🔃 Sıralama -->
+    <select name="sort">
+      <option value="new" {{#if (eq query.sort "new")}}selected{{/if}}>En Yeni</option>
+      <option value="old" {{#if (eq query.sort "old")}}selected{{/if}}>En Eski</option>
+      <option value="title" {{#if (eq query.sort "title")}}selected{{/if}}>Başlığa Göre</option>
+    </select>
+
+    <button type="submit" class="admin-btn">
+      Filtrele
+    </button>
+
+    {{#if query.q}}
+      <a href="/admin/bloglar" class="admin-btn ghost">
+        Temizle
+      </a>
+    {{/if}}
+
   </form>
 </div>
 

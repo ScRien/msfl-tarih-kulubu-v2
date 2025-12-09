@@ -1,0 +1,63 @@
+.support-page {
+  max-width: 600px;
+  margin: 80px auto;
+  padding: 0 20px;
+  text-align: center;
+  font-family: "Cardo", serif;
+}
+
+.support-page h1 {
+  margin-bottom: 10px;
+}
+
+.support-desc {
+  opacity: 0.75;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.support-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.support-form input,
+.support-form select,
+.support-form textarea {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.support-form button {
+  padding: 12px;
+  border-radius: 999px;
+  border: none;
+  background: #c9a752;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.support-form button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.alert {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.alert.success {
+  background: #e6f4d7;
+}
+
+.alert.error {
+  background: #fde2e2;
+}

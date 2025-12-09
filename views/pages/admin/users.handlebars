@@ -1,7 +1,47 @@
 <div class="admin-search-bar">
   <h1>Kullanıcı Yönetimi</h1>
-  <form action="/admin/kullanicilar" method="GET">
-    <input type="text" name="q" placeholder="Kullanıcı adı veya email ara..." class="search-input" value="{{search}}">
+
+  <form action="/admin/kullanicilar" method="GET" class="admin-filter-bar">
+
+    <!-- 🔍 Genel arama -->
+    <input
+      type="text"
+      name="q"
+      placeholder="Kullanıcı adı, ad-soyad veya e-posta ara..."
+      class="search-input"
+      value="{{query.q}}"
+    />
+
+    <!-- 🎭 Rol filtresi -->
+    <select name="role">
+      <option value="">Tüm Roller</option>
+      <option value="admin" {{#if (eq query.role "admin")}}selected{{/if}}>Admin</option>
+      <option value="user" {{#if (eq query.role "user")}}selected{{/if}}>Üye</option>
+    </select>
+
+    <!-- 📅 Kayıt zamanı -->
+    <select name="period">
+      <option value="">Tüm Zamanlar</option>
+      <option value="7"  {{#if (eq query.period "7")}}selected{{/if}}>Son 7 gün</option>
+      <option value="30" {{#if (eq query.period "30")}}selected{{/if}}>Son 30 gün</option>
+      <option value="90" {{#if (eq query.period "90")}}selected{{/if}}>Son 90 gün</option>
+    </select>
+
+    <!-- 🔃 Sıralama -->
+    <select name="sort">
+      <option value="new" {{#if (eq query.sort "new")}}selected{{/if}}>En Yeni</option>
+      <option value="old" {{#if (eq query.sort "old")}}selected{{/if}}>En Eski</option>
+      <option value="name" {{#if (eq query.sort "name")}}selected{{/if}}>Ada göre (A–Z)</option>
+    </select>
+
+    <button type="submit" class="admin-btn">
+      Filtrele
+    </button>
+
+    {{#if query.q}}
+      <a href="/admin/kullanicilar" class="admin-btn ghost">Temizle</a>
+    {{/if}}
+
   </form>
 </div>
 

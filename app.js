@@ -27,6 +27,7 @@ import sifreUnuttumRoute from "./routes/sifreUnuttum.js";
 import adminRoute from "./routes/admin.js";
 import uploadRoutes from "./routes/upload.js";
 import profileMediaRouter from "./routes/profileMedia.js";
+import yardimDestekRoute from "./routes/yardimDestek.js";
 
 dotenv.config();
 
@@ -156,33 +157,54 @@ app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/* AUTH */
+/* ========================================================
+   AUTH (JWT)
+======================================================== */
 app.use(jwtAuth);
 
-/* CSRF'TEN MUAF ROUTE'LAR */
+/* ========================================================
+   CSRF'TEN MUAF ROUTE'LAR (API / UPLOAD / ADMIN)
+======================================================== */
 app.use("/upload", uploadRoutes);
 app.use("/api/profile-media", profileMediaRouter);
 app.use("/admin", adminRoute);
 
-/* CSRF KORUMASI */
+/* ========================================================
+   CSRF KORUMASI (PAGE ROUTES)
+======================================================== */
 app.use(csrfProtection);
 app.use(addCsrfToken);
 
+/* ========================================================
+   GLOBAL FLASH MESAJLAR
+======================================================== */
 app.use((req, res, next) => {
   res.locals.success = req.query.success || null;
   res.locals.error = req.query.error || null;
   next();
 });
 
-/* NORMAL ROUTE'LAR */
+/* ========================================================
+   PUBLIC ROUTE'LAR (GİRİŞ GEREKTİRMEZ)
+======================================================== */
 app.use("/", mainRoute);
 app.use("/blog", blogRoute);
-app.use("/kullanici", kullaniciRoute);
+app.use("/yardim-destek", yardimDestekRoute); // ✅ YENİ
 app.use("/legal", legalRoute);
+app.use("/u", publicProfileRoute);
+app.use("/sifre-unuttum", sifreUnuttumRoute);
+
+/* ========================================================
+   AUTH GEREKTİREN ROUTE'LAR
+======================================================== */
+app.use("/kullanici", kullaniciRoute);
 app.use("/hesap", hesapRoute);
 app.use("/profile", profileRoute);
-app.use("/sifre-unuttum", sifreUnuttumRoute);
-app.use("/u", publicProfileRoute);
+
+/* ========================================================
+   404 HANDLER
+======================================================== */
+app.use((req, res) => res.status(404).render("pages/404"));
 
 /* 404 HANDLER */
 app.use((req, res) => res.status(404).render("pages/404"));

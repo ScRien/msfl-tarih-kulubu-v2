@@ -1,0 +1,19 @@
+<h1>Destek Mesajı</h1>
+
+<div class="support-detail-box">
+  <p><strong>Ad Soyad:</strong> {{message.name}}</p>
+  <p><strong>E-posta:</strong> {{message.email}}</p>
+  <p><strong>Konu:</strong> {{message.topic}}</p>
+  <p><strong>Tarih:</strong> {{generateDateTime message.createdAt}}</p>
+
+  <hr />
+
+  <p><strong>Mesaj:</strong></p>
+  <p class="support-message">
+    {{message.message}}
+  </p>
+</div>
+
+<a href="/admin/destek" class="admin-btn">
+  ← Geri Dön
+</a>

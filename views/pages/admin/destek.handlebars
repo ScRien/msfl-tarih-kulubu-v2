@@ -1,0 +1,103 @@
+<div class="admin-search-bar">
+  <h1>Yardım & Destek Mesajları</h1>
+
+  <form action="/admin/destek" method="GET" class="admin-filter-bar">
+
+    <!-- 🔍 Genel arama -->
+    <input
+      type="text"
+      name="q"
+      placeholder="İsim, e-posta veya içerik ara..."
+      class="search-input"
+      value="{{query.q}}"
+    />
+
+    <!-- 🎯 Konu filtresi -->
+    <select name="topic">
+      <option value="">Tüm Konular</option>
+      <option value="Teknik Hata" {{#if (eq query.topic "Teknik Hata")}}selected{{/if}}>
+        Teknik Hata
+      </option>
+      <option value="İçerik Önerisi" {{#if (eq query.topic "İçerik Önerisi")}}selected{{/if}}>
+        İçerik Önerisi
+      </option>
+      <option value="İş Birliği" {{#if (eq query.topic "İş Birliği")}}selected{{/if}}>
+        İş Birliği
+      </option>
+      <option value="Diğer" {{#if (eq query.topic "Diğer")}}selected{{/if}}>
+        Diğer
+      </option>
+    </select>
+
+    <!-- 🆕 Durum filtresi -->
+    <select name="status">
+      <option value="">Tüm Durumlar</option>
+      <option value="new" {{#if (eq query.status "new")}}selected{{/if}}>
+        Yeni
+      </option>
+      <option value="read" {{#if (eq query.status "read")}}selected{{/if}}>
+        Okunmuş
+      </option>
+    </select>
+
+    <button type="submit" class="admin-btn">
+      Filtrele
+    </button>
+
+    {{!-- ✅ Temizle --}}
+    {{#if query.q}}
+        <a href="/admin/destek" class="admin-btn ghost">Temizle</a>
+    {{else if query.topic}}
+        <a href="/admin/destek" class="admin-btn ghost">Temizle</a>
+    {{else if query.status}}
+        <a href="/admin/destek" class="admin-btn ghost">Temizle</a>
+    {{/if}}
+
+  </form>
+</div>
+
+<div class="table-container">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th width="60">Durum</th>
+        <th>Ad Soyad</th>
+        <th>E-posta</th>
+        <th>Konu</th>
+        <th>Tarih</th>
+        <th>İşlem</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{#if messages.length}}
+        {{#each messages}}
+          <tr class="{{#if (eq status 'new')}}is-new{{/if}}">
+            <td>
+              {{#if (eq status "new")}}
+                🆕
+              {{else}}
+                ✅
+              {{/if}}
+            </td>
+            <td>{{name}}</td>
+            <td>{{email}}</td>
+            <td>{{topic}}</td>
+            <td>{{generateDateTime createdAt}}</td>
+            <td>
+              <a href="/admin/destek/{{_id}}" class="action-btn btn-view">
+                Görüntüle →
+              </a>
+            </td>
+          </tr>
+        {{/each}}
+      {{else}}
+        <tr>
+          <td colspan="6" style="text-align:center; opacity:.6;">
+            Kayıtlı destek mesajı bulunamadı.
+          </td>
+        </tr>
+      {{/if}}
+    </tbody>
+  </table>
+</div>
