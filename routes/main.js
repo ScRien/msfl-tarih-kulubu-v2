@@ -17,7 +17,7 @@ router.get("/tarihteBugun", (req, res) => res.render("pages/tarihteBugun"));
 router.get("/blog", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 6;
+    const limit = 12;
 
     const totalBlogs = await Post.countDocuments();
     const totalPages = Math.ceil(totalBlogs / limit);
