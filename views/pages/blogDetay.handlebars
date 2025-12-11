@@ -86,7 +86,7 @@
         </a>
         <span class="blog-detail-dot">•</span>
         <span class="blog-detail-date">
-          {{generateDate post.date "DD MMMM YYYY"}}
+          {{generateDateTime post.date "DD MMMM YYYY"}}
         </span>
       </div>
     </div>
@@ -100,7 +100,7 @@
     <article class="blog-detail-article">
 
       <div class="blog-detail-content">
-        {{{formatParagraphs post.content}}}
+        {{{post.content}}}
       </div>
 
     </article>

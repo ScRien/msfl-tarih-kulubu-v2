@@ -255,7 +255,7 @@
   /* ✅ TAŞMA FIX */
   word-break: break-word;
   overflow-wrap: anywhere;
-  white-space: normal;
+  white-space: pre-line;
 }
 
 /* ===========================
