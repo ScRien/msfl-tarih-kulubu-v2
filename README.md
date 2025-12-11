@@ -1,179 +1,112 @@
-# 🏛️ MSFL History Club — Official Website
+# 🎉 MSFL History Club — Release v2.0.0
 
-Welcome to the **official web platform** of the *Mustafa Saffet Science High School History Club (MSFL Tarih Kulübü)*.  
-This website is designed to share historical content, club activities, and student-written articles with a modern, dynamic, and fully responsive interface.
+Version **2.0.0** is a major milestone update for the MSFL History Club Official Website.  
+This release brings a fully redesigned admin experience, a modernized user detail panel, improved backend logic, UI consistency upgrades, and significant stability and performance improvements.
 
-🚀 **Live Website:** https://msfltarihkulubu.vercel.app/
-
----
-
-## 📌 Features
-
-### 🏠 Homepage
-- Atatürk-themed hero section with signature and tughra artwork  
-- Fully responsive layout (desktop/tablet/mobile)  
-- Clean typography and modern UI components  
-
-### 📝 Blog System
-- Create, edit, and delete blog posts  
-- Blog listing + detail pages  
-- Author-only permissions  
-- Cloudinary image upload support  
-- Automatic date formatting  
-- Handlebars-based dynamic rendering  
-
-### 👤 User Accounts & Profiles
-- JWT-based authentication (secure cookies)  
-- User registration and login  
-- Profiles with:
-  - Avatar upload  
-  - Cover upload  
-  - Editable biography  
-  - Social media links (Instagram, X, GitHub)  
-- Public profile pages with user posts  
-
-### 🔐 Security
-- CSRF protection  
-- Password hashing  
-- Helmet security middleware  
-- Auth-based route protection  
-- Input normalization for social links  
-
-### 📅 “Today in History” Module
-- Custom historical event section  
-- Editable events  
-- Clean date → events display  
-
-### ⚙️ Backend Architecture
-- Node.js + Express  
-- MongoDB + Mongoose  
-- Handlebars templating engine  
-- Modular routing structure  
-- Helper functions:
-  - `eq`
-  - `generateDate`
-  - `toString`
-  - Custom logger  
+This update also prepares the project for the upcoming **Frontend–Backend Separation (v3.0)**.
 
 ---
 
-## 🗂️ Project Structure
+## 🚀 What's New in v2.0.0
 
-```
-/public
-  /css
-  /js
-  /img
+### 🧑‍💼 Admin Panel Overhaul
+The admin panel has been redesigned for clarity, performance, and usability.
 
-/routes
-  main.js
-  blogs.js
-  kullanici.js
-  hesap.js
-  legal.js
-  profile.js
+#### ✔ New User Detail Page
+- Profile card with avatar, name, email, role, and registration date  
+- Role management (Promote/Demote Admin)  
+- Delete user (with all blogs & comments)  
+- Clean card-based layout  
 
-/views
-  /layouts
-  /partials
-  *.handlebars
+#### ✔ About Section
+Displays:
+- Biography  
+- Instagram link  
+- X (Twitter) link  
+- GitHub profile  
+- Personal website  
 
-/models
-  User.js
-  Post.js
-  Comment.js
-
-/helpers
-/middlewares
-```
+#### ✔ Data Permissions Section
+Shows all privacy-related settings:
+- Analytics cookies  
+- Personalization cookies  
+- Service data usage  
+- Personalized content  
 
 ---
 
-## 🛠️ Tech Stack
+## 📝 Blog & Comment Enhancements
 
-**Frontend:**  
-- HTML5  
-- CSS3  
-- JavaScript  
-- Handlebars (HBS)
+### ✔ Blog List Improvements
+- Cleaner layout  
+- Timestamps  
+- Quick “View Blog” action  
+- Automatic counter:  
+  **`X kayıt bulundu`**
 
-**Backend:**  
-- Node.js (Express)  
-- MongoDB (Mongoose)  
-- JWT authentication  
-
-**Other:**  
-- Cloudinary image hosting  
-- Helmet security  
-- CSRF protection  
+### ✔ Comment List Improvements
+- Better table readability  
+- Delete action for moderation  
+- Automatic counter:  
+  **`X kayıt bulundu`**
 
 ---
 
-## 🚀 Getting Started (Development)
+## 🎨 UI & Layout Improvements
 
-### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/your/repo-name.git
-cd msfl-tarih-kulubu-v2
-```
-
-### 2️⃣ Install Dependencies
-```bash
-npm install
-```
-
-### 3️⃣ Configure Environment Variables  
-Create a `.env` file:
-
-```
-MONGO_URI=your-mongo-db-connection
-JWT_SECRET=your-secret
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_UPLOAD_PRESET=your-preset
-PORT=3000
-```
-
-### 4️⃣ Start the Server
-```bash
-npm run dev
-```
-
-Server runs on:  
-👉 `http://localhost:3000`
+- Fixed layout shifting on admin pages  
+- More consistent padding, margins, and spacing  
+- Unified card design system  
+- Better alignment for desktop + mobile screens  
+- Improved table readability and row spacing  
+- Visual improvements across all admin pages  
 
 ---
 
-## 📦 Deployment
+## ⚙ Backend & Logic Upgrades
 
-This project is fully compatible with **Vercel**.  
-Make sure to:
-- Use `"type": "module"` in package.json  
-- Add environment variables in Vercel dashboard  
-- Set the build command to:  
-```
-npm install
-```
-- And the output directory to:  
-```
-/
-```
+### ✔ Route Cleanup & Optimization
+- More stable user/blog/comment queries  
+- Cleaner admin route structure  
+- Improved error handling  
+- Stronger role-based protection  
 
----
+### ✔ Security Enhancements
+- More consistent CSRF usage  
+- Safer regex-based search  
+- Sanitization updates  
 
-## 🤝 Contributing
-
-Contributions, suggestions, and improvements are welcome!  
-Create an issue or open a pull request.
+### ✔ Performance
+- Faster page loads in admin panel  
+- Reduced duplicate render loads  
+- Removal of unused styles/scripts  
 
 ---
 
-## 📜 License
+## 🐞 Bug Fixes
 
-This project is licensed under the **MIT License**.
+- Fixed mobile layout dropping issues  
+- Fixed admin table overflow on smaller screens  
+- Fixed avatar fallback display issues  
+- Fixed blog carousel visual bugs  
+- Corrected date helper inconsistencies  
+- Fixed missing CSRF token on certain actions  
 
 ---
 
-## 🌐 Visit the Website
+## 🎯 Summary
 
-👉 **https://msfltarihkulubu.vercel.app/**  
-Explore the platform, read articles, and follow new updates from MSFL History Club.
+Version **2.0.0** brings:
+- A more modern admin interface  
+- Expanded user detail management  
+- Greater visual consistency  
+- More stable backend logic  
+- Improved moderation tools  
+- Stronger foundation for the future rewrite  
+
+This is the biggest improvement since the initial project release.
+
+---
+
+## 🏁 Version
+**v2.0.0 — Admin Panel Overhaul & Platform Stability Release**
