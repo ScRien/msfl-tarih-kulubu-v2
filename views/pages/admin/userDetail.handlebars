@@ -1,76 +1,207 @@
-<div style="display:flex; gap:20px; align-items:flex-start;">
-  
-  <!-- SOL: KULLANICI BİLGİLERİ -->
-  <div class="table-container" style="flex:1;">
+<div class="user-detail-layout">
+
+  <!-- SOL PANEL -->
+  <div class="left-panel table-container">
+
     <h3>Profil</h3>
     <br>
-    <div style="text-align:center; margin-bottom:20px;">
-      <img src="{{#if targetUser.avatar.url}}{{targetUser.avatar.url}}{{else}}/img/default-avatar.png{{/if}}" 
-           style="width:100px; height:100px; border-radius:50%; border:3px solid #eee;">
-      <h2>{{targetUser.name}} {{targetUser.surname}}</h2>
-      <p style="color:#777;">@{{targetUser.username}}</p>
+
+    <!-- Avatar + İsim -->
+    <div class="profile-box">
+      <img 
+        src="{{#if targetUser.avatar.url}}{{targetUser.avatar.url}}{{else}}/img/default-avatar.png{{/if}}" 
+        class="profile-avatar"
+      >
+      <h2 class="profile-name">{{targetUser.name}} {{targetUser.surname}}</h2>
+      <p class="profile-username">@{{targetUser.username}}</p>
+
+      <a href="/u/@{{targetUser.username}}" target="_blank" class="visit-profile-btn">
+        Kullanıcı Profiline Git →
+      </a>
     </div>
 
+    <!-- Temel bilgiler -->
     <table class="admin-table">
-      <tr><th>E-posta</th><td>{{targetUser.email}}</td></tr>
-      <tr><th>Rol</th><td>{{targetUser.role}}</td></tr>
-      <tr><th>Kayıt</th><td>{{generateDate targetUser.date}}</td></tr>
+      <tr>
+        <th>E-posta</th>
+        <td>{{targetUser.email}}</td>
+      </tr>
+      <tr>
+        <th>Rol</th>
+        <td>{{targetUser.role}}</td>
+      </tr>
+      <tr>
+        <th>Kayıt Tarihi</th>
+        <td>{{generateDateTime targetUser.date}}</td>
+      </tr>
     </table>
 
-    <div style="margin-top:20px; display:flex; gap:10px;">
-      <form action="/admin/kullanici/{{targetUser._id}}/rol" method="POST" style="flex:1;">
+    <!-- Rol & Silme İşlemleri -->
+    <div class="profile-actions-block">
+      <form action="/admin/kullanici/{{targetUser._id}}/rol"
+            method="POST"
+            class="left-action">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        <button class="action-btn btn-edit" style="width:100%;">
+        <button class="action-btn btn-edit full-btn">
           {{#if (eq targetUser.role 'admin')}}Üye Yap{{else}}Admin Yap{{/if}}
         </button>
       </form>
 
-      <form action="/admin/kullanici/{{targetUser._id}}/sil" method="POST" onsubmit="return confirm('Kullanıcıyı silmek istediğine emin misin?');" style="flex:1;">
+      <form action="/admin/kullanici/{{targetUser._id}}/sil"
+            method="POST"
+            class="left-action"
+            onsubmit="return confirm('Kullanıcıyı silmek istediğine emin misin?');">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        <button class="action-btn btn-delete" style="width:100%;">Sil</button>
+        <button class="action-btn btn-delete full-btn">Sil</button>
       </form>
     </div>
+
+    <!-- Hakkında -->
+    <div class="table-container subsection">
+      <h3>Hakkında</h3>
+
+      <table class="admin-table">
+        <tr>
+          <th>Biyografi</th>
+          <td>{{#if targetUser.bio}}{{targetUser.bio}}{{else}}—{{/if}}</td>
+        </tr>
+
+        <tr>
+          <th>Instagram</th>
+          <td>
+            {{#if targetUser.social.instagram}}
+              <a href="https://instagram.com/{{targetUser.social.instagram}}" target="_blank">
+                @{{targetUser.social.instagram}}
+              </a>
+            {{else}}—{{/if}}
+          </td>
+        </tr>
+
+        <tr>
+          <th>X (Twitter)</th>
+          <td>
+            {{#if targetUser.social.x}}
+              <a href="https://x.com/{{targetUser.social.x}}" target="_blank">
+                @{{targetUser.social.x}}
+              </a>
+            {{else}}—{{/if}}
+          </td>
+        </tr>
+
+        <tr>
+          <th>GitHub</th>
+          <td>
+            {{#if targetUser.social.github}}
+              <a href="https://github.com/{{targetUser.social.github}}" target="_blank">
+                {{targetUser.social.github}}
+              </a>
+            {{else}}—{{/if}}
+          </td>
+        </tr>
+
+        <tr>
+          <th>Website</th>
+          <td>
+            {{#if targetUser.social.website}}
+              <a href="{{targetUser.social.website}}" target="_blank">
+                {{targetUser.social.website}}
+              </a>
+            {{else}}—{{/if}}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ÇEREZ & VERİ İZİNLERİ -->
+    <div class="table-container subsection">
+      <h3>Veri Kullanım & Çerez İzinleri</h3>
+
+      <table class="admin-table">
+        <tr>
+          <th>Analitik Çerezler</th>
+          <td>{{#if targetUser.analyticsCookies}}✔ Açık{{else}}✖ Kapalı{{/if}}</td>
+        </tr>
+
+        <tr>
+          <th>Kişiselleştirme Çerezleri</th>
+          <td>{{#if targetUser.personalizationCookies}}✔ Açık{{else}}✖ Kapalı{{/if}}</td>
+        </tr>
+
+        <tr>
+          <th>Servis Verisi Kullanımı</th>
+          <td>{{#if targetUser.serviceDataUsage}}✔ İzin Verdi{{else}}✖ Vermedi{{/if}}</td>
+        </tr>
+
+        <tr>
+          <th>Kişiselleştirilmiş İçerik</th>
+          <td>{{#if targetUser.personalizedContent}}✔ Açık{{else}}✖ Kapalı{{/if}}</td>
+        </tr>
+      </table>
+    </div>
+
   </div>
 
-  <!-- SAĞ: İÇERİKLER -->
-  <div style="flex:2; display:flex; flex-direction:column; gap:20px;">
-    
+
+
+
+  <!-- SAĞ PANEL -->
+  <div class="right-panel">
+
+    <!-- BLOG TABLOSU -->
     <div class="table-container">
       <h3>Bloglar ({{userBlogs.length}})</h3>
+
+      <p class="count-label">{{userBlogs.length}} kayıt bulundu</p>
+
       <table class="admin-table">
         {{#each userBlogs}}
         <tr>
           <td>{{this.title}}</td>
-          <td>{{generateDate this.date}}</td>
+          <td>{{generateDateTime this.date}}</td>
           <td>
-             <a href="/blog/{{this._id}}" target="_blank" class="action-btn btn-view"><i class="fa-solid fa-eye"></i></a>
+            <a href="/blog/{{this._id}}" target="_blank" class="action-btn btn-view">
+              <i class="fa-solid fa-eye"></i>
+            </a>
           </td>
         </tr>
         {{else}}
-        <tr><td colspan="3">Blog yok.</td></tr>
+        <tr>
+          <td colspan="3">Blog yok.</td>
+        </tr>
         {{/each}}
       </table>
     </div>
 
+    <!-- YORUM TABLOSU -->
     <div class="table-container">
       <h3>Yorumlar ({{userComments.length}})</h3>
+
+      <p class="count-label">{{userComments.length}} kayıt bulundu</p>
+
       <table class="admin-table">
         {{#each userComments}}
         <tr>
-          <td style="font-size:13px; color:#555;">{{this.content}}</td>
-          <td>{{generateDate this.date}}</td>
+          <td>{{this.content}}</td>
+          <td>{{generateDateTime this.date}}</td>
           <td>
-             <form action="/admin/yorum/{{this._id}}/sil" method="POST" style="display:inline;">
-                <input type="hidden" name="_csrf" value="{{../csrfToken}}">
-                <button class="action-btn btn-delete"><i class="fa-solid fa-trash"></i></button>
-             </form>
+            <form action="/admin/yorum/{{this._id}}/sil" 
+                  method="POST"
+                  style="display:inline;">
+              <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+              <button class="action-btn btn-delete">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
           </td>
         </tr>
         {{else}}
-        <tr><td colspan="3">Yorum yok.</td></tr>
+        <tr>
+          <td colspan="3">Yorum yok.</td>
+        </tr>
         {{/each}}
       </table>
     </div>
 
   </div>
+
 </div>
