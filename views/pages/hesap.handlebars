@@ -24,6 +24,14 @@
       Sosyal Medya
     </button>
 
+    <div class="sidebar-category">Veri & Gizlilik</div>
+    <button type="button" class="sidebar-item" data-target="data-usage">
+      Veri Kullanımı & Çerez İzinleri
+    </button>
+    <button type="button" class="sidebar-item" data-target="policies">
+      Gizlilik & Politikalar
+    </button>
+
     <div class="sidebar-category">Gizlilik & Güvenlik</div>
     <button type="button" class="sidebar-item" data-target="password">
       Şifre Değiştir
@@ -36,6 +44,7 @@
 
   </aside>
 
+
   <!-- ========== SAĞ PANEL ========== -->
   <main class="account-content">
 
@@ -44,6 +53,7 @@
       <div class="spinner"></div>
       <p>Hesap bilgileri yükleniyor...</p>
     </div>
+
 
     <!-- ========== PROFİL ========== -->
     <div class="content-box" id="profile" style="display:block;">
@@ -88,6 +98,7 @@
       </form>
     </div>
 
+
     <!-- ========== SOSYAL ========== -->
     <div class="content-box" id="social">
       <h2 class="title">Sosyal Medya</h2>
@@ -116,6 +127,7 @@
         </div>
       </form>
     </div>
+
 
     <!-- ========== MEDYA ========== -->
     <div class="content-box" id="media">
@@ -167,6 +179,86 @@
       </div>
     </div>
 
+
+    <!-- ========== VERİ KULLANIMI ========== -->
+    <div class="content-box" id="data-usage">
+      <h2 class="title">Veri Kullanımı & Çerez İzinleri</h2>
+
+      <p class="desc">Hangi verilerin kullanımına izin verdiğinizi buradan yönetebilirsiniz.</p>
+
+      <form action="/hesap/data-usage" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+        <!-- 1) Analitik Çerezler -->
+        <div class="toggle-row">
+          <label>Analitik Çerezler</label>
+          <label class="switch">
+            <input type="checkbox" name="analyticsCookies"
+              {{#if user.analyticsCookies}}checked{{/if}} />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- 2) Kişiselleştirme Çerezleri -->
+        <div class="toggle-row">
+          <label>Kişiselleştirme Çerezleri</label>
+          <label class="switch">
+            <input type="checkbox" name="personalizationCookies"
+              {{#if user.personalizationCookies}}checked{{/if}} />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- 3) Hizmet Kalitesi için Anonim Veri -->
+        <div class="toggle-row">
+          <label>Hizmet Kalitesi için Anonim Veri</label>
+          <label class="switch">
+            <input type="checkbox" name="serviceDataUsage"
+              {{#if user.serviceDataUsage}}checked{{/if}} />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- 4) Kişiselleştirilmiş İçerik -->
+        <div class="toggle-row">
+          <label>Kişiselleştirilmiş İçerik</label>
+          <label class="switch">
+            <input type="checkbox" name="personalizedContent"
+              {{#if user.personalizedContent}}checked{{/if}} />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn save">Kaydet</button>
+          <button class="btn cancel" type="reset">İptal</button>
+        </div>
+      </form>
+    </div>
+
+
+    <!-- ========== POLİTİKALAR ========== -->
+    <div class="content-box" id="policies">
+      <h2 class="title">Site Politikaları</h2>
+      <p class="desc">Gizlilik, açık rıza ve kullanım şartları belgelerine buradan erişebilirsin.</p>
+
+      <div class="policy-card">
+        <h3 class="policy-title">📘 Açık Rıza Metni</h3>
+        <a href="/legal/acik-riza-metni" class="policy-link">Görüntüle →</a>
+      </div>
+
+      <div class="policy-card">
+        <h3 class="policy-title">🔒 Gizlilik Politikası</h3>
+        <a href="/legal/gizlilik-politikasi" class="policy-link">Görüntüle →</a>
+      </div>
+
+      <div class="policy-card">
+        <h3 class="policy-title">📄 Kullanım Şartları</h3>
+        <a href="/legal/kullanim-sartlari" class="policy-link">Görüntüle →</a>
+      </div>
+    </div>
+
+
     <!-- ========== ŞİFRE ========== -->
     <div class="content-box" id="password">
       <h2 class="title">Şifre Değiştir</h2>
@@ -194,6 +286,7 @@
       </div>
     </div>
 
+
     <!-- ========== HESAP SİL ========== -->
     <div class="content-box" id="delete">
       <h2 class="title danger">Hesabı Sil</h2>
@@ -206,6 +299,7 @@
 
   </main>
 </section>
+
 
 <!-- ========== DELETE MODAL ========== -->
 <div id="deleteModal" class="delete-modal">
@@ -230,17 +324,12 @@
       <p id="modalError" style="color: red; margin-top: 10px; font-size: 0.9rem;"></p>
 
       <div class="modal-buttons">
-        <button
-          type="button"
-          class="cancel-btn"
-        >Vazgeç</button>
-        <button
-          type="button"
-          class="delete-btn"
-        >Hesabı Sil</button>
+        <button type="button" class="cancel-btn">Vazgeç</button>
+        <button type="button" class="delete-btn">Hesabı Sil</button>
       </div>
     </form>
   </div>
 </div>
+
 
 <script type="module" src="/js/hesap.js"></script>
