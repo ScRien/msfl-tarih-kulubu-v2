@@ -39,45 +39,80 @@ router.post("/profil", auth, async (req, res) => {
     const updateData = {};
     const currentUser = await User.findById(req.user.id);
 
+    /* =====================================================
+       KULLANICI ADI GÜNCELLEME
+    ===================================================== */
+    if (req.body.username) {
+      const username = req.body.username.trim();
+
+      // format kontrolü
+      const usernameRegex = /^[a-zA-Z0-9._]{3,20}$/;
+      if (!usernameRegex.test(username)) {
+        return res.redirect("/hesap?error=Geçersiz+kullanıcı+adı");
+      }
+
+      // değişmiş mi?
+      if (currentUser.username !== username) {
+        const existing = await User.findOne({
+          username,
+          _id: { $ne: req.user.id },
+        });
+
+        if (existing) {
+          return res.redirect("/hesap?error=Kullanıcı+adı+kullanımda");
+        }
+
+        updateData.username = username;
+      }
+    }
+
+    /* =====================================================
+       E-POSTA GÜNCELLEME
+    ===================================================== */
     if (req.body.email) {
       const email = req.body.email.trim().toLowerCase();
+
       if (currentUser.email !== email) {
         const existing = await User.findOne({
           email,
           _id: { $ne: req.user.id },
         });
+
         if (existing) {
           return res.redirect("/hesap?error=Bu+e-posta+kullanımda");
         }
+
         updateData.email = email;
       }
     }
 
+    /* =====================================================
+       BİYOGRAFİ
+    ===================================================== */
     if (typeof req.body.bio === "string") {
       updateData.bio = req.body.bio.trim();
     }
 
-    // --- AVATAR GÜNCELLEME (GÜVENLİ PARSE EKLENDİ) ---
+    /* =====================================================
+       AVATAR GÜNCELLEME (ImageKit – güvenli parse)
+    ===================================================== */
     if (req.body.avatar) {
       let avatarData = {};
+
       try {
-        // Önce JSON olarak çözmeyi dene
         avatarData = JSON.parse(req.body.avatar);
-      } catch (e) {
-        // JSON değilse (Düz URL ise) manuel obje oluştur
+      } catch {
         avatarData = { url: req.body.avatar, fileId: "" };
       }
 
       if (avatarData.url) {
-        // Eski avatarı sil (Sadece fileId varsa)
+        // eski avatarı sil
         if (
           currentUser.avatar &&
           currentUser.avatar.fileId &&
           avatarData.fileId
         ) {
-          await imagekit
-            .deleteFile(currentUser.avatar.fileId)
-            .catch((e) => console.log("Silme hatası:", e.message));
+          await imagekit.deleteFile(currentUser.avatar.fileId).catch(() => {});
         }
 
         updateData.avatar = {
@@ -88,17 +123,19 @@ router.post("/profil", auth, async (req, res) => {
       }
     }
 
-    // --- KAPAK FOTOĞRAFI GÜNCELLEME (GÜVENLİ PARSE EKLENDİ) ---
+    /* =====================================================
+       KAPAK FOTOĞRAFI GÜNCELLEME
+    ===================================================== */
     if (req.body.cover) {
       let coverData = {};
+
       try {
         coverData = JSON.parse(req.body.cover);
-      } catch (e) {
+      } catch {
         coverData = { url: req.body.cover, fileId: "" };
       }
 
       if (coverData.url) {
-        // Eski cover'ı sil
         if (
           currentUser.coverImage &&
           currentUser.coverImage.fileId &&
@@ -106,10 +143,9 @@ router.post("/profil", auth, async (req, res) => {
         ) {
           await imagekit
             .deleteFile(currentUser.coverImage.fileId)
-            .catch((e) => console.log("Silme hatası:", e.message));
+            .catch(() => {});
         }
 
-        // Veritabanı alan adı: 'coverImage'
         updateData.coverImage = {
           url: coverData.url,
           fileId: coverData.fileId || "",
@@ -118,6 +154,9 @@ router.post("/profil", auth, async (req, res) => {
       }
     }
 
+    /* =====================================================
+       VERİTABANI GÜNCELLE
+    ===================================================== */
     await User.findByIdAndUpdate(req.user.id, updateData);
     res.redirect("/hesap?success=Profil+bilgileri+güncellendi");
   } catch (error) {
