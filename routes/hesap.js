@@ -39,6 +39,9 @@ router.post("/profil", auth, async (req, res) => {
     const updateData = {};
     const currentUser = await User.findById(req.user.id);
 
+    let usernameChanged = false;
+    let newUsername = null;
+
     /* =====================================================
        KULLANICI ADI GÜNCELLEME
     ===================================================== */
@@ -63,6 +66,8 @@ router.post("/profil", auth, async (req, res) => {
         }
 
         updateData.username = username;
+        usernameChanged = true;
+        newUsername = username;
       }
     }
 
@@ -106,15 +111,12 @@ router.post("/profil", auth, async (req, res) => {
       }
 
       if (avatarData.url) {
-        // eski avatarı sil
         if (
           currentUser.avatar &&
           currentUser.avatar.fileId &&
           avatarData.fileId
         ) {
-          await imagekit
-            .deleteFile(currentUser.avatar.fileId)
-            .catch((e) => console.log("Silme hatası:", e.message));
+          await imagekit.deleteFile(currentUser.avatar.fileId).catch(() => {});
         }
 
         updateData.avatar = {
@@ -145,7 +147,7 @@ router.post("/profil", auth, async (req, res) => {
         ) {
           await imagekit
             .deleteFile(currentUser.coverImage.fileId)
-            .catch((e) => console.log("Silme hatası:", e.message));
+            .catch(() => {});
         }
 
         updateData.coverImage = {
@@ -157,9 +159,20 @@ router.post("/profil", auth, async (req, res) => {
     }
 
     /* =====================================================
-       VERİTABANI GÜNCELLE
+       USER GÜNCELLE
     ===================================================== */
     await User.findByIdAndUpdate(req.user.id, updateData);
+
+    /* =====================================================
+       USERNAME DEĞİŞTİYSE TÜM POSTLARI GÜNCELLE
+    ===================================================== */
+    if (usernameChanged && newUsername) {
+      await Post.updateMany(
+        { user_id: req.user.id },
+        { $set: { username: newUsername } }
+      );
+    }
+
     res.redirect("/hesap?success=Profil+bilgileri+güncellendi");
   } catch (error) {
     console.error("Profil Güncelleme Hatası:", error);
