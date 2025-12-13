@@ -112,7 +112,9 @@ router.post("/profil", auth, async (req, res) => {
           currentUser.avatar.fileId &&
           avatarData.fileId
         ) {
-          await imagekit.deleteFile(currentUser.avatar.fileId).catch(() => {});
+          await imagekit
+            .deleteFile(currentUser.avatar.fileId)
+            .catch((e) => console.log("Silme hatası:", e.message));
         }
 
         updateData.avatar = {
@@ -143,7 +145,7 @@ router.post("/profil", auth, async (req, res) => {
         ) {
           await imagekit
             .deleteFile(currentUser.coverImage.fileId)
-            .catch(() => {});
+            .catch((e) => console.log("Silme hatası:", e.message));
         }
 
         updateData.coverImage = {
